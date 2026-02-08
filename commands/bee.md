@@ -215,6 +215,8 @@ After triage, before delegating to any agent, ask clarifying questions to fill i
 
 **The point:** Don't ask generic questions from a checklist. Ask the specific questions that, if left unanswered, would force the AI to guess later. Each question should resolve a real ambiguity in this particular task.
 
+**Don't ask technical questions here.** Stack, framework, deployment model, API style, database choice — these belong in spec-building and architecture, not inline clarification. Inline clarification scopes the WHAT ("which email actions do you need?"), not the HOW ("should this be REST or GraphQL?").
+
 Pass the developer's answers as enriched context to every downstream agent.
 
 ## NAVIGATION BY SIZE
@@ -298,7 +300,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding. Read `skills/collaboration-loop/SKILL.md` for the full format reference.
 
   1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
-  2. Tell the developer: "Here's the doc: `[path]`. Take a look in your editor — add `@bee` comments on anything you want changed, and mark `[x] Reviewed` when you're ready to move on."
+  2. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
   3. Wait for the developer's next message, then re-read the file.
   4. If `@bee` annotations found: read each comment, make the requested change to the document, replace the annotation with a comment card (see skill for format), tell the developer what changed, wait for next message.
   5. If `[x] Reviewed` found: proceed to the next step. Unresolved comment cards do not block.

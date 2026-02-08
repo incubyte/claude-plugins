@@ -69,7 +69,7 @@ Only `[x] Reviewed` blocks progression. These do NOT block:
 1. Agent writes document and confirms via AskUserQuestion (existing flow)
 2. Agent returns to orchestrator
 3. Orchestrator appends the `[ ] Reviewed` checkbox to the document
-4. Orchestrator shows the file path: "Here's the doc: `[path]`. Take a look in your editor — add `@bee` comments on anything you want changed, and mark `[x] Reviewed` when you're ready to move on."
+4. Orchestrator shows the file path: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
 5. Developer messages Bee (any message triggers a re-read of the file)
 6. Bee re-reads the file:
    - **`@bee` annotations found** → process each one, make changes, replace with comment cards, write updated file, tell the developer what changed, wait for next message
