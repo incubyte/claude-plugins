@@ -1,0 +1,13 @@
+{
+  "name": "incubyte-plugins",
+  "owner": {
+    "name": "Incubyte"
+  },
+  "plugins": [
+    {
+      "name": "bee",
+      "source": "incubyte/bee",
+      "description": "Spec-driven TDD workflow navigator for AI-assisted development"
+    }
+  ]
+}
