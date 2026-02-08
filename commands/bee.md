@@ -279,7 +279,22 @@ After triage and inline clarification, present your recommendation via AskUserQu
   The discovery agent will produce a discovery document, get developer confirmation, and return the document path.
   **→ Update state:** add discovery doc path, phase: "discovery complete"
 
+  **→ Run the Collaboration Loop** on the discovery document (see Collaboration Loop section above).
+
   If discovery revised the triage size (e.g., FEATURE → EPIC), update the state file with the new size.
+
+  ### Collaboration Loop
+
+  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding. Read `skills/collaboration-loop/SKILL.md` for the full format reference.
+
+  1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
+  2. Tell the developer: "Here's the doc: `[path]`. Take a look in your editor — add `@bee` comments on anything you want changed, and mark `[x] Reviewed` when you're ready to move on."
+  3. Wait for the developer's next message, then re-read the file.
+  4. If `@bee` annotations found: read each comment, make the requested change to the document, replace the annotation with a comment card (see skill for format), tell the developer what changed, wait for next message.
+  5. If `[x] Reviewed` found: proceed to the next step. Unresolved comment cards do not block.
+  6. If neither: remind the developer about the file path and the `[x] Reviewed` checkbox.
+
+  This loop applies after: discovery agent returns, spec-builder returns (Step 1), and TDD planner returns (Step 3).
 
   ### The Build Cycle
 
@@ -297,6 +312,8 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   The spec-builder interviews the developer, writes the spec, and gets confirmation before returning.
   **→ Update state:** add spec path, set phase to "spec confirmed" (or "phase N spec confirmed")
+
+  **→ Run the Collaboration Loop** on the spec document.
 
   #### Step 2: Architecture
 
@@ -334,6 +351,8 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   Delegate to the selected planner agent via Task. Pass: the spec path, the slice to plan, the architecture recommendation, the context summary, and the risk level.
   **→ Update state:** add plan path, current slice, set phase to "plan approved, ready to execute"
+
+  **→ Run the Collaboration Loop** on the TDD plan document.
 
   #### Step 4: Execute → Verify (slice loop)
 

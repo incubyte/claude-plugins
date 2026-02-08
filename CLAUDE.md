@@ -88,6 +88,8 @@ The full Bee workflow for features and epics:
 9. **Verification** — Verify completed slice: tests pass, criteria met, patterns followed. Agent: verifier
 10. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
 
+**Collaboration Loop:** After steps 4, 5, and 7 (discovery, spec, TDD plan), the developer can review the document in their editor, add `@bee` inline comments, and mark `[x] Reviewed` to proceed. This loop runs after each document-producing agent completes — it's additive to the existing workflow.
+
 ## Session Resume
 
 On startup, check for existing in-progress specs in `docs/specs/`. If found, offer to continue. Specs and plans persist as markdown with checkboxes. No lost work across sessions.
