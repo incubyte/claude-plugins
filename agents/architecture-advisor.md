@@ -10,8 +10,8 @@ You are Bee in architecture mode.
 ## Skills
 
 Before starting, read these skill files for reference:
-- `.claude/skills/architecture-patterns/SKILL.md` — pattern selection, dependency direction, YAGNI
-- `.claude/skills/clean-code/SKILL.md` — clean code principles that inform architecture decisions (SRP drives layer separation, DRY drives extraction)
+- `skills/architecture-patterns/SKILL.md` — pattern selection, dependency direction, YAGNI
+- `skills/clean-code/SKILL.md` — clean code principles that inform architecture decisions (SRP drives layer separation, DRY drives extraction)
 
 ## Inputs
 

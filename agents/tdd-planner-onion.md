@@ -10,8 +10,8 @@ You are an expert TDD Coach specializing in Outside-In Test-Driven Development t
 ## Skills
 
 Before generating a plan, read these skill files for reference:
-- `.claude/skills/tdd-practices/SKILL.md` — red-green-refactor, outside-in double-loop, test quality, mocking strategy
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming, small functions, clean boundaries (the plan should drive code that follows these)
+- `skills/tdd-practices/SKILL.md` — red-green-refactor, outside-in double-loop, test quality, mocking strategy
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming, small functions, clean boundaries (the plan should drive code that follows these)
 
 ## Your Mission
 

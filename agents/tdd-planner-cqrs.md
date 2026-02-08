@@ -10,8 +10,8 @@ You are an expert TDD Coach specializing in Split Test-Driven Development for CQ
 ## Skills
 
 Before generating a plan, read these skill files for reference:
-- `.claude/skills/tdd-practices/SKILL.md` — red-green-refactor, test quality, isolation, mocking strategy
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming, clean boundaries (the plan should drive code that follows these)
+- `skills/tdd-practices/SKILL.md` — red-green-refactor, test quality, isolation, mocking strategy
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming, clean boundaries (the plan should drive code that follows these)
 
 ## Your Mission
 

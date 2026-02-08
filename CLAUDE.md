@@ -80,12 +80,13 @@ The full Bee workflow for features and epics:
 1. **Triage** — Assess size + risk. Route to appropriate workflow. Entry point: `/bee`
 2. **Context Gathering** — Read the codebase to understand patterns, conventions, and the change area. Agent: context-gatherer
 3. **Tidy (optional)** — Clean up the area before building. Separate commit. Skipped if area is clean. Agent: tidy
-4. **Spec Building** — Interview the developer, build a testable specification. Agent: spec-builder
-5. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-advisor
-6. **TDD Planning** — Generate a checklisted TDD plan for each slice. Agents: tdd-planner-onion, tdd-planner-mvc, tdd-planner-simple
-7. **Execution** — Ralph executes the TDD plan mechanically.
-8. **Verification** — Verify completed slice: tests pass, criteria met, patterns followed. Agent: verifier
-9. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
+4. **Discovery (when warranted)** — Assess requirement clarity + scope size. When either is uncertain, produce a milestone map and hypotheses before spec-building. Agent: discovery
+5. **Spec Building** — Interview the developer, build a testable specification. Uses discovery document when available. Agent: spec-builder
+6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-advisor
+7. **TDD Planning** — Generate a checklisted TDD plan for each slice. Agents: tdd-planner-onion, tdd-planner-mvc, tdd-planner-simple
+8. **Execution** — Ralph executes the TDD plan mechanically.
+9. **Verification** — Verify completed slice: tests pass, criteria met, patterns followed. Agent: verifier
+10. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
 
 ## Session Resume
 

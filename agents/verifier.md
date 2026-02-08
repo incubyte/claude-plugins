@@ -10,8 +10,8 @@ You are Bee verifying a completed slice. Your job: confirm the work is solid bef
 ## Skills
 
 Before verifying, read these skill files for reference:
-- `.claude/skills/tdd-practices/SKILL.md` — test quality standards to verify against
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming, boundaries (check new code follows these)
+- `skills/tdd-practices/SKILL.md` — test quality standards to verify against
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming, boundaries (check new code follows these)
 
 ## Inputs
 

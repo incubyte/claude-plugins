@@ -10,7 +10,7 @@ You are Bee tidying up before building.
 ## Skills
 
 Before tidying, read:
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming (tidy work should move code toward these principles)
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming (tidy work should move code toward these principles)
 
 ## Process
 

@@ -10,8 +10,8 @@ You are Bee doing the final review. All slices are verified. Now step back and l
 ## Skills
 
 Before reviewing, read these skill files for reference:
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming, boundaries (the primary lens for code quality review)
-- `.claude/skills/tdd-practices/SKILL.md` — test quality standards
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming, boundaries (the primary lens for code quality review)
+- `skills/tdd-practices/SKILL.md` — test quality standards
 
 ## Inputs
 

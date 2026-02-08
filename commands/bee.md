@@ -125,9 +125,9 @@ Risk flows to every downstream phase:
 - Moderate risk: standard spec, proper TDD plan, review recommends team review
 - High risk: thorough spec (edge cases, failure modes), defensive TDD plan (more error handling tests), review recommends feature flag + team review + QA
 
-**→ Update state:** Write initial `docs/specs/.bee-state.md` with feature name, size, risk, phase: "triaged, starting discovery".
+**→ Update state:** Write initial `docs/specs/.bee-state.md` with feature name, size, risk, phase: "triaged, starting inline clarification".
 
-## DISCOVERY — CLARIFY BEFORE DOING
+## INLINE CLARIFICATION — CLARIFY BEFORE DOING
 
 After triage, before delegating to any agent, ask clarifying questions to fill in what the developer hasn't told you. This makes every downstream agent more effective — context-gatherer knows where to look, spec-builder doesn't re-ask basics, and the AI doesn't guess.
 
@@ -135,13 +135,13 @@ After triage, before delegating to any agent, ask clarifying questions to fill i
 - Read the developer's task description. Identify what's ambiguous, underspecified, or could go multiple ways.
 - Ask 1-3 clarifying questions via AskUserQuestion. Each question should have 2-4 concrete options based on what's common for this type of task.
 - Questions are contextual — they depend on what the developer said and what you don't know yet.
-- If the developer already gave enough detail, skip discovery entirely.
+- If the developer already gave enough detail, skip inline clarification entirely.
 
-**For TRIVIAL:** Skip discovery. Just do it.
+**For TRIVIAL:** Skip inline clarification. Just do it.
 **For SMALL:** 0-1 quick questions if something is ambiguous.
 **For FEATURE/EPIC:** 1-3 questions to scope the work before scanning the codebase.
 
-**Examples of contextual discovery:**
+**Examples of contextual inline clarification:**
 
 "Add user authentication" →
   "What auth approach?" Options: "Email/password only" / "OAuth (Google, GitHub, MS)" / "Both" / Type something else
@@ -159,7 +159,7 @@ Pass the developer's answers as enriched context to every downstream agent.
 
 ## NAVIGATION BY SIZE
 
-After triage and discovery, present your recommendation via AskUserQuestion:
+After triage and inline clarification, present your recommendation via AskUserQuestion:
 
 - If TRIVIAL:
   Use AskUserQuestion: "This looks like a quick fix. I'll make the change and run tests. Go ahead?"
@@ -188,12 +188,46 @@ After triage and discovery, present your recommendation via AskUserQuestion:
   If the developer says yes: delegate to the tidy agent via Task,
   passing the tidy opportunities from the context-gatherer summary.
 
+  Then evaluate whether deeper discovery is needed before spec-building.
+
+  ### Discovery Evaluation
+
+  Assess two signals from the context-gatherer output and the developer's task description:
+
+  **Signal 1 — Requirement clarity:**
+  - HIGH clarity: developer gave specific details, scope is well-defined, few ambiguities
+  - LOW clarity: vague prompt ("build a system for..."), multiple possible interpretations, unclear scope
+
+  **Signal 2 — Scope size:**
+  - SMALL scope: touches 1-3 files, single concern, context-gatherer found clear integration points
+  - LARGE scope: new subsystem, cross-cutting changes, context-gatherer found many affected areas or greenfield project
+
+  **Decision:**
+  - If BOTH signals are clear (high clarity + small scope): skip discovery, go straight to spec.
+  - If EITHER signal indicates uncertainty (low clarity OR large scope): recommend discovery.
+
+  When discovery is recommended, use AskUserQuestion:
+  "This requirement has some open questions / significant scope. I'd suggest a quick discovery pass to map out milestones before we spec it. Takes a few minutes but prevents building the wrong thing."
+  Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
+
+  If the developer chooses discovery:
+  Delegate to the discovery agent via Task, passing:
+  - The developer's task description
+  - The triage assessment (size + risk)
+  - The context summary from the context-gatherer
+  - Any inline discovery Q&A answers already collected
+  The discovery agent will produce a discovery document, get developer confirmation, and return the document path.
+  **→ Update state:** add discovery doc path, phase: "discovery complete"
+
+  If discovery revised the triage size (e.g., FEATURE → EPIC), update the state file with the new size.
+
   Then move to the spec phase:
   "Now let's nail down exactly what we're building."
   Delegate to the spec-builder agent via Task, passing:
   - The developer's task description
-  - The triage assessment (size + risk)
+  - The triage assessment (size + risk — possibly revised by discovery)
   - The context summary from the context-gatherer
+  - The discovery document path (if discovery was done)
   The spec-builder will interview the developer and write a spec to docs/specs/.
   It will get developer confirmation before returning.
   **→ Update state:** add spec path, phase: "spec confirmed"
@@ -322,6 +356,7 @@ Follow CLAUDE.md conventions strictly.
 - quick-fix: **live** — trivial tasks are handled end-to-end
 - context-gatherer: **live** — codebase scan before planning
 - tidy: **live** — optional cleanup, separate commit
+- discovery: **live** — deeper requirement exploration when clarity or scope warrants it (milestone map + hypotheses)
 - spec-builder: **live** — interview developer, build spec, get confirmation
 - architecture-advisor: **live** — evaluate architecture, YAGNI check, ADRs
 - tdd-planner-cqrs: **live** — split command/query TDD for CQRS systems

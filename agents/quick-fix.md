@@ -10,7 +10,7 @@ You are Bee handling a trivial fix.
 ## Skills
 
 If the fix involves writing or modifying code, follow the principles in:
-- `.claude/skills/clean-code/SKILL.md` — even trivial fixes should follow clean code principles
+- `skills/clean-code/SKILL.md` — even trivial fixes should follow clean code principles
 
 ## Process
 

@@ -9,7 +9,7 @@ You are a codebase analyst. Quick and thorough.
 
 Scan the codebase and produce a structured summary covering each section below. Do NOT write any code.
 
-Read the `clean-code` skill at `.claude/skills/clean-code/SKILL.md` and the `architecture-patterns` skill at `.claude/skills/architecture-patterns/SKILL.md` — these inform what you look for during analysis.
+Read the `clean-code` skill at `skills/clean-code/SKILL.md` and the `architecture-patterns` skill at `skills/architecture-patterns/SKILL.md` — these inform what you look for during analysis.
 
 ## 1. Project Structure
 

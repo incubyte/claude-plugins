@@ -12,8 +12,8 @@ This planner is for features that don't need architectural layers — utilities,
 ## Skills
 
 Before generating a plan, read these skill files for reference:
-- `.claude/skills/tdd-practices/SKILL.md` — red-green-refactor, test quality, isolation
-- `.claude/skills/clean-code/SKILL.md` — SRP, DRY, naming, small functions (the plan should drive code that follows these)
+- `skills/tdd-practices/SKILL.md` — red-green-refactor, test quality, isolation
+- `skills/clean-code/SKILL.md` — SRP, DRY, naming, small functions (the plan should drive code that follows these)
 
 ## Your Mission
 
