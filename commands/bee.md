@@ -252,22 +252,32 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Discovery Evaluation
 
-  Assess two signals from the context-gatherer output and the developer's task description:
+  Decide whether discovery is needed by assessing **decision density** — how many unresolved decisions are in this task, and do they affect each other?
 
-  **Signal 1 — Requirement clarity:**
-  - HIGH clarity: developer gave specific details, scope is well-defined, few ambiguities
-  - LOW clarity: vague prompt ("build a system for..."), multiple possible interpretations, unclear scope
+  Read the developer's prompt and the context-gatherer output. Count the design decisions that haven't been made yet. Then check: are these decisions independent, or does choosing one constrain the others?
 
-  **Signal 2 — Scope size:**
-  - SMALL scope: touches 1-3 files, single concern, context-gatherer found clear integration points
-  - LARGE scope: new subsystem, cross-cutting changes, context-gatherer found many affected areas or greenfield project
+  **High decision density — discovery needed:**
+  - 2+ unresolved decisions that are interdependent (choosing one constrains the others)
+  - Example: "replace Composio with in-house alternative" — auth strategy, provider abstraction pattern, action registry design, and API surface are all open AND entangled
+
+  **Low decision density — skip discovery, go straight to spec:**
+  - 0-1 open decisions, or multiple decisions that are independent of each other
+  - Example: "add date filter to reports page" — one decision (filter UX), everything else follows
+
+  **Amplifying signals** (any of these + 2+ open decisions = definitely discover):
+  - **Goal framing:** developer describes what they want to achieve or stop using, not a specific change. "Build a system that...", "replace X", "remove dependency on Y", "we want to stop using Z"
+  - **Unbounded scope:** words like "at least", "something like", "similar to", "and more" — the boundary isn't drawn yet
+  - **No existing patterns:** greenfield repo, new subsystem, or first-of-its-kind in this codebase
+  - **Multiple providers/consumers/integrations:** implies a pattern decision hiding inside the task ("support Gmail and Outlook" = how do they share an interface?)
+  - **"Replacement" framing:** sounds specific but hides scope — replace WHICH parts? All of it? The API? The auth? The data model?
 
   **Decision:**
-  - If BOTH signals are clear (high clarity + small scope): skip discovery, go straight to spec.
-  - If EITHER signal indicates uncertainty (low clarity OR large scope): recommend discovery.
+  - High decision density → recommend discovery
+  - Low decision density → skip discovery, go straight to spec
+  - Uncertain → recommend discovery. It's a few minutes of exploration vs. hours of building the wrong thing.
 
   When discovery is recommended, use AskUserQuestion:
-  "This requirement has some open questions / significant scope. I'd suggest a quick discovery pass to map out milestones before we spec it. Takes a few minutes but prevents building the wrong thing."
+  "I count [N] design decisions that affect each other here — [list them briefly]. I'd suggest a quick discovery pass to map these out before we spec. Takes a few minutes but prevents building the wrong thing."
   Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
   If the developer chooses discovery:
