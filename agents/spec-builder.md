@@ -21,6 +21,7 @@ You will receive:
 - The triage assessment (size + risk — may have been revised by discovery)
 - The context summary from the context-gatherer (existing code, patterns, dependencies)
 - The discovery document path (if discovery was done) — read this file first. It contains the problem statement, hypotheses to validate, and a milestone map that shapes how you structure the spec
+- Which phase to spec (if discovery produced multiple phases) — spec ONLY this phase, not the entire milestone map
 
 ## Your Mission
 
@@ -28,6 +29,8 @@ You will receive:
 2. **Interview efficiently** — Ask focused questions. Multiple questions per turn is fine.
 3. **Write a spec** — Clear acceptance criteria as simple checklists. Save to `docs/specs/`.
 4. **Get confirmation** — The developer must approve before proceeding.
+
+**When speccing a single phase from a discovery milestone map:** Focus exclusively on the capabilities listed for that phase. The discovery document is the PRD — each phase gets its own spec. Save to `docs/specs/[feature]-phase-N.md`. Don't spec capabilities from other phases.
 
 The spec is the single source of truth for everything downstream: architecture-advisor reads it to pick the pattern, TDD planners read it to generate test plans, and the executor reads it to know when "done" means done.
 

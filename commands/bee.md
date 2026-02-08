@@ -15,12 +15,15 @@ Bee tracks progress in `docs/specs/.bee-state.md`. This file is the source of tr
 Update the state file after each of these transitions:
 - Triage complete → write initial state (feature name, size, risk)
 - Context gathered → add context summary path
-- Spec confirmed → add spec path, set phase to "spec confirmed"
+- Discovery complete → add discovery doc path and phase list
+- Phase started → set current phase number and name
+- Spec confirmed → add spec path for the current phase
 - Architecture decided → add architecture and planner
 - TDD plan written → add plan path, set phase to "planning complete"
 - Execution started → set phase to "executing", track current slice
-- Slice verified → update slice progress, move to next slice or review
-- Review complete → set phase to "done"
+- Slice verified → update slice progress, move to next slice or phase review
+- Phase reviewed → mark phase done in phase progress, move to next phase
+- All phases done → set phase to "done"
 
 ### State File Format
 
@@ -36,26 +39,32 @@ Write the state file as natural markdown. Keep it concise — just enough for a 
 Size: [TRIVIAL/SMALL/FEATURE/EPIC]
 Risk: [LOW/MODERATE/HIGH]
 
-## Phase
-[Current phase — what's done and what's next]
+## Discovery
+[Path to discovery doc, or "not done"]
 
-## Spec
-[Path to spec file, or "not yet written"]
+## Current Phase
+[Phase number and name, or "single-phase" if no discovery]
+
+## Phase Spec
+[Path to current phase's spec file, or "not yet written"]
 
 ## Architecture
 [Architecture decision and which planner, or "not yet decided"]
 
 ## Current Slice
-[Which slice we're on, what phase it's in]
+[Which slice we're on within the current phase]
 
 ## TDD Plan
 [Path to current plan file, or "not yet written"]
 
-## Progress
-[Which slices are done, which remain]
+## Phase Progress
+[Which phases are done, which remain — only present when discovery produced multiple phases]
+
+## Slice Progress
+[Which slices within the current phase are done, which remain]
 ```
 
-Example mid-workflow:
+Example — single-phase feature (no discovery):
 
 ```markdown
 # Bee State
@@ -67,10 +76,13 @@ User authentication with email/password
 Size: FEATURE
 Risk: MODERATE
 
-## Phase
-Executing TDD plan for Slice 1. 4 of 9 steps completed.
+## Discovery
+not done
 
-## Spec
+## Current Phase
+single-phase
+
+## Phase Spec
 docs/specs/user-auth.md — confirmed by developer
 
 ## Architecture
@@ -82,10 +94,54 @@ Slice 1 — Registration (signup form + API + DB)
 ## TDD Plan
 docs/specs/user-auth-slice-1-tdd-plan.md
 
-## Progress
+## Phase Progress
+n/a — single phase
+
+## Slice Progress
 Slice 1: executing (4/9 steps done)
 Slice 2: not started
 Slice 3: not started
+```
+
+Example — multi-phase epic mid-workflow:
+
+```markdown
+# Bee State
+
+## Feature
+E-commerce checkout system
+
+## Triage
+Size: EPIC (revised from FEATURE during discovery)
+Risk: HIGH
+
+## Discovery
+docs/specs/checkout-discovery.md
+
+## Current Phase
+Phase 2: Payment integration
+
+## Phase Spec
+docs/specs/checkout-phase-2.md — confirmed by developer
+
+## Architecture
+Onion/Hexagonal → tdd-planner-onion (carried from Phase 1)
+
+## Current Slice
+Slice 1 — Stripe checkout session
+
+## TDD Plan
+docs/specs/checkout-phase-2-slice-1-tdd-plan.md
+
+## Phase Progress
+Phase 1: done — Cart management (shipped)
+Phase 2: executing
+Phase 3: not started — Order confirmation
+Phase 4: not started — Email notifications
+
+## Slice Progress
+Slice 1: executing (3/7 steps done)
+Slice 2: not started
 ```
 
 ## ON STARTUP — SESSION RESUME
@@ -93,14 +149,18 @@ Slice 3: not started
 Before anything, check for in-progress work:
 
 1. Look for `docs/specs/.bee-state.md`
-2. If found, read it. It tells you exactly where we left off — feature, phase, spec path, plan path, slice progress.
+2. If found, read it. It tells you exactly where we left off — feature, current phase, spec path, plan path, slice and phase progress.
 3. Use AskUserQuestion:
    "I found in-progress work on **[feature name]** — [phase description]. Pick up where we left off?"
    Options: "Yes, continue" / "No, start something new"
-4. If resuming: read the spec and plan files referenced in the state. Continue from the phase indicated.
-   - Phase says "spec confirmed, architecture not decided" → go to architecture
-   - Phase says "executing" → read the TDD plan, find next unchecked step, continue execution
-   - Phase says "slice N verified" → move to next slice's planning, or to review if all slices done
+4. If resuming: read the spec, discovery doc, and plan files referenced in the state. Continue from where indicated.
+   - Multi-phase with "Phase N: done, Phase N+1: not started" → start speccing Phase N+1
+   - Phase spec confirmed, architecture not decided → go to architecture
+   - Executing → read the TDD plan, find next unchecked step, continue execution
+   - Slice verified, more slices remain → plan next slice
+   - All slices in current phase verified → phase review
+   - Phase reviewed, more phases remain → spec next phase
+   - All phases done → final review or "done — shipped"
 5. If no state file found: fall back to checking `docs/specs/*.md` for unchecked boxes. If nothing found, greet with "Tell me what we're working on."
 
 ## TRIAGE — ASSESS SIZE + RISK
@@ -221,34 +281,43 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   If discovery revised the triage size (e.g., FEATURE → EPIC), update the state file with the new size.
 
-  Then move to the spec phase:
-  "Now let's nail down exactly what we're building."
+  ### The Build Cycle
+
+  This is the core loop. It runs once per delivery unit — a phase (in multi-phase) or the whole feature (in single-phase). Every step delegates to a specialist agent and updates state.
+
+  #### Step 1: Spec
+
   Delegate to the spec-builder agent via Task, passing:
   - The developer's task description
   - The triage assessment (size + risk — possibly revised by discovery)
   - The context summary from the context-gatherer
   - The discovery document path (if discovery was done)
-  The spec-builder will interview the developer and write a spec to docs/specs/.
-  It will get developer confirmation before returning.
-  **→ Update state:** add spec path, phase: "spec confirmed"
+  - For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N.md`.
+  - For single-phase: no phase constraint. Spec saves to `docs/specs/[feature].md`.
 
-  After the spec is confirmed, move to architecture:
+  The spec-builder interviews the developer, writes the spec, and gets confirmation before returning.
+  **→ Update state:** add spec path, set phase to "spec confirmed" (or "phase N spec confirmed")
+
+  #### Step 2: Architecture
+
   Delegate to the architecture-advisor agent via Task, passing:
   - The confirmed spec (path and content)
   - The context summary (including detected architecture pattern)
   - The triage assessment (size + risk)
-  The architecture-advisor will either confirm existing patterns or present options.
-  It returns the architecture recommendation.
-  **→ Update state:** add architecture decision and planner name, phase: "architecture decided"
 
-  Report the architecture decision, then move to TDD planning:
-  "Spec confirmed. Architecture: **[recommendation]**. Now let's plan how to build it."
+  The architecture-advisor will either confirm existing patterns or present options. It returns the architecture recommendation.
+  **→ Update state:** add architecture decision and planner name
 
-  ### TDD Planner Selection
+  For multi-phase after Phase 1: the architecture decision typically carries forward. Confirm: "Phase 1 used **[pattern]**. Same for Phase [N]?"
+  Options: "Yes, same approach (Recommended)" / "Re-evaluate for this phase"
 
-  The architecture decision maps directly to a TDD planner:
+  #### Step 3: TDD Planning
 
-  | Architecture Recommendation | TDD Planner |
+  "Spec confirmed. Architecture: **[recommendation]**. Let's plan."
+
+  Select the TDD planner based on the architecture decision:
+
+  | Architecture | TDD Planner |
   |---|---|
   | CQRS | tdd-planner-cqrs |
   | Onion/Hexagonal | tdd-planner-onion |
@@ -257,70 +326,78 @@ After triage and inline clarification, present your recommendation via AskUserQu
   | Simple | tdd-planner-simple |
   | Onion + Event-Driven | tdd-planner-onion for domain, tdd-planner-event-driven for event flow |
 
-  Confirm with the developer:
-  "The architecture points to **[planner name]**. Ready to plan?"
+  Confirm: "The architecture points to **[planner name]**. Ready to plan?"
   Options: "Yes, let's plan (Recommended)" / "I'd pick a different approach"
 
-  If "I'd pick a different approach", use AskUserQuestion to let the developer choose:
-  Options: "Onion/Outside-In" / "MVC" / "Event-Driven" / "Simple"
-  (If the feature has CQRS characteristics, add "CQRS" as an option.)
+  If "I'd pick a different approach", let the developer choose:
+  Options: "Onion/Outside-In" / "MVC" / "Event-Driven" / "Simple" (add "CQRS" if applicable)
 
-  After the developer confirms, delegate to the selected planner agent via Task.
-  Pass: the spec path, the slice to plan (first slice for FEATURE, or current slice for EPIC),
-  the architecture recommendation, the context summary, and the risk level.
-  The planner will generate a TDD plan, save it to `docs/specs/[feature]-slice-N-tdd-plan.md`, and get developer approval.
-  **→ Update state:** add plan path, current slice, phase: "plan approved, ready to execute"
+  Delegate to the selected planner agent via Task. Pass: the spec path, the slice to plan, the architecture recommendation, the context summary, and the risk level.
+  **→ Update state:** add plan path, current slice, set phase to "plan approved, ready to execute"
 
-  After the plan is approved, move to execution:
+  #### Step 4: Execute → Verify (slice loop)
+
   "TDD plan ready. Let's build it."
-  **→ Update state:** phase: "executing"
+  **→ Update state:** set phase to "executing"
 
-  ### Execution
+  The developer (or Ralph, if available) executes the TDD plan mechanically — follow the checklist, write tests, make them pass. This step is developer-driven. Bee monitors but doesn't drive execution.
 
-  The developer (or Ralph, if available) executes the TDD plan mechanically — follow the checklist, write the tests, make them pass.
+  Periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
 
-  This phase is driven by the developer. Bee monitors but doesn't drive execution.
-
-  As execution progresses, periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
-
-  ### Verification
-
-  After the slice is built, delegate to the verifier agent via Task, passing:
+  **After a slice is built**, delegate to the verifier agent via Task, passing:
   - The spec path
   - The TDD plan path
   - The slice number
   - The risk level
   - The context summary
 
-  The verifier will run tests, check plan completion, validate ACs, and check patterns.
+  The verifier runs tests, checks plan completion, validates ACs, and checks patterns.
 
-  If the verifier reports **PASS**: celebrate progress and move on.
-  - For FEATURE (single slice): move to review.
-    **→ Update state:** phase: "all slices verified, ready for review"
-  - For EPIC: "Slice [N] verified. [N of M] slices done." Then loop back to TDD planning for the next slice.
-    **→ Update state:** mark slice done in Progress, increment current slice, phase: "planning slice N+1"
+  - **PASS + more slices remain:** loop back to Step 3 (TDD Planning) for the next slice.
+    **→ Update state:** mark slice done, increment current slice
+  - **PASS + all slices done:** move to Step 5 (Review).
+    **→ Update state:** set phase to "all slices verified, ready for review"
+  - **NEEDS FIXES:** share verifier report with developer. After fixes, re-verify.
 
-  If the verifier reports **NEEDS FIXES**: share the report with the developer.
-  "The verifier found some issues. Here's what needs fixing:"
-  [Show the verifier's report]
-  After the developer fixes, re-run the verifier.
+  #### Step 5: Review
 
-  ### Review
-
-  After ALL slices are verified (all spec checkboxes `[x]`), delegate to the reviewer agent via Task, passing:
+  Delegate to the reviewer agent via Task, passing:
   - The spec path
   - The risk level
   - The context summary
 
-  The reviewer will do a holistic review: spec coverage, code quality, test quality, commit story, observability, and a risk-aware ship recommendation.
+  The reviewer does a holistic review: spec coverage, code quality, test quality, commit story, observability, and a risk-aware ship recommendation.
 
-  Share the review with the developer:
-  "All slices verified. Here's the final review:"
-  [Show the reviewer's report]
+  If the reviewer recommends changes: share with developer, fix, re-review.
+  If the reviewer says "ready to merge": cycle complete.
 
-  If the reviewer recommends changes before merging, share those with the developer.
-  If the reviewer says "ready to merge" — "Ship it. Nice work."
+  ---
+
+  ### Phase-by-Phase Delivery
+
+  When discovery produced multiple phases. Each phase runs the full Build Cycle.
+
+  "Discovery mapped out **[N] phases**. Let's start with Phase 1: **[phase name]**."
+
+  **Loop through phases:**
+  1. Run the Build Cycle for this phase.
+  2. After review passes: "Phase [N] shipped. **[N of M] phases done.** Ready for Phase [N+1]: **[next phase name]**?"
+     Options: "Yes, let's spec Phase [N+1] (Recommended)" / "Take a break, I'll come back"
+     **→ Update state:** mark phase done in Phase Progress, move to next phase
+  3. Repeat until all phases shipped.
+
+  When all phases are done: "All phases shipped. Nice work."
   **→ Update state:** phase: "done — shipped"
+
+  ### Single-Phase Delivery
+
+  When discovery was skipped, or produced only one phase. Run the Build Cycle once.
+
+  "Now let's nail down exactly what we're building."
+
+  1. Run the Build Cycle for the whole feature.
+  2. After review passes: "Ship it. Nice work."
+     **→ Update state:** phase: "done — shipped"
 
 ## HOW YOU NAVIGATE
 
