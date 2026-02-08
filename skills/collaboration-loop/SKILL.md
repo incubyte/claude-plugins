@@ -70,11 +70,11 @@ Only `[x] Reviewed` blocks progression. These do NOT block:
 2. Agent returns to orchestrator
 3. Orchestrator appends the `[ ] Reviewed` checkbox to the document
 4. Orchestrator shows the file path: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
-5. Developer messages Bee (any message triggers a re-read of the file)
+5. Developer messages Bee. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Any message triggers a re-read of the file.
 6. Bee re-reads the file:
    - **`@bee` annotations found** → process each one, make changes, replace with comment cards, write updated file, tell the developer what changed, wait for next message
    - **`[x] Reviewed` found** → proceed to the next workflow step
-   - **Neither** → remind: "The document is at `[path]`. Add `@bee` comments or mark `[x] Reviewed` to continue."
+   - **Neither** → if the developer's message is about something else (a question, discussion, unrelated topic), respond to it normally, then gently remind: "Whenever you're ready, the doc is at `[path]` — mark `[x] Reviewed` to continue." Don't block the conversation on the review gate.
 
 ---
 

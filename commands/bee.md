@@ -238,6 +238,12 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "The lightweight confirm-and-build workflow is coming in a future slice. For now, here's my assessment: **SMALL**, **[risk]**, recommended workflow: **lightweight confirm-and-build**"
 
 - If FEATURE or EPIC:
+
+  ### Context Gathering
+
+  First, scan the codebase — unless it's clearly greenfield (empty repo, no source files).
+
+  **If there's existing code:**
   "Let me read the codebase first to understand what we're working with."
   Delegate to the context-gatherer agent via Task, passing the task description.
   When it returns, share the summary with the developer.
@@ -250,9 +256,13 @@ After triage and inline clarification, present your recommendation via AskUserQu
   If the developer says yes: delegate to the tidy agent via Task,
   passing the tidy opportunities from the context-gatherer summary.
 
-  Then evaluate whether deeper discovery is needed before spec-building.
+  **If greenfield (empty/new repo):**
+  Skip context-gatherer. Note: greenfield is an amplifying signal for discovery — no existing patterns means more open decisions.
+  **→ Update state:** phase: "context gathered (greenfield — skipped scan)"
 
-  ### Discovery Evaluation
+  ### Discovery Evaluation (ALWAYS RUNS)
+
+  This step is mandatory for FEATURE and EPIC. Do NOT skip it, even for greenfield projects. Greenfield makes discovery MORE important, not less — every decision is open.
 
   Decide whether discovery is needed by assessing **decision density** — how many unresolved decisions are in this task, and do they affect each other?
 
@@ -301,10 +311,10 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
   2. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
-  3. Wait for the developer's next message, then re-read the file.
+  3. Wait for the developer's next message. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Then re-read the file.
   4. If `@bee` annotations found: read each comment, make the requested change to the document, replace the annotation with a comment card (see skill for format), tell the developer what changed, wait for next message.
   5. If `[x] Reviewed` found: proceed to the next step. Unresolved comment cards do not block.
-  6. If neither: remind the developer about the file path and the `[x] Reviewed` checkbox.
+  6. If neither: if the developer's message is about something else (a question, discussion, unrelated topic), respond to it normally, then gently remind: "Whenever you're ready, the doc is at `[path]` — mark `[x] Reviewed` to continue." Don't block the conversation on the review gate.
 
   This loop applies after: discovery agent returns, spec-builder returns (Step 1), and TDD planner returns (Step 3).
 
