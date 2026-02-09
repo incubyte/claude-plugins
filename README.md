@@ -61,25 +61,41 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 | MODERATE | User-facing, business logic | Standard spec, proper TDD, team review recommended |
 | HIGH | Payments, auth, data migration | Thorough spec, defensive tests, feature flag + QA recommended |
 
-## Workflow Phases
+## The Workflow
 
-For features and epics, Bee walks you through up to 10 phases. Each one delegates to a specialist agent.
+For features and epics, Bee navigates you through these phases:
 
 ```
-Triage → Context Gathering → Tidy (optional) → Discovery (when warranted)
-  → Spec → Architecture → TDD Plan → Execute → Verify → Review
+"Tell me what we're working on"
+         |
+         v
+   [ TRIAGE ]        Assess size + risk. Route to the right workflow.
+         |
+         v
+   [ CONTEXT ]       Read the codebase. Understand patterns and conventions.
+         |
+         v
+   [ TIDY ]          (Optional) Clean up the area before building. Separate commit.
+         |
+         v
+   [ DISCOVERY ]     (When needed) Explore requirements when scope is uncertain.
+         |
+         v
+   [ SPEC ]          Interview the developer. Build testable acceptance criteria.
+         |
+         v
+   [ ARCHITECTURE ]  Evaluate options when warranted. Most tasks: follow existing patterns.
+         |
+         v
+   [ TDD PLAN ]      Generate a step-by-step test-first implementation plan.
+         |
+         v
+   For each slice:
+   [ EXECUTE ]  -->  [ VERIFY ]  -->  [ next slice ]
+         |
+         v
+   [ REVIEW ]        Full picture. Risk-aware ship recommendation.
 ```
-
-1. **Triage** — Assess size + risk, ask clarifying questions
-2. **Context Gathering** — Scan the codebase for patterns, conventions, and the change area
-3. **Tidy** — Clean up the area before building (separate commit, skipped if clean)
-4. **Discovery** — Map out decisions and milestones when scope is uncertain or decisions are entangled
-5. **Spec Building** — Interview the developer, produce a testable specification with acceptance criteria
-6. **Architecture** — Evaluate architecture options (or confirm existing patterns). YAGNI check included
-7. **TDD Planning** — Generate a step-by-step test-driven plan for each slice
-8. **Execution** — Build it following the TDD plan (manually or via Ralph)
-9. **Verification** — Tests pass, acceptance criteria met, patterns followed
-10. **Review** — Holistic code review with a risk-aware ship recommendation
 
 ### Collaboration Loop
 
@@ -88,6 +104,17 @@ After discovery, spec, and TDD plan documents are produced, you can review them 
 ### Session Resume
 
 Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee`, it picks up exactly where you left off.
+
+## Artifacts Produced
+
+| Artifact | Location | Purpose |
+|----------|----------|---------|
+| Specs | `docs/specs/[feature].md` | Requirements with acceptance criteria |
+| TDD Plans | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
+| ADRs | `docs/adrs/NNN-[decision].md` | Architecture decisions with rationale |
+| State | `docs/specs/.bee-state.md` | Session resume tracking |
+
+These artifacts are knowledge capture — when a new developer joins, they can read the specs and ADRs to understand not just what was built, but why and how.
 
 ## Agents
 
