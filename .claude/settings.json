@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Write(docs/specs/.bee-*)",
-      "Edit(docs/specs/.bee-*)"
+      "Edit(docs/specs/.bee-*)",
+      "Bash(bash */scripts/ensure-ralph.sh)"
     ]
   },
   "hooks": {}
