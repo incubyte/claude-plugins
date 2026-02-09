@@ -15,12 +15,8 @@ This is additive — the agent's own AskUserQuestion confirmation flow is unchan
 
 Every document produced by an agent gets a `[ ] Reviewed` checkbox appended at the very end:
 
-```html
-<div align="center">
-
+```markdown
 - [ ] Reviewed
-
-</div>
 ```
 
 This checkbox is the **only gate** for proceeding to the next step. Bee re-reads the file and checks for `[x] Reviewed`. Until it's marked, Bee stays in the loop.

@@ -381,7 +381,16 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "TDD plan ready. Let's build it."
   **→ Update state:** set phase to "executing"
 
-  The developer (or Ralph, if available) executes the TDD plan mechanically — follow the checklist, write tests, make them pass. This step is developer-driven. Bee monitors but doesn't drive execution.
+  **Ralph Detection:** Check if `/ralph-loop` is available (the ralph-wiggum plugin). If available, offer autonomous execution via AskUserQuestion:
+  "Ralph is available. Want him to execute this TDD plan autonomously, or do you want to drive it yourself?"
+  Options: "Let Ralph handle it (Recommended)" / "I'll drive it myself"
+
+  If Ralph: invoke `/ralph-loop` with the TDD plan path and a completion promise. Example:
+  `/ralph-loop "Execute the TDD plan at [plan-path]. Follow each step: write the failing test, make it pass, refactor. Check off each step as you go. Output <promise>SLICE COMPLETE</promise> when all steps pass." --max-iterations 30 --completion-promise "SLICE COMPLETE"`
+
+  If not available: suggest installation. "Ralph isn't installed — he can execute TDD plans autonomously. Install with: `claude plugin install ralph-wiggum@incubyte-plugins`. For now, let's do it manually."
+
+  The developer (or Ralph, if available) executes the TDD plan mechanically — follow the checklist, write tests, make them pass. This step is developer-driven when Ralph is not used. Bee monitors but doesn't drive execution.
 
   Periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
 
