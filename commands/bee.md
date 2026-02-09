@@ -385,16 +385,26 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "TDD plan ready. Let's build it."
   **→ Update state:** set phase to "executing"
 
-  **Ralph Detection:** Check if `/ralph-loop` is available (the ralph-wiggum plugin). If available, offer autonomous execution via AskUserQuestion:
-  "Ralph is available. Want him to execute this TDD plan autonomously, or do you want to drive it yourself?"
+  **STOP — before writing any code, you MUST ask the developer how they want to execute.** Check the RALPH_STATUS at the top of this prompt. Use AskUserQuestion:
+
+  If RALPH_STATUS is INSTALLED:
+  "TDD plan ready. Ralph is available — want him to execute autonomously, or do you want to drive it?"
   Options: "Let Ralph handle it (Recommended)" / "I'll drive it myself"
 
-  If Ralph: invoke `/ralph-loop` with the TDD plan path and a completion promise. Example:
-  `/ralph-loop "Execute the TDD plan at [plan-path]. Follow each step: write the failing test, make it pass, refactor. Check off each step as you go. Output <promise>SLICE COMPLETE</promise> when all steps pass." --max-iterations 30 --completion-promise "SLICE COMPLETE"`
+  If RALPH_STATUS is NOT_INSTALLED:
+  "TDD plan ready. Ralph isn't installed — he can execute TDD plans autonomously. Want to install him, or drive it yourself?"
+  Options: "Install Ralph and use him (Recommended)" / "I'll drive it myself"
 
-  If not available: suggest installation. "Ralph isn't installed — he can execute TDD plans autonomously. Install with: `claude plugin install ralph-wiggum@incubyte-plugins`. For now, let's do it manually."
+  **If the developer chooses Ralph:**
+  Output the exact command for the developer to copy and paste. Replace [plan-path] with the actual TDD plan path from state:
+  ```
+  /ralph-loop:ralph-loop "Execute the TDD plan at [plan-path]. Follow each step in order: write the failing test, make it pass, refactor. Check off each step as you go. When done output <promise>SLICE COMPLETE</promise>" --completion-promise "SLICE COMPLETE" --max-iterations 40
+  ```
+  Tell the developer: "Copy and paste this command. Ralph will take over from here. Come back when he's done and we'll verify the slice."
+  Note: Due to Claude Code's security model, slash commands can only be invoked by the user — Bee cannot trigger Ralph programmatically.
 
-  The developer (or Ralph, if available) executes the TDD plan mechanically — follow the checklist, write tests, make them pass. This step is developer-driven when Ralph is not used. Bee monitors but doesn't drive execution.
+  **If the developer chooses manual:**
+  The developer executes the TDD plan — follow the checklist, write tests, make them pass. Bee monitors but doesn't drive execution.
 
   Periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
 
