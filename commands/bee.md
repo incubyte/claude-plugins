@@ -1,5 +1,6 @@
 ---
 description: Start a Bee workflow navigation session. Assesses your task and recommends the right level of process.
+allowed-tools: Bash(bash:*)
 ---
 
 ## Ralph Wiggum (Autonomous Execution)
