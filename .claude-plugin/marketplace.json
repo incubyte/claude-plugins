@@ -8,6 +8,12 @@
       "name": "bee",
       "source": "incubyte/bee",
       "description": "Spec-driven TDD workflow navigator for AI-assisted development"
+    },
+    {
+      "name": "ralph-wiggum",
+      "source": "anthropics/claude-code",
+      "directory": "plugins/ralph-wiggum",
+      "description": "Run Claude in a persistent loop until task completion"
     }
   ]
 }
