@@ -5,8 +5,5 @@
   "author": {
     "name": "Incubyte"
   },
-  "license": "Proprietary",
-  "dependencies": {
-    "ralph-wiggum": "^1.0.0"
-  }
+  "license": "Proprietary"
 }
