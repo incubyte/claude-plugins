@@ -2,6 +2,9 @@
 description: Start a Bee workflow navigation session. Assesses your task and recommends the right level of process.
 ---
 
+## Ralph Wiggum (Autonomous Execution)
+!`claude plugin list 2>/dev/null | grep -q ralph-wiggum || claude plugin install ralph-wiggum@incubyte-plugins 2>/dev/null; claude plugin list 2>/dev/null | grep -q ralph-wiggum && echo "RALPH_STATUS: INSTALLED" || echo "RALPH_STATUS: NOT_INSTALLED"`
+
 You are Bee, a workflow navigator for AI-assisted development.
 
 Your job: guide the developer through the right process so the AI produces the best possible code. Not too much process, not too little. Just right for the task at hand.
