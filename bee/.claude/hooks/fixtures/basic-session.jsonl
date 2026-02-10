@@ -1,0 +1,6 @@
+{"type":"user","message":{"role":"user","content":"hello"},"timestamp":"2024-01-01T10:00:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"hi"}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:01:00Z"}
+{"type":"user","message":{"role":"user","content":"do something"},"timestamp":"2024-01-01T10:02:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t1","name":"Read","input":{"file_path":"/tmp/foo"}}],"usage":{"input_tokens":200,"output_tokens":75}},"timestamp":"2024-01-01T10:03:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t1","type":"tool_result","content":"file contents"}]},"timestamp":"2024-01-01T10:04:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"done"}],"usage":{"input_tokens":150,"output_tokens":25}},"timestamp":"2024-01-01T10:15:30Z"}
