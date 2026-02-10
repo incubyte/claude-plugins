@@ -4,13 +4,13 @@
 
 Every new client engagement starts with scattered requirements — ad-hoc notes, call transcripts, half-remembered conversations. There's no standard intake tool. The team wants a PM persona built into the Bee workflow that interviews stakeholders (or synthesizes from transcripts), produces a structured PRD, and outputs something polished enough to share directly with clients for review and sign-off.
 
-The existing discovery agent inside `/bee:bee` already does requirement exploration, but it's developer-focused and embedded in the build workflow. The team wants to promote this to a first-class, standalone command that works both independently and as part of `/bee:bee`.
+The existing discovery agent inside `/bee:build` already does requirement exploration, but it's developer-focused and embedded in the build workflow. The team wants to promote this to a first-class, standalone command that works both independently and as part of `/bee:build`.
 
 ## Who
 
 - **Primary user**: Developers/consultants running client intake sessions
 - **Primary user**: Clients themselves, self-service via Claude Desktop
-- **Internal consumer**: `/bee:bee` workflow, which delegates to the same discover logic
+- **Internal consumer**: `/bee:build` workflow, which delegates to the same discover logic
 
 ## Success Criteria
 
@@ -29,8 +29,8 @@ Client requirements gathering is ad-hoc — notes scattered across calls, transc
 - H1: Users will want to paste raw transcripts upfront and have the PM persona synthesize rather than re-ask everything
 - H2: The interview should ask one question at a time (not batched) to keep it conversational and thorough
 - H3: The client-shareable PRD needs sections beyond the internal format — Executive Summary, Assumptions & Risks, Open Questions — and should avoid internal jargon
-- H4: When invoked from `/bee:bee`, the same agent should run the same deep interview — no "lighter" version
-- H5: State tracking via `.bee-state.md` is needed for both standalone and `/bee:bee` invocations so sessions can resume
+- H4: When invoked from `/bee:build`, the same agent should run the same deep interview — no "lighter" version
+- H5: State tracking via `.bee-state.md` is needed for both standalone and `/bee:build` invocations so sessions can resume
 - H6: Since clients may use this directly, the persona must be warm and professional — not developer-jargon-heavy
 
 ## Out of Scope
@@ -42,15 +42,15 @@ Client requirements gathering is ad-hoc — notes scattered across calls, transc
 
 ## Milestone Map
 
-### Phase 1: /bee:discover command with PM persona + /bee:bee integration
+### Phase 1: /bee:discover command with PM persona + /bee:build integration
 
 - User can invoke `/bee:discover` with initial context (description, transcript, or both)
 - PM persona interviews the user one question at a time until satisfied
 - Produces a structured, client-shareable PRD (Executive Summary, Problem, Users, Success Criteria, Scope, Assumptions & Risks, Milestones, Open Questions)
 - Collaboration loop applies — user can annotate with `@bee` and mark `[x] Reviewed`
 - State tracked in `.bee-state.md` for session resume
-- `/bee:bee` delegates to the same enhanced discover agent
-- Existing discovery evaluation logic in `bee.md` updated to use the new agent
+- `/bee:build` delegates to the same enhanced discover agent
+- Existing discovery evaluation logic in `build.md` updated to use the new agent
 - Context from triage and context-gatherer flows into the discover interview as enrichment
 
 ## Revised Assessment

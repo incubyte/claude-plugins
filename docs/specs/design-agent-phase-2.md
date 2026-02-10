@@ -61,7 +61,7 @@ Discovery doc: `docs/specs/design-agent-discovery.md`
 - **Output location**: `.claude/DESIGN.md` in the target project (same as Phase 1)
 - **Interview pattern**: AskUserQuestion with concrete options, same interaction style as the spec-builder interview
 - **Files to modify**: `agents/design-agent.md` (add greenfield interview flow alongside the existing extraction flow)
-- **Files NOT modified**: `commands/bee.md`, `agents/context-gatherer.md`, `agents/spec-builder.md` -- all already wired in Phase 1
+- **Files NOT modified**: `commands/build.md`, `agents/context-gatherer.md`, `agents/spec-builder.md` -- all already wired in Phase 1
 - **Risk level**: LOW
 
 ---

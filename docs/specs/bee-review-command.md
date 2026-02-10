@@ -71,7 +71,7 @@ A standalone code review command that applies software craftsmanship principles 
 ## Technical Context
 
 - **Files to create**: `commands/review.md` (the slash command), `skills/code-review/SKILL.md` (review methodology and Tornhill analysis techniques, referenced by the command)
-- **Command format**: YAML frontmatter with `description` only, followed by the prompt body (matches `commands/bee.md` pattern)
+- **Command format**: YAML frontmatter with `description` only, followed by the prompt body (matches `commands/build.md` pattern)
 - **Skill format**: YAML frontmatter with `name`, `description`, followed by methodology content
 - **Skills to reference from the command**: `skills/clean-code/SKILL.md`, `skills/architecture-patterns/SKILL.md`, `skills/tdd-practices/SKILL.md`, `skills/code-review/SKILL.md`
 - **Tools needed**: Read, Glob, Grep, Bash (for git log, git diff, git shortlog, gh pr list, gh pr view)

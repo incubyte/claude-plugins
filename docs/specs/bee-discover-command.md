@@ -2,13 +2,13 @@
 
 ## Overview
 
-A standalone `/bee:discover` command with a PM persona that interviews users (developers or clients) and produces a client-shareable PRD. The same agent serves both standalone invocation and internal `/bee:bee` delegation, replacing the current discovery agent with a richer format and warmer persona.
+A standalone `/bee:discover` command with a PM persona that interviews users (developers or clients) and produces a client-shareable PRD. The same agent serves both standalone invocation and internal `/bee:build` delegation, replacing the current discovery agent with a richer format and warmer persona.
 
 ## Acceptance Criteria
 
 ### Command Definition
 
-- [ ] A command file exists at `commands/discover.md` with YAML frontmatter (`description` field) matching the convention used by `commands/bee.md`
+- [ ] A command file exists at `commands/discover.md` with YAML frontmatter (`description` field) matching the convention used by `commands/build.md`
 - [ ] Invoking `/bee:discover` starts with a warm, professional greeting and asks the user what they are working on
 - [ ] The command works without any arguments -- users paste context inline during the conversation
 
@@ -32,7 +32,7 @@ A standalone `/bee:discover` command with a PM persona that interviews users (de
 
 - [ ] The agent reads `docs/specs/.bee-state.md` on startup and offers to resume an in-progress discovery session if one exists
 - [ ] The agent updates `docs/specs/.bee-state.md` after producing the PRD (adds discovery doc path, sets phase to "discovery complete")
-- [ ] Standalone and `/bee:bee` invocations use the same state file
+- [ ] Standalone and `/bee:build` invocations use the same state file
 
 ### Error and Edge Cases
 
@@ -40,10 +40,10 @@ A standalone `/bee:discover` command with a PM persona that interviews users (de
 - [ ] When the user wants to stop mid-interview, the agent saves progress to the state file so the session can resume later
 - [ ] When the user provides extremely vague input ("build an app"), the agent asks grounding questions before attempting any synthesis
 
-### Integration with /bee:bee
+### Integration with /bee:build
 
-- [ ] The orchestrator in `commands/bee.md` delegates to the same enhanced discovery agent -- no separate internal-mode agent or lighter format
-- [ ] Context from triage and context-gatherer (when available via `/bee:bee`) flows into the discover interview as enrichment
+- [ ] The orchestrator in `commands/build.md` delegates to the same enhanced discovery agent -- no separate internal-mode agent or lighter format
+- [ ] Context from triage and context-gatherer (when available via `/bee:build`) flows into the discover interview as enrichment
 - [ ] The collaboration loop applies after the PRD is produced (appends `[ ] Reviewed` checkbox, supports `@bee` annotations)
 - [ ] `CLAUDE.md` workflow phases list references the updated discovery agent and mentions `/bee:discover` as a standalone entry point
 
@@ -93,13 +93,13 @@ Greenfield: [yes/no]
 - Multi-project tracking or a discovery dashboard
 - Technical scoping (stack, architecture, deployment) -- that belongs to spec-builder and architecture-advisor
 - Changes to TRIVIAL or SMALL workflows -- discover only applies to FEATURE and EPIC
-- A separate "lite" format for internal `/bee:bee` usage -- one format for all paths
+- A separate "lite" format for internal `/bee:build` usage -- one format for all paths
 
 ## Technical Context
 
-- **Patterns to follow**: Command files use markdown with YAML frontmatter (`description` field). Agent files use markdown with YAML frontmatter (`name`, `description`, `tools`, `model: inherit`). See `commands/bee.md` and `agents/spec-builder.md` as references.
+- **Patterns to follow**: Command files use markdown with YAML frontmatter (`description` field). Agent files use markdown with YAML frontmatter (`name`, `description`, `tools`, `model: inherit`). See `commands/build.md` and `agents/spec-builder.md` as references.
 - **Files to create**: `commands/discover.md`
-- **Files to modify**: `agents/discovery.md` (replace with enhanced PM persona + richer PRD format), `commands/bee.md` (update discovery delegation to reference enhanced agent), `CLAUDE.md` (add `/bee:discover` as standalone entry point in workflow phases)
+- **Files to modify**: `agents/discovery.md` (replace with enhanced PM persona + richer PRD format), `commands/build.md` (update discovery delegation to reference enhanced agent), `CLAUDE.md` (add `/bee:discover` as standalone entry point in workflow phases)
 - **Key dependencies**: Collaboration loop skill (`skills/collaboration-loop/SKILL.md`), state file (`docs/specs/.bee-state.md`), spec-builder agent (already accepts discovery doc path as input -- no changes needed)
 - **Risk level**: LOW
 

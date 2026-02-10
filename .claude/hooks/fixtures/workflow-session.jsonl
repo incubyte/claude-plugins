@@ -1,0 +1,14 @@
+{"type":"user","message":{"role":"user","content":"build auth feature"},"timestamp":"2024-01-01T10:00:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t1","name":"Write","input":{"file_path":"docs/specs/auth-feature.md","content":"# Auth Spec"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:01:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t1","type":"tool_result","content":"written"}]},"timestamp":"2024-01-01T10:02:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t2","name":"Task","input":{"prompt":"verify the slice","subagent_type":"bee:verifier"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:03:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t2","type":"tool_result","content":"verified"}]},"timestamp":"2024-01-01T10:04:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t3","name":"Write","input":{"file_path":"src/app.ts","content":"code"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:05:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t3","type":"tool_result","content":"written"}]},"timestamp":"2024-01-01T10:06:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t4","name":"Write","input":{"file_path":"src/app.test.ts","content":"test"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:07:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t4","type":"tool_result","content":"written","is_error":false}]},"timestamp":"2024-01-01T10:08:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t5","name":"Bash","input":{"command":"npm test"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:09:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t5","type":"tool_result","content":"error: test failed","is_error":true}]},"timestamp":"2024-01-01T10:10:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t6","name":"Bash","input":{"command":"npm test"}}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:11:00Z"}
+{"type":"user","message":{"role":"user","content":[{"tool_use_id":"t6","type":"tool_result","content":"error: still failing","is_error":true}]},"timestamp":"2024-01-01T10:12:00Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"done"}],"usage":{"input_tokens":100,"output_tokens":50}},"timestamp":"2024-01-01T10:15:30Z"}

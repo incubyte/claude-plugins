@@ -152,7 +152,7 @@ The developer is the driver. Claude Code is the car. **Bee is the GPS.**
 
 The orchestrator is the brain of Bee. Everything flows through it.
 
-> **Implementation note:** The orchestrator is implemented as a **command** (`.claude/commands/bee.md`), not a subagent. This is a deliberate divergence from the original design. Per the Claude Code docs, subagents cannot spawn other subagents. Since the orchestrator needs to delegate to agents like quick-fix, context-gatherer, and spec-builder, it must run in the main conversation context. A command achieves this — the `/bee` slash command injects the orchestrator prompt into the main conversation, which can then use the Task tool to spawn subagents.
+> **Implementation note:** The orchestrator is implemented as a **command** (`.claude/commands/build.md`), not a subagent. This is a deliberate divergence from the original design. Per the Claude Code docs, subagents cannot spawn other subagents. Since the orchestrator needs to delegate to agents like quick-fix, context-gatherer, and spec-builder, it must run in the main conversation context. A command achieves this — the `/bee:build` slash command injects the orchestrator prompt into the main conversation, which can then use the Task tool to spawn subagents.
 
 **Responsibilities:**
 
@@ -166,7 +166,7 @@ The orchestrator is the brain of Bee. Everything flows through it.
 
 **Tools:** All tools available in the main conversation context (Read, Glob, Grep, Task, AskUserQuestion). Does NOT write files directly — delegates to subagents via Task.
 
-**Implementation:** `.claude/commands/bee.md` — a slash command invoked with `/bee` or `/bee [task description]`. Supports `$ARGUMENTS` for inline task descriptions. The full orchestrator prompt lives in this file. See the actual file for the complete prompt.
+**Implementation:** `.claude/commands/build.md` — a slash command invoked with `/bee:build` or `/bee:build [task description]`. Supports `$ARGUMENTS` for inline task descriptions. The full orchestrator prompt lives in this file. See the actual file for the complete prompt.
 
 **Subagents available to the orchestrator (spawned via Task):**
 
@@ -1228,7 +1228,7 @@ bee:
 bee/
 ├── .claude/
 │   ├── commands/
-│   │   └── bee.md                  # /bee slash command (orchestrator entry point)
+│   │   └── build.md                # /bee:build slash command (orchestrator entry point)
 │   ├── agents/                     # Subagent definitions (YAML frontmatter + markdown)
 │   │   ├── quick-fix.md            # Slice 1: trivial fixes
 │   │   ├── context-gatherer.md     # Slice 2: read codebase, flag tidy + cross-cuts
@@ -1256,7 +1256,7 @@ bee/
 
 ### Key Structural Decisions
 
-**`/bee` is a command, not an agent.** Lives in `.claude/commands/bee.md`. Commands run in the main conversation context and can spawn subagents via Task. Agents (`.claude/agents/`) are subagents that Claude delegates to — they run in isolated context and cannot spawn other subagents.
+**`/bee` is a command, not an agent.** Lives in `.claude/commands/build.md`. Commands run in the main conversation context and can spawn subagents via Task. Agents (`.claude/agents/`) are subagents that Claude delegates to — they run in isolated context and cannot spawn other subagents.
 
 **`CLAUDE.md` at project root, not inside `.claude/`.** Per Claude Code conventions, `CLAUDE.md` at the project root is automatically loaded into every conversation. It contains Bee's identity, navigation rules, and personality.
 
@@ -1275,7 +1275,7 @@ bee/
 ├── .claude-plugin/
 │   └── plugin.json                 # Plugin manifest (name, version, description)
 ├── commands/
-│   └── bee.md                      # /bee:bee slash command
+│   └── build.md                    # /bee:build slash command
 ├── agents/                         # Subagent definitions
 │   └── ...
 ├── skills/                         # Shared reference knowledge
@@ -1314,7 +1314,7 @@ Once stable, Bee will be packaged as a Claude Code plugin with `.claude-plugin/p
 }
 ```
 
-Skills will be namespaced as `/bee:bee`. Installation via marketplace or `--plugin-dir`.
+Skills will be namespaced as `/bee:build`. Installation via marketplace or `--plugin-dir`.
 
 ---
 
@@ -1348,7 +1348,7 @@ Skills will be namespaced as `/bee:bee`. Installation via marketplace or `--plug
 
 14. **Quick fix as a real path.** Trivial tasks get a concrete subagent — not a hand-wave. The most common task type deserves a defined, efficient path: fix it, run tests, done.
 
-15. **Orchestrator as command, not subagent.** Per Claude Code docs, subagents cannot spawn other subagents. The orchestrator needs to delegate to quick-fix, context-gatherer, spec-builder, etc. — so it must run in the main conversation context. A command (`.claude/commands/bee.md`) achieves this: it's user-invokable via `/bee` and can use the Task tool to spawn subagents. This is a divergence from the original design (which modeled the orchestrator as a `ClaudeAgentOptions` agent) driven by a platform constraint.
+15. **Orchestrator as command, not subagent.** Per Claude Code docs, subagents cannot spawn other subagents. The orchestrator needs to delegate to quick-fix, context-gatherer, spec-builder, etc. — so it must run in the main conversation context. A command (`.claude/commands/build.md`) achieves this: it's user-invokable via `/bee:build` and can use the Task tool to spawn subagents. This is a divergence from the original design (which modeled the orchestrator as a `ClaudeAgentOptions` agent) driven by a platform constraint.
 
 16. **Standalone first, plugin later.** The Claude Code docs recommend: "Start with standalone configuration in `.claude/` for quick iteration, then convert to a plugin when you're ready to share." During dogfooding, Bee uses standalone `.claude/` configuration — pure markdown, no build step, no TypeScript. This enables rapid iteration. Plugin conversion happens when we're ready to distribute.
 

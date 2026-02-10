@@ -5,5 +5,17 @@
       "Edit(docs/specs/.bee-*)"
     ]
   },
-  "hooks": {}
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/stop-session.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
 }

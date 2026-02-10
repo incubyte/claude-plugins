@@ -10,7 +10,7 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
 - **Source**: `docs/specs/design-agent-phase-1.md`
 - **Slice**: Slice 2 — Orchestrator Routes to Design Agent
 - **Risk**: LOW
-- **File to modify**: `commands/bee.md`
+- **File to modify**: `commands/build.md`
 - **Acceptance Criteria**:
   1. Orchestrator reads the "UI-involved" flag from context-gatherer output
   2. When "UI-involved: yes", orchestrator triggers the design agent after context-gathering (parallel to discovery when both are needed)
@@ -21,12 +21,12 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
 ## Codebase Analysis
 
 ### File Structure
-- Implementation: `commands/bee.md` (single file modification)
+- Implementation: `commands/build.md` (single file modification)
 - No test files — this is a markdown orchestrator definition, not runnable code
 - Related: `agents/context-gatherer.md` (already updated in Slice 1 with Design System subsection)
 
 ### What Exists Today
-The orchestrator (`commands/bee.md`) has this flow for FEATURE/EPIC tasks:
+The orchestrator (`commands/build.md`) has this flow for FEATURE/EPIC tasks:
 1. Context Gathering — delegates to context-gatherer agent via Task
 2. Tidy check — optional cleanup if context-gatherer flagged opportunities
 3. Discovery Evaluation — decides whether discovery is needed, delegates if so
@@ -59,7 +59,7 @@ The design agent routing should follow the same structure but is simpler — it 
   - When "UI-involved: yes" — delegate to the design agent via Task
   - When "UI-involved: no" — skip the design agent entirely, no message needed
 
-- [x] **APPLY CHANGE**: Insert the new subsection into `commands/bee.md` in the FEATURE/EPIC flow, after the tidy opportunity check (around line 258) and before "Discovery Evaluation" (around line 263).
+- [x] **APPLY CHANGE**: Insert the new subsection into `commands/build.md` in the FEATURE/EPIC flow, after the tidy opportunity check (around line 258) and before "Discovery Evaluation" (around line 263).
 
 - [x] **VERIFY**: Read the file back. Confirm the tidy check, design agent evaluation, and discovery evaluation appear in that order. Confirm the design agent section checks the "UI-involved" flag.
 
@@ -112,7 +112,7 @@ The design agent routing should follow the same structure but is simpler — it 
 
 ## Behavior 5: Update state tracking for design agent
 
-**Given** the state tracking section in bee.md
+**Given** the state tracking section in build.md
 **When** the design agent completes
 **Then** state is updated to reflect design agent completion
 
@@ -126,7 +126,7 @@ The design agent routing should follow the same structure but is simpler — it 
 
 ## Behavior 6: Register design-agent in the "WHAT'S IMPLEMENTED" list
 
-**Given** the "WHAT'S IMPLEMENTED" section at the bottom of bee.md
+**Given** the "WHAT'S IMPLEMENTED" section at the bottom of build.md
 **When** the design agent is added to the pipeline
 **Then** it appears in the implemented agents list
 
@@ -149,7 +149,7 @@ The design agent routing should follow the same structure but is simpler — it 
 
 ## Final Check
 
-- [x] Read `commands/bee.md` top to bottom. Confirm:
+- [x] Read `commands/build.md` top to bottom. Confirm:
   - TRIVIAL flow is unchanged (no design agent mention)
   - SMALL flow checks UI-involved after context-gatherer, delegates to design agent if yes
   - FEATURE/EPIC flow has Design Agent Evaluation after tidy and before Discovery Evaluation
