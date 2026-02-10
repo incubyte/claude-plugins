@@ -102,6 +102,7 @@ On startup, check for existing in-progress specs in `docs/specs/`. If found, off
 - Agent definitions live in `.claude/agents/`
 - The `/bee` command is the entry point for all workflows
 - The `/bee:discover` command is a standalone entry point for discovery — PM persona, client-shareable PRD output
+- The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
 
 ## Hooks: Smart Guardrails
 
