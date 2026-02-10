@@ -41,8 +41,8 @@ Add an inline review loop after every document-producing agent completes. The de
 - Any changes to non-document-producing agents (quick-fix, context-gatherer, tidy, verifier, reviewer)
 
 ## Technical Context
-- Patterns to follow: orchestrator logic in `commands/bee.md`, shared skills in `skills/[name]/SKILL.md`
+- Patterns to follow: orchestrator logic in `commands/build.md`, shared skills in `skills/[name]/SKILL.md`
 - Files to create: `skills/collaboration-loop/SKILL.md`
-- Files to modify: `commands/bee.md`, `CLAUDE.md`
+- Files to modify: `commands/build.md`, `CLAUDE.md`
 - Key integration: the loop inserts at step 3.5 in the orchestrator, between agent return and next-step routing
 - Risk level: LOW

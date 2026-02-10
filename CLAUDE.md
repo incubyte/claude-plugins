@@ -80,7 +80,7 @@ The full Bee workflow for features and epics:
 1. **Triage** — Assess size + risk. Route to appropriate workflow. Entry point: `/bee`
 2. **Context Gathering** — Read the codebase to understand patterns, conventions, and the change area. Agent: context-gatherer
 3. **Tidy (optional)** — Clean up the area before building. Separate commit. Skipped if area is clean. Agent: tidy
-4. **Discovery (when warranted)** — Assess requirement clarity + scope size. When either is uncertain, produce a milestone map and hypotheses before spec-building. Agent: discovery
+4. **Discovery (when warranted)** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally when decision density is high. Agent: discovery
 5. **Spec Building** — Interview the developer, build a testable specification. Uses discovery document when available. Agent: spec-builder
 6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-advisor
 7. **TDD Planning** — Generate a checklisted TDD plan for each slice. Agents: tdd-planner-onion, tdd-planner-mvc, tdd-planner-simple
@@ -101,6 +101,7 @@ On startup, check for existing in-progress specs in `docs/specs/`. If found, off
 - TDD plans live in `docs/specs/[feature]-slice-N-tdd-plan.md`
 - Agent definitions live in `.claude/agents/`
 - The `/bee` command is the entry point for all workflows
+- The `/bee:discover` command is a standalone entry point for discovery — PM persona, client-shareable PRD output
 
 ## Hooks: Smart Guardrails
 

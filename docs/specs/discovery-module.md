@@ -11,8 +11,8 @@ A discovery agent that sits between context gathering and spec building, produci
 - [ ] Discovery agent produces a discovery document saved to `docs/specs/[feature-name]-discovery.md` with two sections: milestone map (vertical slices) and problem statement with hypotheses
 - [ ] Milestone map uses vertical slices ordered outside-in (user-verifiable features first), with a walking skeleton as phase one when context-gatherer output indicates a greenfield project
 - [ ] Hypotheses are written as confirmable/rejectable prompts that the spec-builder can address during its interview
-- [ ] Orchestrator (`commands/bee.md`) evaluates two signals after context gathering -- requirement clarity and scope size -- and recommends discovery when either signal indicates high uncertainty
-- [ ] Inline discovery Q&A (the "DISCOVERY — CLARIFY BEFORE DOING" section in `bee.md`) remains as the lightweight path; the discovery agent is recommended only when deeper exploration is warranted
+- [ ] Orchestrator (`commands/build.md`) evaluates two signals after context gathering -- requirement clarity and scope size -- and recommends discovery when either signal indicates high uncertainty
+- [ ] Inline discovery Q&A (the "DISCOVERY — CLARIFY BEFORE DOING" section in `build.md`) remains as the lightweight path; the discovery agent is recommended only when deeper exploration is warranted
 - [ ] Discovery can revise the triage size assessment (e.g., FEATURE to EPIC or vice versa) and the state file reflects the updated size
 - [ ] State file (`docs/specs/.bee-state.md`) tracks a "discovery" phase between "context gathered" and "spec confirmed", including the path to the discovery document
 - [ ] Spec-builder receives the discovery document path as an additional input alongside existing inputs (task description, triage, context summary, inline Q&A answers)
@@ -53,8 +53,8 @@ Greenfield: [yes/no, detected from context-gatherer]
 
 ## Technical Context
 
-- **Patterns to follow**: Agent files use markdown with YAML frontmatter (`agents/spec-builder.md` is the closest reference). Orchestrator routing follows the existing pattern in `commands/bee.md` lines 160-200 (FEATURE/EPIC path).
+- **Patterns to follow**: Agent files use markdown with YAML frontmatter (`agents/spec-builder.md` is the closest reference). Orchestrator routing follows the existing pattern in `commands/build.md` lines 160-200 (FEATURE/EPIC path).
 - **Key dependencies**: Context-gatherer output (provides greenfield detection, scope signals). Spec-builder inputs (must accept discovery document path). State file format (needs new "discovery" phase marker).
 - **Files to create**: `agents/discovery.md`
-- **Files to modify**: `commands/bee.md` (trigger logic + routing), `CLAUDE.md` (add discovery to workflow phases list), `agents/spec-builder.md` (accept discovery doc as input)
+- **Files to modify**: `commands/build.md` (trigger logic + routing), `CLAUDE.md` (add discovery to workflow phases list), `agents/spec-builder.md` (accept discovery doc as input)
 - **Risk level**: LOW
