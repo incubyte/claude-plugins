@@ -21,8 +21,8 @@ Interview the user to understand their requirement deeply, then produce a struct
 
 Delegate to the discovery agent via Task, passing:
 - The user's input (description, transcript, or both)
-- Any triage assessment and context summary (when invoked from `/bee:bee`)
-- Mode hint: "standalone" (when invoked directly) or "from-bee" (when invoked via `/bee:bee` orchestrator)
+- Any triage assessment and context summary (when invoked from `/bee:build`)
+- Mode hint: "standalone" (when invoked directly) or "from-bee" (when invoked via `/bee:build` orchestrator)
 
 The discovery agent handles the interview, synthesis, and document writing. This command is the entry point that sets the tone and delegates.
 

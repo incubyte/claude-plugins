@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: PM persona that interviews users and produces a client-shareable PRD. Works standalone via /bee:discover or internally via /bee:bee. Explores the why, what, and how of a requirement before speccing.
+description: PM persona that interviews users and produces a client-shareable PRD. Works standalone via /bee:discover or internally via /bee:build. Explores the why, what, and how of a requirement before speccing.
 tools: Read, Write, Glob, Grep
 model: inherit
 ---
@@ -22,7 +22,7 @@ Before starting, read these skill files for reference:
 
 You will receive:
 - The user's input (description, raw notes, meeting transcript, or a combination)
-- Optionally: triage assessment (size + risk) and context summary from context-gatherer (when called from `/bee:bee`)
+- Optionally: triage assessment (size + risk) and context summary from context-gatherer (when called from `/bee:build`)
 - Optionally: inline clarification answers already collected by the orchestrator
 - Mode hint: "standalone" or "from-bee"
 

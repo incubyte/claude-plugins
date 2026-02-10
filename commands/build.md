@@ -512,7 +512,7 @@ Follow CLAUDE.md conventions strictly.
 - context-gatherer: **live** — codebase scan before planning
 - design-agent: **live** — produces design brief for UI-involved tasks, reads context-gatherer Design System signals
 - tidy: **live** — optional cleanup, separate commit
-- discovery: **live** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally via `/bee:bee` when decision density is high
+- discovery: **live** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally via `/bee:build` when decision density is high
 - spec-builder: **live** — interview developer, build spec, get confirmation
 - architecture-advisor: **live** — evaluate architecture, YAGNI check, ADRs
 - tdd-planner-cqrs: **live** — split command/query TDD for CQRS systems

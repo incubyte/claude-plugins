@@ -17,7 +17,7 @@ Wire detection into the existing context-gatherer so it flags UI involvement and
 
 ## Slice 2: Orchestrator Routes to Design Agent
 
-Update `commands/bee.md` to trigger the design agent when the context-gatherer flags UI involvement.
+Update `commands/build.md` to trigger the design agent when the context-gatherer flags UI involvement.
 
 - [x] Orchestrator reads the "UI-involved" flag from context-gatherer output
 - [x] When "UI-involved: yes", orchestrator triggers the design agent after context-gathering (parallel to discovery when both are needed)
@@ -69,7 +69,7 @@ Update the spec-builder to read the design brief and use it for design-aware acc
 ## Technical Context
 
 - **Patterns to follow**: Existing agent format (see `agents/discovery.md`, `agents/context-gatherer.md` for structure). Existing skill format (see `skills/clean-code/SKILL.md`). All files are markdown with YAML frontmatter.
-- **Files to modify**: `agents/context-gatherer.md` (add Design System subsection), `commands/bee.md` (add routing logic), `agents/spec-builder.md` (add brief consumption)
+- **Files to modify**: `agents/context-gatherer.md` (add Design System subsection), `commands/build.md` (add routing logic), `agents/spec-builder.md` (add brief consumption)
 - **Files to create**: `agents/design-agent.md`, `skills/design-fundamentals/SKILL.md`
 - **Key integration**: The design brief is project-level context (`.claude/DESIGN.md` in the target project), not feature-level. It persists across features and sessions, and works outside Bee too.
 - **Risk level**: LOW

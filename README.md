@@ -29,13 +29,13 @@ Without Ralph, you drive execution manually by following the TDD plan checklist.
 ## Usage
 
 ```
-/bee:bee add user authentication
+/bee:build add user authentication
 ```
 
 Or start without a task:
 
 ```
-/bee:bee
+/bee:build
 ```
 
 Bee greets you with "Tell me what we're working on" and guides you from there.
@@ -46,7 +46,7 @@ Bee greets you with "Tell me what we're working on" and guides you from there.
 /bee:discover
 ```
 
-A PM persona that interviews you (or synthesizes from meeting transcripts) and produces a client-shareable PRD. Works standalone for early-stage requirement exploration, or let `/bee:bee` invoke it automatically when decision density is high.
+A PM persona that interviews you (or synthesizes from meeting transcripts) and produces a client-shareable PRD. Works standalone for early-stage requirement exploration, or let `/bee:build` invoke it automatically when decision density is high.
 
 ```
 /bee:review
@@ -129,7 +129,7 @@ After discovery, spec, design brief, and TDD plan documents are produced, you ca
 
 ### Session Resume
 
-Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee:bee`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
+Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
 
 ## Artifacts Produced
 
@@ -154,7 +154,7 @@ Bee ships with 14 specialist agents:
 | `context-gatherer` | Read codebase — patterns, conventions, and design system signals |
 | `tidy` | Clean up the area before building |
 | `design-agent` | Produce a design brief from existing design systems or greenfield interviews |
-| `discovery` | PM persona that interviews users and produces a client-shareable PRD. Works standalone or inside `/bee:bee` |
+| `discovery` | PM persona that interviews users and produces a client-shareable PRD. Works standalone or inside `/bee:build` |
 | `spec-builder` | Interview developer, write testable and design-aware specs |
 | `architecture-advisor` | Evaluate architecture options, YAGNI check |
 | `tdd-planner-onion` | Outside-in TDD for onion/hexagonal architecture |
@@ -185,7 +185,7 @@ bee/
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
-│   ├── bee.md                    # /bee:bee orchestrator
+│   ├── build.md                   # /bee:build orchestrator
 │   ├── discover.md               # /bee:discover standalone discovery
 │   └── review.md                 # /bee:review standalone code review
 ├── agents/
@@ -221,7 +221,7 @@ bee/
 
 ## Design Decisions
 
-**Why `/bee:bee` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 14 agents, it must run as a command in the main conversation context.
+**Why `/bee:build` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 14 agents, it must run as a command in the main conversation context.
 
 **Navigator, not enforcer.** Bee suggests the right process but never blocks. Say "just code it" and Bee asks one clarifying question, then proceeds.
 
