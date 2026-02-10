@@ -54,6 +54,12 @@ A PM persona that interviews you (or synthesizes from meeting transcripts) and p
 
 Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
 
+```
+/bee:onboard
+```
+
+Interactive developer onboarding for existing projects. Analyzes the codebase and delivers an adaptive walkthrough — architecture, entry points, domain concepts, tribal knowledge, dragons, and how to run/test/deploy. Adapts to the developer's role, experience level, and focus area. Includes MCQ knowledge checks.
+
 ## How It Works
 
 Bee assesses every task on two axes — **size** and **risk** — then recommends the right workflow.
@@ -146,7 +152,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 14 specialist agents:
+Bee ships with 15 specialist agents:
 
 | Agent | Role |
 |-------|------|
@@ -164,6 +170,7 @@ Bee ships with 14 specialist agents:
 | `tdd-planner-simple` | Straightforward test-implement-verify |
 | `verifier` | Post-slice quality gate |
 | `reviewer` | Final review with ship recommendation |
+| `onboard` | Interactive developer onboarding — codebase walkthrough adapted to role, experience, and focus area |
 
 ## Skills
 
@@ -187,6 +194,7 @@ bee/
 ├── commands/
 │   ├── build.md                   # /bee:build orchestrator
 │   ├── discover.md               # /bee:discover standalone discovery
+│   ├── onboard.md                # /bee:onboard interactive developer onboarding
 │   └── review.md                 # /bee:review standalone code review
 ├── agents/
 │   ├── quick-fix.md
@@ -202,7 +210,8 @@ bee/
 │   ├── tdd-planner-event-driven.md
 │   ├── tdd-planner-simple.md
 │   ├── verifier.md
-│   └── reviewer.md
+│   ├── reviewer.md
+│   └── onboard.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/
