@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "bee",
-      "source": "incubyte/bee",
+      "source": "./bee",
       "description": "Spec-driven TDD workflow navigator for AI-assisted development"
     },
     {
