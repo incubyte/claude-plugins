@@ -57,6 +57,22 @@ Flag these specifically — they feed the optional Tidy phase:
 
 If none found, say "Area is clean — no tidy needed."
 
+## 8. Design System Signals
+
+Scan for UI and design system indicators. This feeds the design agent, which activates only when UI signals are present.
+
+Look for:
+- Frontend frameworks: React, Vue, Svelte, Angular, SolidJS, Qwik (check package.json deps, framework config files, file extensions like .jsx, .tsx, .vue, .svelte)
+- Tailwind CSS: tailwind.config.ts/js, @tailwind directives in CSS files
+- CSS custom properties: :root blocks with --color-*, --spacing-*, --font-*, etc.
+- Component libraries: shadcn (components.json), MUI (@mui/*), Chakra (@chakra-ui/*), Radix, Ant Design, etc.
+- Design tokens: token files (tokens.json, tokens.css, style-dictionary config)
+- Template/view files: .ejs, .hbs, .pug, .blade.php, .erb
+
+Set "UI-involved" to "yes" if any of the above are found. Set "Has design system" to "yes" only when there is evidence of a cohesive system (Tailwind config, design tokens, or a component library). Individual CSS files alone are "UI-involved: yes" but "Has design system: no".
+
+If no UI signals are detected, set both flags to "no" and report "No UI signals detected."
+
 ---
 
 ## Output Format
@@ -106,6 +122,11 @@ Structure your output exactly as follows. Downstream agents (spec-builder, archi
 [List of specific tidy items, or "Area is clean — no tidy needed."]
 - [Item 1: what and where]
 - [Item 2: what and where]
+
+### Design System
+- **UI-involved**: [yes / no]
+- **Has design system**: [yes / no]
+- **Detected signals**: [list of what was found with file paths, or "No UI signals detected"]
 ```
 
 This format is consumed directly by:
@@ -113,3 +134,4 @@ This format is consumed directly by:
 - **architecture-advisor**: uses Architecture Pattern and Test Infrastructure to recommend patterns, uses Project Conventions for constraint awareness
 - **TDD planners**: use Test Infrastructure for test setup, Change Area for file locations, Architecture Pattern for layer structure
 - **verifier/reviewer**: use Project Conventions and Architecture Pattern for compliance checks
+- **design-agent**: uses Design System subsection to determine whether to activate and what signals to investigate further
