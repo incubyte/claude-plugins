@@ -488,7 +488,7 @@ Follow CLAUDE.md conventions strictly.
 - quick-fix: **live** — trivial tasks are handled end-to-end
 - context-gatherer: **live** — codebase scan before planning
 - tidy: **live** — optional cleanup, separate commit
-- discovery: **live** — deeper requirement exploration when clarity or scope warrants it (milestone map + hypotheses)
+- discovery: **live** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally via `/bee:bee` when decision density is high
 - spec-builder: **live** — interview developer, build spec, get confirmation
 - architecture-advisor: **live** — evaluate architecture, YAGNI check, ADRs
 - tdd-planner-cqrs: **live** — split command/query TDD for CQRS systems
