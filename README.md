@@ -40,6 +40,20 @@ Or start without a task:
 
 Bee greets you with "Tell me what we're working on" and guides you from there.
 
+### Standalone Commands
+
+```
+/bee:discover
+```
+
+A PM persona that interviews you (or synthesizes from meeting transcripts) and produces a client-shareable PRD. Works standalone for early-stage requirement exploration, or let `/bee` invoke it automatically when decision density is high.
+
+```
+/bee:review
+```
+
+Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
+
 ## How It Works
 
 Bee assesses every task on two axes — **size** and **risk** — then recommends the right workflow.
@@ -72,17 +86,20 @@ For features and epics, Bee navigates you through these phases:
    [ TRIAGE ]        Assess size + risk. Route to the right workflow.
          |
          v
-   [ CONTEXT ]       Read the codebase. Understand patterns and conventions.
-         |
+   [ CONTEXT ]       Read the codebase. Understand patterns, conventions,
+         |            and design system signals.
          v
    [ TIDY ]          (Optional) Clean up the area before building. Separate commit.
          |
          v
+   [ DESIGN ]        (When UI involved) Produce a design brief from the existing
+         |            design system or interview for greenfield projects.
+         v
    [ DISCOVERY ]     (When needed) Explore requirements when scope is uncertain.
          |
          v
-   [ SPEC ]          Interview the developer. Build testable acceptance criteria.
-         |
+   [ SPEC ]          Interview the developer. Build testable, design-aware
+         |            acceptance criteria.
          v
    [ ARCHITECTURE ]  Evaluate options when warranted. Most tasks: follow existing patterns.
          |
@@ -97,36 +114,48 @@ For features and epics, Bee navigates you through these phases:
    [ REVIEW ]        Full picture. Risk-aware ship recommendation.
 ```
 
+### Design Awareness
+
+Bee detects UI signals in the codebase — frontend frameworks, Tailwind configs, CSS custom properties, component libraries, design tokens. When UI work is detected:
+
+- **Existing design system**: Bee extracts the color palette, typography, spacing, component patterns, and accessibility constraints into a design brief (`.claude/DESIGN.md`). All downstream work is constrained to the existing system — no invented colors, no off-system components.
+- **Greenfield**: Bee interviews the developer about visual preferences (mood, brand colors, reference sites, logo) and proposes a cohesive design direction grounded in accessibility and design principles.
+
+The design brief is a project-level artifact. It's created once and referenced by every subsequent UI task, so the project maintains a consistent visual language.
+
 ### Collaboration Loop
 
-After discovery, spec, and TDD plan documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Bee reads your annotations, makes changes, and leaves comment cards so you can see what it did.
+After discovery, spec, design brief, and TDD plan documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Type `check` when you're ready for Bee to re-read, or just keep chatting — Bee won't block the conversation while you review.
 
 ### Session Resume
 
-Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee`, it picks up exactly where you left off.
+Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
 
 ## Artifacts Produced
 
 | Artifact | Location | Purpose |
 |----------|----------|---------|
+| Design Brief | `.claude/DESIGN.md` | Project-level visual constraints for UI work |
 | Specs | `docs/specs/[feature].md` | Requirements with acceptance criteria |
+| Discovery Docs | `docs/specs/[feature]-discovery.md` | Problem statement, hypotheses, milestone map |
 | TDD Plans | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
 | ADRs | `docs/adrs/NNN-[decision].md` | Architecture decisions with rationale |
 | State | `docs/specs/.bee-state.md` | Session resume tracking |
 
-These artifacts are knowledge capture — when a new developer joins, they can read the specs and ADRs to understand not just what was built, but why and how.
+These artifacts are knowledge capture — when a new developer joins, they can read the specs, discovery docs, and design brief to understand not just what was built, but why and how.
 
 ## Agents
 
-Bee ships with 13 specialist agents:
+Bee ships with 14 specialist agents:
 
 | Agent | Role |
 |-------|------|
 | `quick-fix` | Handle trivial fixes end-to-end |
-| `context-gatherer` | Read codebase to understand patterns and conventions |
+| `context-gatherer` | Read codebase — patterns, conventions, and design system signals |
 | `tidy` | Clean up the area before building |
-| `discovery` | Explore requirements, produce milestone map |
-| `spec-builder` | Interview developer, write testable spec |
+| `design-agent` | Produce a design brief from existing design systems or greenfield interviews |
+| `discovery` | PM persona that interviews users and produces a client-shareable PRD. Works standalone or inside `/bee` |
+| `spec-builder` | Interview developer, write testable and design-aware specs |
 | `architecture-advisor` | Evaluate architecture options, YAGNI check |
 | `tdd-planner-onion` | Outside-in TDD for onion/hexagonal architecture |
 | `tdd-planner-mvc` | Layer-by-layer TDD for MVC codebases |
@@ -146,6 +175,8 @@ Shared reference knowledge that agents draw on:
 - **spec-writing** — Acceptance criteria, vertical slicing, adaptive depth
 - **ai-workflow** — Why spec-first TDD produces better AI-generated code
 - **collaboration-loop** — Inline review with `@bee` annotations
+- **code-review** — Review methodology, hotspot analysis, coupling detection, effort sizing
+- **design-fundamentals** — Accessibility rules, typography, spacing, responsive breakpoints, visual quality checklist
 
 ## Project Structure
 
@@ -154,11 +185,14 @@ bee/
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
-│   └── bee.md                    # /bee orchestrator
+│   ├── bee.md                    # /bee orchestrator
+│   ├── discover.md               # /bee:discover standalone discovery
+│   └── review.md                 # /bee:review standalone code review
 ├── agents/
 │   ├── quick-fix.md
 │   ├── context-gatherer.md
 │   ├── tidy.md
+│   ├── design-agent.md
 │   ├── discovery.md
 │   ├── spec-builder.md
 │   ├── architecture-advisor.md
@@ -175,7 +209,9 @@ bee/
 │   ├── architecture-patterns/
 │   ├── spec-writing/
 │   ├── ai-workflow/
-│   └── collaboration-loop/
+│   ├── collaboration-loop/
+│   ├── code-review/
+│   └── design-fundamentals/
 ├── docs/
 │   ├── specs/                    # Generated specs, TDD plans, state
 │   └── adrs/                    # Architecture Decision Records
@@ -185,11 +221,15 @@ bee/
 
 ## Design Decisions
 
-**Why `/bee` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 13 agents, it must run as a command in the main conversation context.
+**Why `/bee` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 14 agents, it must run as a command in the main conversation context.
 
 **Navigator, not enforcer.** Bee suggests the right process but never blocks. Say "just code it" and Bee asks one clarifying question, then proceeds.
 
 **Risk flows downstream.** A HIGH risk triage means deeper specs, more defensive tests, and stricter review recommendations. LOW risk means lighter everything. The developer doesn't have to think about calibration — Bee handles it.
+
+**Design is project-level, not task-level.** The design brief (`.claude/DESIGN.md`) is created once and persists across features. A TRIVIAL CSS fix and an EPIC redesign reference the same brief. This keeps the project visually consistent without re-deriving the design system every time.
+
+**Design and discovery are independent.** Both consume the context-gatherer output, but neither blocks the other. Design triggers on UI involvement. Discovery triggers on decision density. A task can need both, one, or neither.
 
 ## License
 
