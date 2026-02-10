@@ -15,6 +15,7 @@ Bee tracks progress in `docs/specs/.bee-state.md`. This file is the source of tr
 Update the state file after each of these transitions:
 - Triage complete → write initial state (feature name, size, risk)
 - Context gathered → add context summary path
+- Design brief produced → add design brief path (`.claude/DESIGN.md`)
 - Discovery complete → add discovery doc path and phase list
 - Phase started → set current phase number and name
 - Spec confirmed → add spec path for the current phase
@@ -234,6 +235,11 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "Got it. Let me quickly scan the codebase to understand what we're working with."
   Delegate to the context-gatherer agent via Task, passing the task description.
   When it returns, summarize what it found in 2-3 sentences.
+
+  Check the "UI-involved" flag from the context-gatherer's Design System subsection:
+  - **When "UI-involved: yes"**: delegate to the design agent via Task, passing the developer's task description, the full context-gatherer output (including the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
+  - **When "UI-involved: no"**: skip the design agent.
+
   Then report:
   "The lightweight confirm-and-build workflow is coming in a future slice. For now, here's my assessment: **SMALL**, **[risk]**, recommended workflow: **lightweight confirm-and-build**"
 
@@ -259,6 +265,23 @@ After triage and inline clarification, present your recommendation via AskUserQu
   **If greenfield (empty/new repo):**
   Skip context-gatherer. Note: greenfield is an amplifying signal for discovery — no existing patterns means more open decisions.
   **→ Update state:** phase: "context gathered (greenfield — skipped scan)"
+
+  ### Design Agent Evaluation
+
+  After context-gathering returns, check the "UI-involved" flag from the Design System subsection.
+
+  - **When "UI-involved: yes"**: delegate to the design agent via Task, passing:
+    - The developer's task description
+    - The full context-gatherer output (including the Design System subsection with detected signals, file paths, and flags)
+    - The triage assessment (size + risk)
+    The design agent produces a design brief at `.claude/DESIGN.md` in the target project.
+    **→ Update state:** add design brief path
+
+    **→ Run the Collaboration Loop** on the design brief.
+
+  - **When "UI-involved: no"**: skip the design agent entirely.
+
+  The design agent and discovery are independent — neither blocks the other. Both consume the context-gatherer output directly. When both are needed, they can run in parallel.
 
   ### Discovery Evaluation (ALWAYS RUNS)
 
@@ -487,6 +510,7 @@ Follow CLAUDE.md conventions strictly.
 
 - quick-fix: **live** — trivial tasks are handled end-to-end
 - context-gatherer: **live** — codebase scan before planning
+- design-agent: **live** — produces design brief for UI-involved tasks, reads context-gatherer Design System signals
 - tidy: **live** — optional cleanup, separate commit
 - discovery: **live** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally via `/bee:bee` when decision density is high
 - spec-builder: **live** — interview developer, build spec, get confirmation

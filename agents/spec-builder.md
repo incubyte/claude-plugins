@@ -21,6 +21,7 @@ You will receive:
 - The triage assessment (size + risk — may have been revised by discovery)
 - The context summary from the context-gatherer (existing code, patterns, dependencies)
 - The discovery document path (if discovery was done) — read this file first. It contains the problem statement, hypotheses to validate, and a milestone map that shapes how you structure the spec
+- The design brief path (if the design agent produced one) — check for `.claude/DESIGN.md` in the target project. If it exists, read it and use it to write design-aware ACs for any UI-related criteria. The brief documents the project's existing design system (colors, typography, spacing, components, accessibility constraints).
 - Which phase to spec (if discovery produced multiple phases) — spec ONLY this phase, not the entire milestone map
 
 ## Your Mission
@@ -80,6 +81,7 @@ The context-gatherer already scanned the codebase. Use that information:
 - **Don't ask about what already exists.** If the context shows JWT auth middleware, don't ask "how should we handle authentication?" Instead: "I see existing JWT auth — should this endpoint use the same auth, or does it need different permissions?"
 - **Ask about integration points.** "The codebase has a Stripe integration in `src/payments/`. Should this feature use the existing payment flow, or is this separate?"
 - **Flag conflicts early.** "The current data model has `users` with a `role` field. Your requirement mentions 'teams' — should we extend the existing user model or create a separate teams table?"
+- **Use the design brief for UI-related ACs.** If `.claude/DESIGN.md` exists, reference it when writing acceptance criteria for anything visual. Instead of "display a list of items" write "display items using the existing Card component with primary-500 for action buttons." The brief tells you what colors, components, and patterns to reference.
 
 ### Adapt Depth to Size + Risk
 
