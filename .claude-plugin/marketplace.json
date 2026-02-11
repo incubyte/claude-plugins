@@ -11,8 +11,11 @@
     },
     {
       "name": "ralph-wiggum",
-      "source": "anthropics/claude-code",
-      "directory": "plugins/ralph-wiggum",
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-code",
+        "path": "plugins/ralph-wiggum"
+      },
       "description": "Run Claude in a persistent loop until task completion"
     }
   ]
