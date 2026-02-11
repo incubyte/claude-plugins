@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-COMMAND_FILE="$REPO_ROOT/commands/bee-coach.md"
+COMMAND_FILE="$REPO_ROOT/commands/coach.md"
 
 PASS_COUNT=0
 FAIL_COUNT=0
@@ -45,7 +45,7 @@ assert_grep() {
 
 test_command_file_exists_with_frontmatter() {
   echo "TEST: command file exists with correct frontmatter"
-  assert_file_exists "bee-coach.md exists" "$COMMAND_FILE"
+  assert_file_exists "coach.md exists" "$COMMAND_FILE"
   local first_line
   first_line=$(head -n 1 "$COMMAND_FILE")
   assert_eq "starts with YAML delimiter" "---" "$first_line"

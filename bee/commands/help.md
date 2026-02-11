@@ -163,18 +163,18 @@ This one is read-only — no code changes. Great for onboarding onto a new proje
 
 Then ask: "Next command?"
 
-### 5. `/bee:bee-coach` — Session Coaching
+### 5. `/bee:coach` — Session Coaching
 
-"**`/bee:bee-coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
+"**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
 - Iteration patterns (how many tries to get tests passing?)
 - Tool usage (are you using the right tools efficiently?)
 - Session trends over time
 
 Run it with flags:
-- `/bee:bee-coach` — analyze last session + 5-session trend
-- `/bee:bee-coach --last 10` — trend across last 10 sessions
-- `/bee:bee-coach --all` — all sessions
+- `/bee:coach` — analyze last session + 5-session trend
+- `/bee:coach --last 10` — trend across last 10 sessions
+- `/bee:coach --all` — all sessions
 
 Also read-only — no code changes, just insights. Needs a few sessions logged before it has data to work with."
 
@@ -205,7 +205,7 @@ After covering all commands (or if the developer says they've seen enough), clos
 - **`/bee:discover`** for exploring requirements before building
 - **`/bee:review`** for a health check on existing code
 - **`/bee:onboard`** for getting new team members up to speed
-- **`/bee:bee-coach`** for improving your workflow over time
+- **`/bee:coach`** for improving your workflow over time
 
 Most people start with `/bee:build [what you want to build]` and let Bee guide from there."
 
@@ -217,7 +217,7 @@ If there's active work: "Since there's active work on **[feature]**, running `/b
 
 If the developer asks to skip ahead, present:
 Use AskUserQuestion: "Which command do you want to know about?"
-Options: "/bee:build" / "/bee:discover" / "/bee:review" / "/bee:onboard" / "/bee:bee-coach"
+Options: "/bee:build" / "/bee:discover" / "/bee:review" / "/bee:onboard" / "/bee:coach"
 
 Jump to that section, then offer to continue the tour from the next command.
 

@@ -21,9 +21,9 @@ Discovery document: `docs/specs/bee-coach-discovery.md`
 - [x] Script exits gracefully if the transcript file is missing or unreadable (no crash, no error output)
 - [x] Hook is registered in `.claude/settings.json` under `hooks.Stop`
 
-### `/bee:coach` Command (`commands/bee-coach.md`)
+### `/bee:coach` Command (`commands/coach.md`)
 
-- [ ] Command file exists at `commands/bee-coach.md` with YAML frontmatter matching existing command conventions
+- [ ] Command file exists at `commands/coach.md` with YAML frontmatter matching existing command conventions
 - [ ] Default behavior (no flags): reads the last session's transcript for deep analysis and shows a trend summary from the last 5 sessions
 - [ ] `--last N` flag: shows trend summary across the last N sessions from the session log
 - [ ] `--all` flag: shows trend summary across all sessions in the session log
@@ -91,7 +91,7 @@ Command invocation:
 ## Technical Context
 
 - Patterns to follow: commands use markdown with YAML frontmatter (`commands/bee.md` is the reference). Agents follow the same pattern (`agents/quick-fix.md`).
-- Files to create: `.claude/hooks/stop-session.sh`, `commands/bee-coach.md`
+- Files to create: `.claude/hooks/stop-session.sh`, `commands/coach.md`
 - Files to modify: `.claude/settings.json` (add Stop hook registration)
 - Directories to create (by hook, at runtime): `.bee-insights/`
 - The coach command is a markdown agent — Claude analyzes the transcript in-context via prompt instructions, no separate analysis engine
