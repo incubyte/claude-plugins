@@ -54,6 +54,12 @@ A PM persona that interviews you (or synthesizes from meeting transcripts) and p
 
 Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
 
+```
+/bee:architect
+```
+
+Architectural health assessment grounded in domain language. Compares how a product describes itself (README, docs, website, marketing copy) against how the code is structured. Produces an assessment report with domain vocabulary mapping, boundary analysis, and runnable ArchUnit-style boundary tests — some passing (documenting good boundaries) and some intentionally failing (flagging architecture leaks).
+
 ## How It Works
 
 Bee assesses every task on two axes — **size** and **risk** — then recommends the right workflow.
@@ -146,7 +152,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 14 specialist agents:
+Bee ships with 16 specialist agents:
 
 | Agent | Role |
 |-------|------|
@@ -164,6 +170,8 @@ Bee ships with 14 specialist agents:
 | `tdd-planner-simple` | Straightforward test-implement-verify |
 | `verifier` | Post-slice quality gate |
 | `reviewer` | Final review with ship recommendation |
+| `domain-language-extractor` | Extract domain vocabulary from docs, website, and code; flag vocabulary drift and boundary mismatches |
+| `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests from an architecture assessment report |
 
 ## Skills
 
@@ -187,7 +195,8 @@ bee/
 ├── commands/
 │   ├── build.md                   # /bee:build orchestrator
 │   ├── discover.md               # /bee:discover standalone discovery
-│   └── review.md                 # /bee:review standalone code review
+│   ├── review.md                 # /bee:review standalone code review
+│   └── architect.md              # /bee:architect architecture assessment
 ├── agents/
 │   ├── quick-fix.md
 │   ├── context-gatherer.md
@@ -202,7 +211,9 @@ bee/
 │   ├── tdd-planner-event-driven.md
 │   ├── tdd-planner-simple.md
 │   ├── verifier.md
-│   └── reviewer.md
+│   ├── reviewer.md
+│   ├── domain-language-extractor.md
+│   └── architecture-test-writer.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/
