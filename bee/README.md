@@ -1,8 +1,14 @@
 # Bee
 
-**The developer is the driver. Claude Code is the car. Bee is the GPS.**
+Bee is a Claude Code plugin that brings spec-driven, test-first engineering discipline to AI-assisted development — automatically scaling process to match the task.
 
-Bee is a Claude Code plugin that navigates you through the right level of process for each task. A typo? Just fix it. A new feature? Spec it, plan it, TDD it, verify it. An epic? Break it into shippable phases and tackle them one at a time.
+**Why this exists.** Incubyte is a 140+ engineer software consultancy built on eXtreme Programming and software craftsmanship. We noticed AI coding tools are fast but undisciplined — they skip specs, ignore architecture, and produce code without tests. Bee encodes the engineering discipline our team practices daily into a plugin any developer can use with Claude Code.
+
+**What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
+
+**What you get.** 7 commands, 17 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+
+> The developer is the driver. Claude Code is the car. Bee is the GPS.
 
 Bee doesn't enforce process — it suggests. The developer always has final say.
 
