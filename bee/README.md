@@ -28,17 +28,32 @@ Without Ralph, you drive execution manually by following the TDD plan checklist.
 
 ## Usage
 
+### `/bee:build` — The Main Event
+
+**What it is:** An opinionated workflow that codifies engineering discipline as a command. Spec before code. Tests before shipping. Review before merging. That's the default path — not a hope.
+
+**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. A TDD plan means every line of code has a reason. Bee makes that the path of least resistance.
+
+**How it works:** Tell it what you want to build. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
+
+| Task size | What Bee does |
+|-----------|--------------|
+| Typo / config fix | Just fixes it |
+| Small bug / UI tweak | Quick confirmation, then builds |
+| New feature | Spec, architecture, TDD plan, verify, review |
+| Epic / new subsystem | Breaks into shippable phases, full workflow per phase |
+
 ```
 /bee:build add user authentication
 ```
 
-Or start without a task:
+Or start without a task — Bee asks what you're working on:
 
 ```
 /bee:build
 ```
 
-Bee greets you with "Tell me what we're working on" and guides you from there.
+Picks up where you left off across sessions. Close your terminal mid-feature, come back later, it resumes.
 
 ### Standalone Commands
 
