@@ -44,9 +44,13 @@ Once paths are confirmed, spawn **two context-gatherer agents in parallel** via 
 
 Store the results as **legacy context** and **new context** — both are used in every downstream step.
 
-## Step 3: Analyze Legacy Codebase
+## Step 3: Analyze Both Codebases
 
-After the **legacy** context-gatherer completes (you need its file list), spawn **two analysis agents in parallel** via the Task tool. The new context-gatherer can still be running — you don't need to wait for it.
+After each context-gatherer completes (you need its file list), spawn analysis agents in parallel via the Task tool.
+
+### Legacy Analysis
+
+Once the **legacy** context-gatherer returns, spawn these two in parallel:
 
 **review-coupling** — use `subagent_type: bee:review-coupling`, pass:
 - `files`: the list of source files identified by the legacy context-gatherer
@@ -54,14 +58,27 @@ After the **legacy** context-gatherer completes (you need its file list), spawn 
 
 This identifies natural extraction seams — modules with low afferent coupling that can be pulled out without touching half the system, and tightly coupled clusters that must migrate together.
 
-**review-behavioral** — use `subagent_type: bee:review-behavioral`, pass:
+**review-behavioral (legacy)** — use `subagent_type: bee:review-behavioral`, pass:
 - `files`: the list of source files identified by the legacy context-gatherer
 - `git_range`: "the beginning" (use full history — migration cares about lifetime activity, not just recent changes)
 - `project_root`: the legacy codebase path
 
 This identifies hotspots (high-churn + high-complexity files that are actively maintained) versus cold/dead code (files with no meaningful recent git activity that may be candidates to skip).
 
-**Graceful degradation:** If either agent fails, report which analysis was skipped and continue with the remaining results. A migration plan with only coupling data or only behavioral data is still useful — just less precise in its prioritization.
+### New Codebase Analysis
+
+Once the **new** context-gatherer returns, spawn:
+
+**review-behavioral (new)** — use `subagent_type: bee:review-behavioral`, pass:
+- `files`: the list of source files identified by the new context-gatherer
+- `git_range`: "the beginning" (full history)
+- `project_root`: the new codebase path
+
+This reveals what's already established in the new codebase — actively maintained areas where migrated code will integrate, and patterns that are in use vs. abandoned. For partial migrations, this also surfaces functionality that may have already been moved.
+
+All three analysis agents (legacy coupling, legacy behavioral, new behavioral) can run in parallel once their respective context-gatherer completes. Spawn them as early as possible — don't wait for all context-gatherers to finish if one is ready.
+
+**Graceful degradation:** If any agent fails, report which analysis was skipped and continue with the remaining results. A migration plan with partial data is still useful — just less precise in its prioritization.
 
 ## Step 4: Interview Developer
 
@@ -83,7 +100,7 @@ Then interview the developer. The goal is clarity — ask what you need to produ
    Options should reflect what you see in the codebases (e.g., "Modernize the tech stack" / "Consolidate into a single system" / "Replace specific functionality")
 
 2. **Already migrated** — "Has any functionality already been moved to the new system?"
-   If the new codebase context shows existing modules that look like they came from the legacy system, reference them: "I see `[module]` in the new codebase — was this already migrated from the legacy system?"
+   Use the new codebase's behavioral analysis to identify recently active areas that may be migrated functionality. Reference them: "I see `[module]` in the new codebase with active recent commits — was this already migrated from the legacy system?"
 
 3. **Priorities** — "Which modules or capabilities should move first?"
    Use the coupling analysis to offer concrete options: "The coupling analysis found these loosely-coupled modules that would be easiest to extract: [A, B, C]. Which area matters most to your users?"
@@ -95,12 +112,13 @@ Then interview the developer. The goal is clarity — ask what you need to produ
 
 ## Step 5: Synthesize Migration Plan
 
-Combine all four data sources into a prioritized migration plan:
+Combine all five data sources into a prioritized migration plan:
 
-1. **Coupling analysis** — which modules have natural seams (low afferent coupling, few external dependents) vs. which are tightly coupled clusters
-2. **Behavioral analysis** — which modules are actively maintained (hotspots) vs. cold/dead code
-3. **Context from both codebases** — tech stacks, architecture patterns, folder conventions, integration points
-4. **Developer interview answers** — goals, priorities, constraints, what's already migrated
+1. **Coupling analysis (legacy)** — which modules have natural seams (low afferent coupling, few external dependents) vs. which are tightly coupled clusters
+2. **Behavioral analysis (legacy)** — which modules are actively maintained (hotspots) vs. cold/dead code
+3. **Behavioral analysis (new)** — what's already established in the new codebase, what's been recently built (possible prior migration), and which areas are actively maintained integration points
+4. **Context from both codebases** — tech stacks, architecture patterns, folder conventions, integration points
+5. **Developer interview answers** — goals, priorities, constraints, what's already migrated
 
 ### Ordering Logic
 
