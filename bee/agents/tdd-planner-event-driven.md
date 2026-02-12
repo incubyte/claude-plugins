@@ -310,6 +310,9 @@ test('rejects malformed events without crashing', async () => {
 
 Follow these steps in order to fulfill your mission:
 
+### Phase 0: Check Module Boundaries
+Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries when structuring the plan — tests should validate that new code lands in the correct module and does not import across undeclared boundaries.
+
 ### Phase 1: Locate and Parse
 1. Read the specification file provided
 2. Locate the EXACT slice or section specified

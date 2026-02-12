@@ -137,6 +137,12 @@ Save to `docs/specs/[feature-name]-discovery.md`:
 - [Next capability]
 - [Next capability]
 
+## Module Structure
+*(Greenfield projects only — omit this section for non-greenfield projects)*
+
+- `modulename/` -- owns: Concept1, Concept2. Depends on: (none)
+- `modulename/` -- owns: Concept3. Depends on: modulename
+
 ## Open Questions
 - [Things that came up during discovery but weren't resolved]
 - [Decisions that need more information or stakeholder input]
@@ -155,6 +161,7 @@ Greenfield: [yes/no — from context-gatherer, or "unknown" if standalone]
 - **Open Questions are honest.** Don't pretend you resolved everything. If something needs more stakeholder input, say so.
 - **Milestone map is vertical, not horizontal.** Each phase delivers end-to-end user value. Never "build the database first."
 - **Phase 1 is always the walking skeleton** — the simplest end-to-end path that proves the concept works.
+- **Module Structure is derived from the Milestone Map** (greenfield only). Extract modules by grouping related capabilities into domain boundaries. Each module's "owns" list comes from the domain concepts mentioned in those capabilities. Dependencies are inferred from which modules need data or behavior from other modules. Do not invent modules that have no basis in the Milestone Map.
 
 ---
 

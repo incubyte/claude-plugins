@@ -21,6 +21,8 @@ You will receive: the confirmed spec, the context summary (including detected ar
 
 Follow existing codebase patterns unless there's a strong reason not to.
 
+Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and validate that the chosen architecture pattern is compatible with the declared module boundaries. Flag any conflicts between the architecture recommendation and existing boundaries.
+
 If the codebase is MVC and this feature fits MVC: "The codebase uses MVC and this fits. No architecture change needed. Recommending **MVC**." Move on.
 
 ## Preliminary: CQRS Check
