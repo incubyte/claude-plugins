@@ -55,10 +55,18 @@ A PM persona that interviews you (or synthesizes from meeting transcripts) and p
 Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
 
 ```
+
+```
 /bee:architect
 ```
 
 Architectural health assessment grounded in domain language. Compares how a product describes itself (README, docs, website, marketing copy) against how the code is structured. Produces an assessment report with domain vocabulary mapping, boundary analysis, and runnable ArchUnit-style boundary tests — some passing (documenting good boundaries) and some intentionally failing (flagging architecture leaks).
+
+```
+/bee:onboard
+```
+
+Interactive developer onboarding for existing projects. Analyzes the codebase and delivers an adaptive walkthrough — architecture, entry points, domain concepts, tribal knowledge, dragons, and how to run/test/deploy. Adapts to the developer's role, experience level, and focus area. Includes MCQ knowledge checks.
 
 ## How It Works
 
@@ -152,7 +160,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 16 specialist agents:
+Bee ships with 17 specialist agents:
 
 | Agent | Role |
 |-------|------|
@@ -172,6 +180,7 @@ Bee ships with 16 specialist agents:
 | `reviewer` | Final review with ship recommendation |
 | `domain-language-extractor` | Extract domain vocabulary from docs, website, and code; flag vocabulary drift and boundary mismatches |
 | `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests from an architecture assessment report |
+| `onboard` | Interactive developer onboarding — codebase walkthrough adapted to role, experience, and focus area |
 
 ## Skills
 
@@ -196,7 +205,8 @@ bee/
 │   ├── build.md                   # /bee:build orchestrator
 │   ├── discover.md               # /bee:discover standalone discovery
 │   ├── review.md                 # /bee:review standalone code review
-│   └── architect.md              # /bee:architect architecture assessment
+│   ├── architect.md              # /bee:architect architecture assessment
+│   └── onboard.md                # /bee:onboard interactive developer onboarding
 ├── agents/
 │   ├── quick-fix.md
 │   ├── context-gatherer.md
@@ -213,7 +223,8 @@ bee/
 │   ├── verifier.md
 │   ├── reviewer.md
 │   ├── domain-language-extractor.md
-│   └── architecture-test-writer.md
+│   ├── architecture-test-writer.md
+│   └── onboard.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/
