@@ -28,17 +28,42 @@ Without Ralph, you drive execution manually by following the TDD plan checklist.
 
 ## Usage
 
+### `/bee:build` — The Main Event
+
+**What it is:** An opinionated workflow that codifies engineering discipline as a command. Spec before code. Tests before shipping. Review before merging. That's the default path — not a hope.
+
+**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. A TDD plan means every line of code has a reason. Bee makes that the path of least resistance.
+
+**How it works:** Tell it what you want to build. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
+
+| Task size | What Bee does |
+|-----------|--------------|
+| Typo / config fix | Just fixes it |
+| Small bug / UI tweak | Quick confirmation, then builds |
+| New feature | Spec, architecture, TDD plan, verify, review |
+| Epic / new subsystem | Breaks into shippable phases, full workflow per phase |
+
 ```
 /bee:build add user authentication
 ```
 
-Or start without a task:
+Or start without a task — Bee asks what you're working on:
 
 ```
 /bee:build
 ```
 
-Bee greets you with "Tell me what we're working on" and guides you from there.
+Picks up where you left off across sessions. Close your terminal mid-feature, come back later, it resumes.
+
+**Working with Bee during a build:**
+
+Bee produces documents along the way — discovery docs, specs, TDD plans. After each one, you review it in your editor. Two things to know:
+
+1. **`@bee` annotations** — Add `@bee` followed by your comment on any line you want changed (e.g., `@bee this AC is too vague`). Type `check` in the chat and Bee reads your annotations, makes the changes, and leaves a comment card showing what it did.
+
+2. **`[x] Reviewed`** — Every doc ends with a `[ ] Reviewed` checkbox. Mark it `[x] Reviewed` when you're happy with the doc to move to the next phase. Unresolved comment cards don't block — it's a trust-based gate.
+
+You're never locked in. Ask questions, go off-topic, or push back at any point — Bee won't block the conversation while you review.
 
 ### Standalone Commands
 
@@ -59,6 +84,24 @@ Standalone code review with hotspot analysis, tech debt prioritization, and deve
 ```
 
 Interactive developer onboarding for existing projects. Analyzes the codebase and delivers an adaptive walkthrough — architecture, entry points, domain concepts, tribal knowledge, dragons, and how to run/test/deploy. Adapts to the developer's role, experience level, and focus area. Includes MCQ knowledge checks.
+
+```
+/bee:migrate /path/to/legacy /path/to/new-app
+```
+
+Analyze a legacy and new codebase to produce a prioritized, independently-shippable migration plan. Reads both codebases, interviews you about goals, and writes a plan where each unit is a clean PR. Read-only — produces a plan, not code.
+
+```
+/bee:coach
+```
+
+Analyze your Claude Code sessions and get actionable coaching insights — workflow adoption, prompt quality, session efficiency, and code quality signals. Tracks trends over time.
+
+```
+/bee:help
+```
+
+Interactive guided tour of all Bee commands. Adapts to your project context — if Bee has already produced specs or state files, it shows what's been done. If it's a fresh project, it suggests where to start.
 
 ## How It Works
 
@@ -193,7 +236,10 @@ bee/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
 │   ├── build.md                   # /bee:build orchestrator
+│   ├── coach.md                   # /bee:coach session coaching insights
 │   ├── discover.md               # /bee:discover standalone discovery
+│   ├── help.md                    # /bee:help interactive guided tour
+│   ├── migrate.md                 # /bee:migrate migration planning
 │   ├── onboard.md                # /bee:onboard interactive developer onboarding
 │   └── review.md                 # /bee:review standalone code review
 ├── agents/

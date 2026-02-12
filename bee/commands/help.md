@@ -163,7 +163,22 @@ This one is read-only — no code changes. Great for onboarding onto a new proje
 
 Then ask: "Next command?"
 
-### 5. `/bee:coach` — Session Coaching
+### 5. `/bee:migrate` — Migration Planning
+
+"**`/bee:migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
+
+You give it two paths — the legacy system and the target system:
+```
+/bee:migrate /path/to/legacy /path/to/new-app
+```
+
+It reads both codebases, interviews you about migration goals and priorities, then writes a plan with independently-shippable migration units.
+
+This one is read-only — it produces a plan, not code. No files in either codebase are modified. Great for scoping a migration before you start cutting code."
+
+Then ask: "Next command?"
+
+### 6. `/bee:coach` — Session Coaching
 
 "**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
@@ -180,7 +195,7 @@ Also read-only — no code changes, just insights. Needs a few sessions logged b
 
 Then ask: "Next command?"
 
-### 6. Skills (Reference Knowledge)
+### 7. Skills (Reference Knowledge)
 
 "Bee also ships with **skills** — shared reference knowledge that any agent can draw on. You can invoke them directly to learn Bee's principles:
 
@@ -196,7 +211,7 @@ Then ask: "Next command?"
 
 These are read-only references — no code changes. Pick any one to read up on a topic."
 
-### 7. Wrap-Up
+### 8. Wrap-Up
 
 After covering all commands (or if the developer says they've seen enough), close with:
 
@@ -205,6 +220,7 @@ After covering all commands (or if the developer says they've seen enough), clos
 - **`/bee:discover`** for exploring requirements before building
 - **`/bee:review`** for a health check on existing code
 - **`/bee:onboard`** for getting new team members up to speed
+- **`/bee:migrate`** for planning incremental migrations between codebases
 - **`/bee:coach`** for improving your workflow over time
 
 Most people start with `/bee:build [what you want to build]` and let Bee guide from there."
