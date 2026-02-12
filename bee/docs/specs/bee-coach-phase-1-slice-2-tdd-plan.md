@@ -8,10 +8,10 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
 
 ## Context
 - **Source**: `docs/specs/bee-coach-phase-1.md`
-- **Slice**: `/bee:coach` Command (`commands/bee-coach.md`)
+- **Slice**: `/bee:coach` Command (`commands/coach.md`)
 - **Risk**: LOW
 - **Acceptance Criteria**:
-  1. Command file exists at `commands/bee-coach.md` with YAML frontmatter matching existing conventions
+  1. Command file exists at `commands/coach.md` with YAML frontmatter matching existing conventions
   2. Default behavior (no flags): reads last session transcript for deep analysis + trend from last 5 sessions
   3. `--last N` flag: trend summary across last N sessions
   4. `--all` flag: trend summary across all sessions
@@ -31,7 +31,7 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
 ## Codebase Analysis
 
 ### File Structure
-- Implementation: `commands/bee-coach.md` (new file -- markdown command with YAML frontmatter)
+- Implementation: `commands/coach.md` (new file -- markdown command with YAML frontmatter)
 - Tests: `.claude/hooks/test-bee-coach-command.sh` (bash structural tests, following Slice 1 pattern)
 - Reference command: `commands/bee.md` (YAML frontmatter convention)
 - Data source: `.bee-insights/session-log.jsonl` (created by Slice 1 stop hook)
@@ -54,20 +54,20 @@ description: [one-line description of what the command does]
 ## Behavior 1: Command file exists with correct frontmatter
 
 **Given** the commands directory exists
-**When** we check for `commands/bee-coach.md`
+**When** we check for `commands/coach.md`
 **Then** the file exists and has YAML frontmatter with a `description` field
 
 - [x] **RED**: Write failing test
   - Location: `.claude/hooks/test-bee-coach-command.sh`
   - Test name: `test_command_file_exists_with_frontmatter`
   - Create the test harness with `assert_eq`, `assert_file_exists` helpers (reuse pattern from `test-stop-session.sh`)
-  - Assert file exists at `commands/bee-coach.md`
+  - Assert file exists at `commands/coach.md`
   - Assert file starts with `---` (YAML frontmatter delimiter)
   - Assert frontmatter contains `description:` field
 
 - [x] **RUN**: Confirm test FAILS (file does not exist yet)
 
-- [x] **GREEN**: Create `commands/bee-coach.md`
+- [x] **GREEN**: Create `commands/coach.md`
   - Add YAML frontmatter with `description` matching the pattern from `bee.md`
   - Description should convey: "Analyze your development sessions and get actionable coaching insights"
   - Add a minimal body placeholder
@@ -93,7 +93,7 @@ description: [one-line description of what the command does]
 
 - [x] **RUN**: Confirm test FAILS
 
-- [x] **GREEN**: Add an invocation modes section to `commands/bee-coach.md`
+- [x] **GREEN**: Add an invocation modes section to `commands/coach.md`
   - Describe default: read last session transcript for deep analysis, show trend from last 5
   - Describe `--last N`: trend summary across last N sessions
   - Describe `--all`: trend summary across all sessions
@@ -117,7 +117,7 @@ description: [one-line description of what the command does]
 
 - [x] **RUN**: Confirm test FAILS
 
-- [x] **GREEN**: Add coaching analysis section to `commands/bee-coach.md`
+- [x] **GREEN**: Add coaching analysis section to `commands/coach.md`
   - Describe each category and what to look for in the transcript/session log data
   - Workflow adoption: spec usage, TDD plans, verification, review phases
   - Prompt quality: clarity, specificity, context provided
@@ -145,7 +145,7 @@ description: [one-line description of what the command does]
 
 - [x] **RUN**: Confirm test FAILS
 
-- [x] **GREEN**: Add report output section to `commands/bee-coach.md`
+- [x] **GREEN**: Add report output section to `commands/coach.md`
   - Instruct Claude to save insights to `.bee-insights/coaching-report-YYYY-MM-DD.md`
   - Instruct overwrite (not append) if file already exists
   - Specify report format: date header, 2-4 insights, trend summary
@@ -171,7 +171,7 @@ description: [one-line description of what the command does]
 
 - [x] **RUN**: Confirm test FAILS
 
-- [x] **GREEN**: Add trend summary section to `commands/bee-coach.md`
+- [x] **GREEN**: Add trend summary section to `commands/coach.md`
   - Instruct Claude to read session-log.jsonl
   - Describe the four trend metrics: spec adoption rate, avg token usage, workflow phase completeness, message counts
   - Instruct relative framing ("your X went from Y to Z") not absolute scores
@@ -198,7 +198,7 @@ description: [one-line description of what the command does]
 
 - [x] **RUN**: Confirm test FAILS
 
-- [x] **GREEN**: Add tone and output quality section to `commands/bee-coach.md`
+- [x] **GREEN**: Add tone and output quality section to `commands/coach.md`
   - Instruct encouraging, non-judgmental tone
   - Instruct exactly 2-4 insights per session
   - Each insight must name a concrete behavior (not generic advice)
@@ -233,7 +233,7 @@ description: [one-line description of what the command does]
 - [x] **Run full test suite**: `bash .claude/hooks/test-bee-coach-command.sh` -- 26 assertions, 8 tests, all pass
 - [x] **Run Slice 1 tests**: `bash .claude/hooks/test-stop-session.sh` -- 50 assertions, 16 tests, still green (no regressions)
 - [x] **Review test names**: Read them top to bottom -- they describe the command's structure clearly
-- [x] **Review command file**: Read `commands/bee-coach.md` end-to-end -- instructions are clear enough for Claude to produce good coaching output
+- [x] **Review command file**: Read `commands/coach.md` end-to-end -- instructions are clear enough for Claude to produce good coaching output
 
 ## Test Summary
 | Category | # Tests | Status |
