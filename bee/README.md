@@ -55,8 +55,6 @@ A PM persona that interviews you (or synthesizes from meeting transcripts) and p
 Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
 
 ```
-
-```
 /bee:architect
 ```
 
