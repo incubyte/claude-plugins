@@ -68,6 +68,18 @@ Architectural health assessment grounded in domain language. Compares how a prod
 
 Interactive developer onboarding for existing projects. Analyzes the codebase and delivers an adaptive walkthrough — architecture, entry points, domain concepts, tribal knowledge, dragons, and how to run/test/deploy. Adapts to the developer's role, experience level, and focus area. Includes MCQ knowledge checks.
 
+```
+/bee:migrate /path/to/legacy /path/to/new-app
+```
+
+Analyze a legacy and new codebase to produce a prioritized, independently-shippable migration plan. Reads both codebases, interviews you about goals, and writes a plan where each unit is a clean PR. Read-only — produces a plan, not code.
+
+```
+/bee:coach
+```
+
+Analyze your Claude Code sessions and get actionable coaching insights — workflow adoption, prompt quality, session efficiency, and code quality signals. Tracks trends over time.
+
 ## How It Works
 
 Bee assesses every task on two axes — **size** and **risk** — then recommends the right workflow.
@@ -203,10 +215,13 @@ bee/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
 │   ├── build.md                   # /bee:build orchestrator
-│   ├── discover.md               # /bee:discover standalone discovery
-│   ├── review.md                 # /bee:review standalone code review
+│   ├── coach.md                   # /bee:coach session coaching insights
 │   ├── architect.md              # /bee:architect architecture assessment
-│   └── onboard.md                # /bee:onboard interactive developer onboarding
+│   ├── discover.md               # /bee:discover standalone discovery
+│   ├── help.md                    # /bee:help interactive guided tour
+│   ├── migrate.md                 # /bee:migrate migration planning
+│   ├── onboard.md                # /bee:onboard interactive developer onboarding
+│   └── review.md                 # /bee:review standalone code review
 ├── agents/
 │   ├── quick-fix.md
 │   ├── context-gatherer.md
