@@ -61,6 +61,16 @@ Or start without a task — Bee asks what you're working on:
 
 Picks up where you left off across sessions. Close your terminal mid-feature, come back later, it resumes.
 
+**Working with Bee during a build:**
+
+Bee produces documents along the way — discovery docs, specs, TDD plans. After each one, you review it in your editor. Two things to know:
+
+1. **`@bee` annotations** — Add `@bee` followed by your comment on any line you want changed (e.g., `@bee this AC is too vague`). Type `check` in the chat and Bee reads your annotations, makes the changes, and leaves a comment card showing what it did.
+
+2. **`[x] Reviewed`** — Every doc ends with a `[ ] Reviewed` checkbox. Mark it `[x] Reviewed` when you're happy with the doc to move to the next phase. Unresolved comment cards don't block — it's a trust-based gate.
+
+You're never locked in. Ask questions, go off-topic, or push back at any point — Bee won't block the conversation while you review.
+
 ### Standalone Commands
 
 ```
@@ -98,6 +108,12 @@ Analyze a legacy and new codebase to produce a prioritized, independently-shippa
 ```
 
 Analyze your Claude Code sessions and get actionable coaching insights — workflow adoption, prompt quality, session efficiency, and code quality signals. Tracks trends over time.
+
+```
+/bee:help
+```
+
+Interactive guided tour of all Bee commands. Adapts to your project context — if Bee has already produced specs or state files, it shows what's been done. If it's a fresh project, it suggests where to start.
 
 ## How It Works
 
