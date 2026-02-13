@@ -224,7 +224,7 @@ description: [one-line description of what the command does]
   - Note: Check the `allowed-tools` pattern from `bee.md` -- if present there, it may be needed here too
 - [x] **GREEN -> REFACTOR**
 
-- [ ] **COMMIT**: "feat: add /bee:coach command file with coaching instructions"
+- [x] **COMMIT**: "feat: add /bee:coach command file with coaching instructions"
 
 ---
 

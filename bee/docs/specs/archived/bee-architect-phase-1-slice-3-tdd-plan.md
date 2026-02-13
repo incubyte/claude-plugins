@@ -229,7 +229,7 @@ Cover all three error scenarios (no docs, no test framework, no git history) plu
 
 ## Final Check
 
-- [ ] Read `commands/architect.md` top to bottom. Confirm:
+- [x] Read `commands/architect.md` top to bottom. Confirm:
   - YAML frontmatter has `description` (no `tools` or `name` -- it is a command, not an agent)
   - Persona establishes the orchestrator role
   - Skills reference architecture-patterns and collaboration-loop

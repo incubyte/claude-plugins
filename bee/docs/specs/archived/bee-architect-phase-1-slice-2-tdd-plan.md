@@ -244,7 +244,7 @@ Since this is a markdown agent definition (no compiled code, no test framework),
 
 ## Final Check
 
-- [ ] Read `agents/architecture-test-writer.md` top to bottom. Confirm:
+- [x] Read `agents/architecture-test-writer.md` top to bottom. Confirm:
   - YAML frontmatter has name, description, tools (Read, Write, Glob, Grep), model: inherit
   - Persona line sets the agent's role clearly
   - Skills section references architecture-patterns, clean-code, and tdd-practices

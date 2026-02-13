@@ -5,14 +5,14 @@ Add an inline review loop after every document-producing agent completes. The de
 
 ## Acceptance Criteria
 
-- [ ] After a document-producing agent returns, the orchestrator appends a centered `[ ] Reviewed` checkbox to the end of the document
-- [ ] Orchestrator shows the file path and invites the developer to review the document in their editor
-- [ ] When the developer adds `@bee [comment]` anywhere in the document, Bee reads it, makes the requested change, and replaces the annotation with a comment card
-- [ ] Comment card format uses HTML comment delimiters, quotes the original developer comment, includes Bee's response, and has a `[ ] mark as resolved` checkbox
-- [ ] The loop continues re-reading the file until `[x] Reviewed` is found (the only gate for proceeding)
-- [ ] Unresolved comment cards do not block proceeding -- only `[x] Reviewed` matters
-- [ ] A shared skill file defines the annotation format, comment card format, and reviewed-gate behavior so all 7 document-producing agent paths use identical logic
-- [ ] The 7 existing agent files are not modified -- the loop lives entirely in the orchestrator
+- [x] After a document-producing agent returns, the orchestrator appends a centered `[ ] Reviewed` checkbox to the end of the document
+- [x] Orchestrator shows the file path and invites the developer to review the document in their editor
+- [x] When the developer adds `@bee [comment]` anywhere in the document, Bee reads it, makes the requested change, and replaces the annotation with a comment card
+- [x] Comment card format uses HTML comment delimiters, quotes the original developer comment, includes Bee's response, and has a `[ ] mark as resolved` checkbox
+- [x] The loop continues re-reading the file until `[x] Reviewed` is found (the only gate for proceeding)
+- [x] Unresolved comment cards do not block proceeding -- only `[x] Reviewed` matters
+- [x] A shared skill file defines the annotation format, comment card format, and reviewed-gate behavior so all 7 document-producing agent paths use identical logic
+- [x] The 7 existing agent files are not modified -- the loop lives entirely in the orchestrator
 
 ## Comment Card Format
 

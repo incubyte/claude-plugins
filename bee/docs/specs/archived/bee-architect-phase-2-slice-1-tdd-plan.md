@@ -95,7 +95,7 @@ The PRD ends with a Revised Assessment block that includes Size and Greenfield f
 
 ## Final Check
 
-- [ ] Read `agents/discovery.md` top to bottom. Confirm:
+- [x] Read `agents/discovery.md` top to bottom. Confirm:
   - Frontmatter and persona are unchanged
   - Skills, Inputs, Interview/Synthesis flow are unchanged
   - PRD output template now includes Module Structure between Milestone Map and Open Questions

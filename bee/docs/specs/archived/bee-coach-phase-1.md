@@ -23,28 +23,28 @@ Discovery document: `docs/specs/bee-coach-discovery.md`
 
 ### `/bee:coach` Command (`commands/coach.md`)
 
-- [ ] Command file exists at `commands/coach.md` with YAML frontmatter matching existing command conventions
-- [ ] Default behavior (no flags): reads the last session's transcript for deep analysis and shows a trend summary from the last 5 sessions
-- [ ] `--last N` flag: shows trend summary across the last N sessions from the session log
-- [ ] `--all` flag: shows trend summary across all sessions in the session log
-- [ ] Command reads the transcript JSONL and instructs Claude to analyze it across four categories: workflow adoption, prompt quality, session efficiency, and code quality signals
-- [ ] Produces 2-4 specific, actionable coaching insights (not generic advice)
-- [ ] Each insight names a concrete thing the developer did well or a specific improvement to try next session
-- [ ] Coaching tone is encouraging and non-judgmental — highlights growth, not failures
+- [x] Command file exists at `commands/coach.md` with YAML frontmatter matching existing command conventions
+- [x] Default behavior (no flags): reads the last session's transcript for deep analysis and shows a trend summary from the last 5 sessions
+- [x] `--last N` flag: shows trend summary across the last N sessions from the session log
+- [x] `--all` flag: shows trend summary across all sessions in the session log
+- [x] Command reads the transcript JSONL and instructs Claude to analyze it across four categories: workflow adoption, prompt quality, session efficiency, and code quality signals
+- [x] Produces 2-4 specific, actionable coaching insights (not generic advice)
+- [x] Each insight names a concrete thing the developer did well or a specific improvement to try next session
+- [x] Coaching tone is encouraging and non-judgmental — highlights growth, not failures
 
 ### Coaching Report Output
 
-- [ ] Insights are printed directly to the terminal as conversational output
-- [ ] Insights are also saved to `.bee-insights/coaching-report-YYYY-MM-DD.md` (using the current date)
-- [ ] If multiple coaching runs happen on the same day, the file is overwritten with the latest report
-- [ ] Report file includes the session date, the 2-4 insights, and the trend summary
+- [x] Insights are printed directly to the terminal as conversational output
+- [x] Insights are also saved to `.bee-insights/coaching-report-YYYY-MM-DD.md` (using the current date)
+- [x] If multiple coaching runs happen on the same day, the file is overwritten with the latest report
+- [x] Report file includes the session date, the 2-4 insights, and the trend summary
 
 ### Trend Summary
 
-- [ ] Trend summary reads from `.bee-insights/session-log.jsonl`
-- [ ] Shows directional changes across sessions: spec adoption rate, average token usage, workflow phase completeness, message counts
-- [ ] Uses relative framing ("your spec adoption went from 2/5 to 4/5 sessions") rather than absolute scores
-- [ ] Shows a helpful message when fewer than 2 sessions exist ("not enough sessions for trends yet")
+- [x] Trend summary reads from `.bee-insights/session-log.jsonl`
+- [x] Shows directional changes across sessions: spec adoption rate, average token usage, workflow phase completeness, message counts
+- [x] Uses relative framing ("your spec adoption went from 2/5 to 4/5 sessions") rather than absolute scores
+- [x] Shows a helpful message when fewer than 2 sessions exist ("not enough sessions for trends yet")
 
 ## API Shape
 
