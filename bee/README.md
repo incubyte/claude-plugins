@@ -174,7 +174,7 @@ After discovery, spec, design brief, and TDD plan documents are produced, you ca
 
 ### Session Resume
 
-Close your terminal mid-feature? No problem. Bee persists progress in `docs/specs/.bee-state.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
+Close your terminal mid-feature? No problem. Bee persists progress in `.claude/bee-state.local.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
 
 ## Artifacts Produced
 
@@ -185,7 +185,7 @@ Close your terminal mid-feature? No problem. Bee persists progress in `docs/spec
 | Discovery Docs | `docs/specs/[feature]-discovery.md` | Problem statement, hypotheses, milestone map |
 | TDD Plans | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
 | ADRs | `docs/adrs/NNN-[decision].md` | Architecture decisions with rationale |
-| State | `docs/specs/.bee-state.md` | Session resume tracking |
+| State | `.claude/bee-state.local.md` | Session resume tracking |
 
 These artifacts are knowledge capture — when a new developer joins, they can read the specs, discovery docs, and design brief to understand not just what was built, but why and how.
 

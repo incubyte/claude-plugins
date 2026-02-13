@@ -26,7 +26,7 @@ Bee guides developers through a structured workflow (triage, spec, TDD, verify, 
 - H3: Individual developer coaching (self-improvement) is independently valuable without team aggregation features. Team features can be layered on later without changing the data model.
 - H4: Developers will find "compared to your last N sessions" framing more useful than absolute scores or grades. Relative improvement is more motivating than judgment.
 - H5: The coaching heuristics can be expressed as prompt instructions to Claude (analyzing the transcript as context) rather than requiring executable code or a separate analysis engine.
-- H6: A JSONL log at `.bee-insights/session-log.jsonl` is sufficient for trend storage -- no database needed. Each line is one session's metrics.
+- H6: A JSONL log at `.claude/bee-insights/session-log.jsonl` is sufficient for trend storage -- no database needed. Each line is one session's metrics.
 
 ## Out of Scope
 
@@ -125,7 +125,7 @@ The `bee_workflow` flags can be detected by scanning for spec file writes (`docs
 
 A developer can run `/bee:coach` after any session and get actionable coaching insights. The Stop hook silently logs metrics after every session.
 
-- Stop hook that parses the session transcript JSONL and appends lightweight metrics to `.bee-insights/session-log.jsonl`
+- Stop hook that parses the session transcript JSONL and appends lightweight metrics to `.claude/bee-insights/session-log.jsonl`
 - `/bee:coach` command (markdown agent) that reads the last session's transcript and produces 2-4 coaching insights organized by category (workflow, prompts, efficiency)
 - Trend summary from the session log: "Over your last N sessions, here's what's changing" (spec adoption rate, average tokens, workflow completeness)
 - Option flags: last session (default), last N sessions, all sessions

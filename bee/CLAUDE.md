@@ -92,7 +92,7 @@ The full Bee workflow for features and epics:
 
 ## Session Resume
 
-On startup, check for existing in-progress specs in `docs/specs/`. If found, offer to continue. Specs and plans persist as markdown with checkboxes. No lost work across sessions.
+On startup, check for `.claude/bee-state.local.md` for in-progress work. If found, offer to continue. Specs and plans persist as markdown with checkboxes. No lost work across sessions.
 
 ## Project Conventions
 

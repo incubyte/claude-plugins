@@ -14,7 +14,7 @@ A discovery agent that sits between context gathering and spec building, produci
 - [ ] Orchestrator (`commands/build.md`) evaluates two signals after context gathering -- requirement clarity and scope size -- and recommends discovery when either signal indicates high uncertainty
 - [ ] Inline discovery Q&A (the "DISCOVERY — CLARIFY BEFORE DOING" section in `build.md`) remains as the lightweight path; the discovery agent is recommended only when deeper exploration is warranted
 - [ ] Discovery can revise the triage size assessment (e.g., FEATURE to EPIC or vice versa) and the state file reflects the updated size
-- [ ] State file (`docs/specs/.bee-state.md`) tracks a "discovery" phase between "context gathered" and "spec confirmed", including the path to the discovery document
+- [ ] State file (`.claude/bee-state.local.md`) tracks a "discovery" phase between "context gathered" and "spec confirmed", including the path to the discovery document
 - [ ] Spec-builder receives the discovery document path as an additional input alongside existing inputs (task description, triage, context summary, inline Q&A answers)
 
 ## Discovery Document Format
@@ -48,7 +48,7 @@ Greenfield: [yes/no, detected from context-gatherer]
 - Discovery does not replace the spec-builder interview -- it feeds into it
 - No automated hypothesis validation (prototyping, data analysis) -- hypotheses are prompts for the developer
 - No changes to TRIVIAL or SMALL workflows -- discovery only applies to FEATURE and EPIC
-- No MCP server changes -- state tracking uses the existing `.bee-state.md` markdown file
+- No MCP server changes -- state tracking uses the existing `bee-state.local.md` markdown file
 - Not updating `docs/bee-v2-architecture.md` -- that is a reference doc, not a live config (can be updated separately)
 
 ## Technical Context

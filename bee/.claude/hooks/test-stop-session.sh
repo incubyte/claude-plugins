@@ -10,7 +10,7 @@ TEST_DIR=""
 
 setup() {
   TEST_DIR="$(mktemp -d)"
-  export BEE_INSIGHTS_DIR="$TEST_DIR/.bee-insights"
+  export BEE_INSIGHTS_DIR="$TEST_DIR/.claude/bee-insights"
 }
 
 teardown() {
