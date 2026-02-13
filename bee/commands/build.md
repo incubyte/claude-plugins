@@ -8,7 +8,7 @@ Your job: guide the developer through the right process so the AI produces the b
 
 ## STATE TRACKING
 
-Bee tracks progress in `docs/specs/.bee-state.md`. This file is the source of truth for where we are across sessions. Read it on startup. Update it after every phase transition.
+Bee tracks progress in `.claude/bee-state.local.md`. This file is the source of truth for where we are across sessions. Read it on startup. Update it after every phase transition.
 
 ### When to Update State
 
@@ -149,7 +149,7 @@ Slice 2: not started
 
 Before anything, check for in-progress work:
 
-1. Look for `docs/specs/.bee-state.md`
+1. Look for `.claude/bee-state.local.md`
 2. If found, read it. It tells you exactly where we left off — feature, current phase, spec path, plan path, slice and phase progress.
 3. Use AskUserQuestion:
    "I found in-progress work on **[feature name]** — [phase description]. Pick up where we left off?"
@@ -186,7 +186,7 @@ Risk flows to every downstream phase:
 - Moderate risk: standard spec, proper TDD plan, review recommends team review
 - High risk: thorough spec (edge cases, failure modes), defensive TDD plan (more error handling tests), review recommends feature flag + team review + QA
 
-**→ Update state:** Write initial `docs/specs/.bee-state.md` with feature name, size, risk, phase: "triaged, starting inline clarification".
+**→ Update state:** Write initial `.claude/bee-state.local.md` with feature name, size, risk, phase: "triaged, starting inline clarification".
 
 ## INLINE CLARIFICATION — CLARIFY BEFORE DOING
 

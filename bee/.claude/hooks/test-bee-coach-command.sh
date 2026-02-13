@@ -70,7 +70,7 @@ test_command_references_four_coaching_categories() {
 
 test_command_instructs_report_saving() {
   echo "TEST: command instructs saving the coaching report"
-  assert_grep "report save path" "\.bee-insights/coaching-report-" "$COMMAND_FILE"
+  assert_grep "report save path" "\.claude/bee-insights/coaching-report-" "$COMMAND_FILE"
   assert_grep "overwrite behavior" "[Oo]verwrite" "$COMMAND_FILE"
   assert_grep "report includes insights" "insights" "$COMMAND_FILE"
   assert_grep "report includes trend" "trend" "$COMMAND_FILE"

@@ -16,7 +16,7 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
   3. Detects bee workflow usage by scanning for spec writes, TDD plan writes, verification/review agent calls
   4. Resolves git branch from cwd
   5. Computes session duration from first/last timestamps
-  6. Appends one JSON line to `.bee-insights/session-log.jsonl` (creates dir/file if needed)
+  6. Appends one JSON line to `.claude/bee-insights/session-log.jsonl` (creates dir/file if needed)
   7. Follows discovery schema
   8. Exits silently on success
   9. Exits gracefully on missing/unreadable transcript
@@ -77,7 +77,7 @@ The test harness creates and tears down a temp directory per test run. All file 
   - Pipe the JSON with a nonexistent transcript_path
   - Assert exit code is 0
   - Assert no output on stdout or stderr (capture with `2>&1`)
-  - Assert `.bee-insights/session-log.jsonl` does NOT exist in the test dir
+  - Assert `.claude/bee-insights/session-log.jsonl` does NOT exist in the test dir
 
 - [x] **RUN**: Confirm test FAILS (script does not parse stdin yet)
 
@@ -241,7 +241,7 @@ The test harness creates and tears down a temp directory per test run. All file 
 
 **Given** a complete transcript fixture with all fields
 **When** the hook runs
-**Then** the output JSON line contains ALL schema fields (session_id, timestamp, duration_seconds, cwd, git_branch, message_counts, token_usage, tools_used, bee_workflow, files_modified, test_files_modified, errors_observed, transcript_path) and the `.bee-insights/` directory and file were created
+**Then** the output JSON line contains ALL schema fields (session_id, timestamp, duration_seconds, cwd, git_branch, message_counts, token_usage, tools_used, bee_workflow, files_modified, test_files_modified, errors_observed, transcript_path) and the `.claude/bee-insights/` directory and file were created
 
 - [x] **RED**: Write test `test_full_schema_output`
 - [x] **RUN**: Confirm test FAILS

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-BEE_INSIGHTS_DIR="${BEE_INSIGHTS_DIR:-.bee-insights}"
+BEE_INSIGHTS_DIR="${BEE_INSIGHTS_DIR:-.claude/bee-insights}"
 
 INPUT=$(cat) || true
 if [[ -z "$INPUT" ]]; then
