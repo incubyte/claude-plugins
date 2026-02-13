@@ -125,7 +125,25 @@ If the project has discovery docs, add:
 
 Then ask: "Next command?"
 
-### 3. `/bee:review` — Standalone Code Review
+### 3. `/bee:architect` — Architecture Assessment
+
+"**`/bee:architect`** is an architectural health assessment grounded in domain language. It compares how your product describes itself (README, docs, website, marketing copy) against how the code is actually structured.
+
+It produces an assessment report with:
+- Domain vocabulary mapping — do your code names match your product language?
+- Boundary analysis — are your modules aligned with real domain boundaries?
+- Runnable ArchUnit-style boundary tests — some passing (documenting good boundaries), some intentionally failing (flagging architecture leaks)
+
+Point it at a codebase:
+```
+/bee:architect assess this codebase
+```
+
+This one is read-only — it analyzes but doesn't change code. It does generate test files you can keep. Try it anytime."
+
+Then ask: "Next command?"
+
+### 4. `/bee:review` — Standalone Code Review
 
 "**`/bee:review`** runs a standalone code review — independent of any build workflow. No spec or triage needed.
 
@@ -147,7 +165,7 @@ This one is read-only — it analyzes but doesn't change code. Great for getting
 
 Then ask: "Next command?"
 
-### 4. `/bee:onboard` — Developer Onboarding
+### 5. `/bee:onboard` — Developer Onboarding
 
 "**`/bee:onboard`** is an interactive onboarding guide for new team members joining an existing project. It analyzes the codebase and delivers an adaptive walkthrough tailored to your role and focus area.
 
@@ -163,7 +181,7 @@ This one is read-only — no code changes. Great for onboarding onto a new proje
 
 Then ask: "Next command?"
 
-### 5. `/bee:migrate` — Migration Planning
+### 6. `/bee:migrate` — Migration Planning
 
 "**`/bee:migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
 
@@ -178,7 +196,7 @@ This one is read-only — it produces a plan, not code. No files in either codeb
 
 Then ask: "Next command?"
 
-### 6. `/bee:coach` — Session Coaching
+### 7. `/bee:coach` — Session Coaching
 
 "**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
@@ -195,7 +213,7 @@ Also read-only — no code changes, just insights. Needs a few sessions logged b
 
 Then ask: "Next command?"
 
-### 7. Skills (Reference Knowledge)
+### 8. Skills (Reference Knowledge)
 
 "Bee also ships with **skills** — shared reference knowledge that any agent can draw on. You can invoke them directly to learn Bee's principles:
 
@@ -211,13 +229,14 @@ Then ask: "Next command?"
 
 These are read-only references — no code changes. Pick any one to read up on a topic."
 
-### 8. Wrap-Up
+### 9. Wrap-Up
 
 After covering all commands (or if the developer says they've seen enough), close with:
 
 "That's the full toolkit. The short version:
 - **`/bee:build`** for building anything (it picks the right process)
 - **`/bee:discover`** for exploring requirements before building
+- **`/bee:architect`** for domain-grounded architecture assessment
 - **`/bee:review`** for a health check on existing code
 - **`/bee:onboard`** for getting new team members up to speed
 - **`/bee:migrate`** for planning incremental migrations between codebases
@@ -233,7 +252,7 @@ If there's active work: "Since there's active work on **[feature]**, running `/b
 
 If the developer asks to skip ahead, present:
 Use AskUserQuestion: "Which command do you want to know about?"
-Options: "/bee:build" / "/bee:discover" / "/bee:review" / "/bee:onboard" / "/bee:coach"
+Options: "/bee:build" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:onboard"
 
 Jump to that section, then offer to continue the tour from the next command.
 

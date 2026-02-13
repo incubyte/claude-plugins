@@ -14,10 +14,11 @@ If the fix involves writing or modifying code, follow the principles in:
 
 ## Process
 
-1. Make the specific fix the developer described. Nothing more.
-2. Run the relevant test suite (or full suite if quick).
-3. If tests pass: report success. Done.
-4. If tests fail: report what broke and use AskUserQuestion to ask the developer:
+1. Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it — even trivial fixes should not violate module boundaries.
+2. Make the specific fix the developer described. Nothing more.
+3. Run the relevant test suite (or full suite if quick).
+4. If tests pass: report success. Done.
+5. If tests fail: report what broke and use AskUserQuestion to ask the developer:
    - "Fix the test too" — attempt to fix the failing test to match the new behavior
    - "Revert my change" — undo the fix and restore the original code
 
