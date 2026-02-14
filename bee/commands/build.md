@@ -266,6 +266,25 @@ After triage and inline clarification, present your recommendation via AskUserQu
   Skip context-gatherer. Note: greenfield is an amplifying signal for discovery — no existing patterns means more open decisions.
   **→ Update state:** phase: "context gathered (greenfield — skipped scan)"
 
+  **Greenfield design check:** Since there's no context-gatherer output to provide a "UI-involved" flag, do a lightweight UI-signal scan:
+  - Scan the developer's task description and any inline clarification answers for UI keywords: screen, form, dashboard, page, UI, UX, frontend, display, view, layout, chart, table, component, button, widget
+  - Quick-check if the developer mentioned any frontend framework, Tailwind, shadcn, or UI library
+
+  If UI signals are detected (or the task is ambiguous about whether UI is involved), use AskUserQuestion:
+  "This looks like it involves UI. Want me to set up a design direction before we start building? I'll interview you about mood, colors, and fonts, then save a design brief so the AI follows it consistently."
+  Options: "Yes, interview me about design (Recommended)" / "Skip for now"
+
+  If the developer says yes: delegate to the design agent via Task, passing:
+  - The developer's task description
+  - The triage assessment (size + risk)
+  - A note that this is greenfield (no existing design system to detect)
+  The design agent produces a design brief at `.claude/DESIGN.md` in the target project.
+  **→ Update state:** add design brief path
+
+  **→ Run the Collaboration Loop** on the design brief.
+
+  If the developer declines or no UI signals detected: skip design agent, note in state, move on.
+
   ### Design Agent Evaluation
 
   After context-gathering returns, check the "UI-involved" flag from the Design System subsection.
