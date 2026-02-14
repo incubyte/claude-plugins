@@ -181,7 +181,29 @@ This one is read-only — no code changes. Great for onboarding onto a new proje
 
 Then ask: "Next command?"
 
-### 6. `/bee:migrate` — Migration Planning
+### 6. `/bee:qc` — Quality Coverage Analysis
+
+"**`/bee:qc`** finds where your test coverage investment will have the most impact. Instead of guessing where to write tests, it uses git history (code as a crime scene) to find hotspots — high-churn, high-complexity files that are most likely to harbor bugs.
+
+Two modes:
+
+**Full codebase** — produces a prioritized test plan:
+```
+/bee:qc
+```
+It spawns 3 analysis agents in parallel (behavioral hotspots, test inventory, structural coupling), then synthesizes a plan at `docs/specs/qc-plan.md` with the top 5-10 highest-risk items. Each item includes what refactoring is needed (if any), what tests to write, and why it matters. You can follow the plan manually or hand it to Ralph.
+
+**PR-scoped** — analyzes and auto-executes:
+```
+/bee:qc 42
+```
+Same analysis, scoped to PR #42's changed files. Then it auto-executes: refactors for testability (each step verified by another agent before commit), writes tests, and pushes. Every commit has a WHY message. Refactoring and tests are in separate commits.
+
+This one is read-only in full mode, and code-modifying in PR mode. The plan follows test pyramid priority: unit tests first, integration where necessary."
+
+Then ask: "Next command?"
+
+### 7. `/bee:migrate` — Migration Planning
 
 "**`/bee:migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
 
@@ -196,7 +218,7 @@ This one is read-only — it produces a plan, not code. No files in either codeb
 
 Then ask: "Next command?"
 
-### 7. `/bee:coach` — Session Coaching
+### 8. `/bee:coach` — Session Coaching
 
 "**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
@@ -213,7 +235,7 @@ Also read-only — no code changes, just insights. Needs a few sessions logged b
 
 Then ask: "Next command?"
 
-### 8. Skills (Reference Knowledge)
+### 9. Skills (Reference Knowledge)
 
 "Bee also ships with **skills** — shared reference knowledge that any agent can draw on. You can invoke them directly to learn Bee's principles:
 
@@ -229,7 +251,7 @@ Then ask: "Next command?"
 
 These are read-only references — no code changes. Pick any one to read up on a topic."
 
-### 9. Wrap-Up
+### 10. Wrap-Up
 
 After covering all commands (or if the developer says they've seen enough), close with:
 
@@ -238,6 +260,7 @@ After covering all commands (or if the developer says they've seen enough), clos
 - **`/bee:discover`** for exploring requirements before building
 - **`/bee:architect`** for domain-grounded architecture assessment
 - **`/bee:review`** for a health check on existing code
+- **`/bee:qc`** for strategic test coverage (hotspot-driven)
 - **`/bee:onboard`** for getting new team members up to speed
 - **`/bee:migrate`** for planning incremental migrations between codebases
 - **`/bee:coach`** for improving your workflow over time
@@ -252,7 +275,7 @@ If there's active work: "Since there's active work on **[feature]**, running `/b
 
 If the developer asks to skip ahead, present:
 Use AskUserQuestion: "Which command do you want to know about?"
-Options: "/bee:build" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:onboard"
+Options: "/bee:build" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:qc" / "/bee:onboard"
 
 Jump to that section, then offer to continue the tour from the next command.
 
