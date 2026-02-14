@@ -13,13 +13,13 @@ This is additive — the agent's own AskUserQuestion confirmation flow is unchan
 
 ## The Reviewed Gate
 
-Every document produced by an agent gets a `[ ] Reviewed` checkbox appended at the very end:
+Every document produced by an agent gets a `[ ] Reviewed` checkbox appended at the very end of the file, on its own line:
 
 ```markdown
-- [ ] Reviewed
+[ ] Reviewed
 ```
 
-This checkbox is the **only gate** for proceeding to the next step. Bee re-reads the file and checks for `[x] Reviewed`. Until it's marked, Bee stays in the loop.
+The developer marks it `[x] Reviewed` when satisfied. This checkbox is the **only gate** for proceeding to the next step. Bee re-reads the file and checks for `[x] Reviewed`. Until it's marked, Bee stays in the loop.
 
 ---
 
@@ -49,6 +49,37 @@ When Bee finds an `@bee` annotation, it:
 ```
 
 The HTML comment delimiters (`<!-- -->`) make the card boundaries machine-readable. The blockquote formatting makes it visually distinct. The `[ ] mark as resolved` checkbox is for the developer's tracking — it does NOT affect the gate.
+
+### Concrete Example
+
+**Before** (developer writes):
+```markdown
+## Success Criteria
+- App loads in under 2 seconds
+@bee this needs to specify what network conditions — 2s on 3G is very different from 2s on fiber
+- User can log in with email/password
+```
+
+**After** (Bee processes the annotation):
+```markdown
+## Success Criteria
+- App loads in under 2 seconds on a 4G connection (simulated with Chrome DevTools "Fast 3G" throttle)
+<!-- -------- bee-comment -------- -->
+> **@developer**: this needs to specify what network conditions — 2s on 3G is very different from 2s on fiber
+> **@bee**: Added "on a 4G connection" with a specific measurement method (Chrome DevTools throttle profile) so the criterion is testable.
+> - [ ] mark as resolved
+<!-- -------- /bee-comment -------- -->
+- User can log in with email/password
+```
+
+**This format must be used exactly as shown.** Every `@bee` annotation becomes a comment card with:
+1. Opening delimiter: `<!-- -------- bee-comment -------- -->`
+2. Developer's original comment as a blockquote with `**@developer**:` prefix
+3. Bee's response as a blockquote with `**@bee**:` prefix explaining what changed
+4. A `- [ ] mark as resolved` checkbox inside the blockquote
+5. Closing delimiter: `<!-- -------- /bee-comment -------- -->`
+
+Do not vary this structure. Consistency across all documents (discovery, specs, TDD plans) is required.
 
 ---
 

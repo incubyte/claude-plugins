@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven, test-first engineering disc
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
 
-**What you get.** 7 commands, 17 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 8 commands, 18 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -84,6 +84,13 @@ A PM persona that interviews you (or synthesizes from meeting transcripts) and p
 ```
 
 Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching. Independent of the build workflow — no spec or triage needed. Point it at a file, directory, or PR.
+
+```
+/bee:qc
+/bee:qc 42
+```
+
+Quality coverage analysis — finds hotspots (high-churn × high-complexity × many-author files), inventories existing tests, and produces a prioritized test plan at `docs/specs/qc-plan.md`. Follows the test pyramid: unit tests first, integration where necessary. When code isn't testable, proposes specific refactoring. Full codebase mode produces a plan; PR mode (`/bee:qc <PR-id>`) auto-executes refactoring and test creation with verification at every step.
 
 ```
 /bee:architect
@@ -207,7 +214,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 17 specialist agents:
+Bee ships with 18 specialist agents:
 
 | Agent | Role |
 |-------|------|
@@ -228,6 +235,7 @@ Bee ships with 17 specialist agents:
 | `domain-language-extractor` | Extract domain vocabulary from docs, website, and code; flag vocabulary drift and boundary mismatches |
 | `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests from an architecture assessment report |
 | `onboard` | Interactive developer onboarding — codebase walkthrough adapted to role, experience, and focus area |
+| `qc-planner` | Synthesize review outputs into a prioritized, hotspot-driven test plan |
 
 ## Skills
 
@@ -256,6 +264,7 @@ bee/
 │   ├── help.md                    # /bee:help interactive guided tour
 │   ├── migrate.md                 # /bee:migrate migration planning
 │   ├── onboard.md                # /bee:onboard interactive developer onboarding
+│   ├── qc.md                     # /bee:qc quality coverage analysis
 │   └── review.md                 # /bee:review standalone code review
 ├── agents/
 │   ├── quick-fix.md
@@ -274,7 +283,8 @@ bee/
 │   ├── reviewer.md
 │   ├── domain-language-extractor.md
 │   ├── architecture-test-writer.md
-│   └── onboard.md
+│   ├── onboard.md
+│   └── qc-planner.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/

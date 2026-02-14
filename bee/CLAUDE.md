@@ -104,6 +104,7 @@ On startup, check for existing in-progress specs in `docs/specs/`. If found, off
 - The `/bee:discover` command is a standalone entry point for discovery — PM persona, client-shareable PRD output
 - The `/bee:architect` command is a standalone architecture assessment — domain language analysis, boundary tests
 - The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
+- The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
 
 ## Hooks: Smart Guardrails
 
