@@ -294,11 +294,7 @@ The example above is illustrative. Your brief should reflect the developer's act
 Append to both brief types:
 
 ```markdown
-
-<div align="center">
-
 [ ] Reviewed
-</div>
 ```
 
 ---
