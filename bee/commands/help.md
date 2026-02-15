@@ -254,17 +254,19 @@ Then ask: "Next command?"
 
 ### 10. Skills (Reference Knowledge)
 
-"Bee also ships with **skills** — shared reference knowledge that any agent can draw on. You can invoke them directly to learn Bee's principles:
+"Bee also ships with **skills** — shared reference knowledge that agents import via frontmatter. You can also invoke them directly to learn Bee's principles:
 
 - `/bee:clean-code` — SRP, DRY, YAGNI, naming, error handling
 - `/bee:tdd-practices` — Red-green-refactor, outside-in, test quality
 - `/bee:architecture-patterns` — When to use onion vs MVC vs simple
 - `/bee:spec-writing` — Acceptance criteria, vertical slicing
+- `/bee:design-fundamentals` — Accessibility, typography, spacing, responsive breakpoints
+- `/bee:debugging` — Systematic diagnosis: read before you change, assume nothing
 - `/bee:ai-workflow` — Why spec-first TDD produces better AI code
 - `/bee:collaboration-loop` — Inline review with `@bee` annotations
 - `/bee:code-review` — Review methodology, hotspot analysis
-- `/bee:design-fundamentals` — Accessibility, typography, spacing
 - `/bee:ai-ergonomics` — Making code LLM-friendly
+- `/bee:browser-testing` — Chrome MCP tool reference, screenshot conventions
 
 These are read-only references — no code changes. Pick any one to read up on a topic."
 

@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven, test-first engineering disc
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
 
-**What you get.** 8 commands, 18 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -214,7 +214,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 18 specialist agents:
+Bee ships with 26 specialist agents:
 
 | Agent | Role |
 |-------|------|
@@ -222,7 +222,7 @@ Bee ships with 18 specialist agents:
 | `context-gatherer` | Read codebase — patterns, conventions, and design system signals |
 | `tidy` | Clean up the area before building |
 | `design-agent` | Produce a design brief from existing design systems or greenfield interviews |
-| `discovery` | PM persona that interviews users and produces a client-shareable PRD. Works standalone or inside `/bee:build` |
+| `discovery` | PM persona that interviews users and produces a client-shareable PRD |
 | `spec-builder` | Interview developer, write testable and design-aware specs |
 | `architecture-advisor` | Evaluate architecture options, YAGNI check |
 | `tdd-planner-onion` | Outside-in TDD for onion/hexagonal architecture |
@@ -232,23 +232,35 @@ Bee ships with 18 specialist agents:
 | `tdd-planner-simple` | Straightforward test-implement-verify |
 | `verifier` | Post-slice quality gate |
 | `reviewer` | Final review with ship recommendation |
-| `domain-language-extractor` | Extract domain vocabulary from docs, website, and code; flag vocabulary drift and boundary mismatches |
-| `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests from an architecture assessment report |
-| `onboard` | Interactive developer onboarding — codebase walkthrough adapted to role, experience, and focus area |
-| `qc-planner` | Synthesize review outputs into a prioritized, hotspot-driven test plan |
+| `browser-verifier` | Browser-based AC verification via Chrome MCP |
+| `domain-language-extractor` | Extract domain vocabulary; flag vocabulary drift |
+| `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests |
+| `onboard` | Interactive developer onboarding |
+| `qc-planner` | Synthesize review outputs into a prioritized test plan |
+| `review-code-quality` | SRP, DRY, YAGNI, naming review |
+| `review-coupling` | Import dependencies, change amplifiers |
+| `review-tests` | Test quality, coverage gaps |
+| `review-behavioral` | Git hotspots, temporal coupling |
+| `review-team-practices` | Commit messages, PR review substance |
+| `review-org-standards` | Project CLAUDE.md conventions |
+| `review-ai-ergonomics` | LLM-friendliness review |
 
 ## Skills
 
-Shared reference knowledge that agents draw on:
+Shared reference knowledge that agents draw on. Skills are imported via frontmatter — agents declare which skills they need, and the content is preloaded at startup.
 
 - **clean-code** — SRP, DRY, YAGNI, naming, error handling
 - **tdd-practices** — Red-green-refactor, outside-in, test quality
 - **architecture-patterns** — When to use onion vs MVC vs simple
 - **spec-writing** — Acceptance criteria, vertical slicing, adaptive depth
+- **design-fundamentals** — Accessibility rules, typography, spacing, responsive breakpoints
+- **debugging** — Systematic diagnosis: read before you change, assume nothing, trial and error is last resort
 - **ai-workflow** — Why spec-first TDD produces better AI-generated code
 - **collaboration-loop** — Inline review with `@bee` annotations
-- **code-review** — Review methodology, hotspot analysis, coupling detection, effort sizing
-- **design-fundamentals** — Accessibility rules, typography, spacing, responsive breakpoints, visual quality checklist
+- **code-review** — Review methodology, hotspot analysis, coupling detection
+- **ai-ergonomics** — Making code LLM-friendly
+- **lsp-analysis** — LSP-enhanced dependency analysis, graceful degradation
+- **browser-testing** — Chrome MCP tool reference, screenshot conventions
 
 ## Project Structure
 
@@ -281,19 +293,31 @@ bee/
 │   ├── tdd-planner-simple.md
 │   ├── verifier.md
 │   ├── reviewer.md
+│   ├── browser-verifier.md
 │   ├── domain-language-extractor.md
 │   ├── architecture-test-writer.md
 │   ├── onboard.md
-│   └── qc-planner.md
+│   ├── qc-planner.md
+│   ├── review-code-quality.md
+│   ├── review-coupling.md
+│   ├── review-tests.md
+│   ├── review-behavioral.md
+│   ├── review-team-practices.md
+│   ├── review-org-standards.md
+│   └── review-ai-ergonomics.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/
 │   ├── architecture-patterns/
 │   ├── spec-writing/
+│   ├── design-fundamentals/
+│   ├── debugging/
 │   ├── ai-workflow/
 │   ├── collaboration-loop/
 │   ├── code-review/
-│   └── design-fundamentals/
+│   ├── ai-ergonomics/
+│   ├── lsp-analysis/
+│   └── browser-testing/
 ├── docs/
 │   ├── specs/                    # Generated specs, TDD plans, state
 │   └── adrs/                    # Architecture Decision Records
