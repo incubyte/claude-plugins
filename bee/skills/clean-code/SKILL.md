@@ -100,7 +100,6 @@ async function handleOrderRequest(req: Request) {
 **Functions should be short enough to understand at a glance.**
 
 - **5-20 lines is the sweet spot.** Over 30 lines, look for extraction opportunities. Over 50 lines is almost always too much.
-- **One level of abstraction per function.** Don't mix high-level orchestration with low-level details.
 - **If you need a comment to explain a block of code, that block should be a function.** The function name replaces the comment.
 
 ```typescript
@@ -114,6 +113,39 @@ else if (qty >= 10) discount = 0.05;
 // Clean: the function name IS the documentation
 const discount = calculateTierDiscount(qty);
 ```
+
+## One Level of Abstraction
+
+**Every statement in a function should be at the same level of abstraction.**
+
+Don't mix high-level orchestration with low-level details. When you read a function, you should be able to understand it without mentally switching between "what the system does" and "how bytes move."
+
+```typescript
+// Mixed abstraction levels
+async function processOrder(order: Order) {
+  const isValid = order.items.length > 0 && order.items.every(i => i.price > 0);  // low-level
+  await notifyWarehouse(order);                                                      // high-level
+  const tax = order.items.reduce((sum, i) => sum + i.price * 0.08, 0);             // low-level
+  await chargeCustomer(order.customerId, order.total + tax);                         // high-level
+}
+
+// Clean: all at the same level
+async function processOrder(order: Order) {
+  validateOrder(order);
+  const total = calculateTotal(order);
+  await chargeCustomer(order.customerId, total);
+  await notifyWarehouse(order);
+}
+```
+
+## Tidy First
+
+**Clean up before building, not after.**
+
+- Before adding a feature, tidy the area you're about to change. Separate commit.
+- Small structural improvements (rename, extract function, reorder) make the feature change simpler and the diff reviewable.
+- Don't tidy unrelated areas — scope tidying to the code you're about to touch.
+- Tidying after the feature muddies the diff — reviewers can't tell what's the feature and what's cleanup.
 
 ## Meaningful Names
 
@@ -199,6 +231,85 @@ If you find an inner module importing from an outer module, the dependency is in
 - A function called `getUser()` should not modify the user or trigger side effects.
 - A function called `saveOrder()` should not also send an email.
 - If a function has an important side effect, the name should reflect it: `saveOrderAndNotify()` — or better, split it into two functions.
+
+## Comments Are a Last Resort
+
+**A comment is a failure to express intent in code.**
+
+- If you need a comment to explain what code does, rename the function or extract a well-named one.
+- **Justified comments:** legal headers, explanation of _why_ (not _what_), warnings about consequences, TODOs with ticket numbers.
+- **Noise comments:** restating the code (`// increment counter`), mandated Javadoc on every method, commented-out code, change logs in files.
+- Remove redundant comments. If the code is clear, the comment adds nothing. If the code is unclear, fix the code.
+
+## Fewer Function Arguments
+
+**Fewer arguments, clearer intent.**
+
+- Zero or one argument is ideal. Two is acceptable. Three — question it. More than three — refactor.
+- **Flag arguments are bad.** `render(true)` tells you the function does two different things. Split into `renderForPrint()` and `renderForScreen()`.
+- **Group related arguments into an object.** `createUser(name, email, role, department)` becomes `createUser(userRequest)`.
+- **Output arguments are confusing.** `appendFooter(report)` — does it append TO the report or append the report somewhere? Prefer `report.appendFooter()`.
+
+## Command-Query Separation
+
+**Functions either do something or answer something. Never both.**
+
+- Commands change state but return nothing (`saveOrder(order)`).
+- Queries return data but change nothing (`getOrderTotal(orderId)`).
+- A function that sets a value AND returns whether it succeeded mixes the two: `if (set("username", "bob"))` — is it checking or assigning? Split into `attributeExists()` and `setAttribute()`.
+
+## Law of Demeter
+
+**Only talk to your immediate friends.**
+
+- Don't chain: `order.getCustomer().getAddress().getCity()`. Each dot couples you to another class's internal structure.
+- A method should only call methods on: its own object, its parameters, objects it creates, its direct dependencies.
+- **Violation sign:** more than one dot in a chain (unless it's a fluent builder or stream API designed for chaining).
+- Fix by asking the object to do the work: `order.getShippingCity()` — let Order know how to get it.
+
+## Don't Return Null
+
+**Returning null pushes error handling to every caller.**
+
+- Return empty collections instead of null for lists: `[]` not `null`.
+- Use Optional/Maybe types when a value might be absent.
+- Throw a domain-specific error when absence is exceptional: `throw new UserNotFoundError(id)`.
+- Null checks scattered through the codebase are a smell. Every `if (x !== null)` is a potential missed check somewhere else.
+
+## Avoid Feature Envy
+
+**A method that uses more from another class than its own has the wrong home.**
+
+- If a function reads 5 fields from another object and only 1 from its own, it probably belongs on that other object.
+- Feature envy creates hidden coupling — changes to the envied class ripple to the envious one.
+- Fix by moving the method to the class whose data it actually uses.
+
+```typescript
+// Feature envy: OrderPrinter reaches into Order's internals
+class OrderPrinter {
+  formatSummary(order: Order) {
+    return `${order.customer.name}: ${order.items.length} items, $${order.total - order.discount}`;
+  }
+}
+
+// Clean: Order formats its own summary
+class Order {
+  formatSummary(): string {
+    return `${this.customer.name}: ${this.items.length} items, $${this.netTotal}`;
+  }
+}
+```
+
+## Kent Beck's Four Rules of Simple Design
+
+**In priority order — the first rule wins when they conflict:**
+
+1. **Passes the tests.** Working code is non-negotiable.
+2. **Reveals intention.** Every name, structure, and grouping should make the code's purpose obvious to a reader.
+3. **No duplication.** Every piece of knowledge has a single representation (see DRY).
+4. **Fewest elements.** Remove anything that doesn't serve the first three rules — no extra classes, methods, or abstractions.
+
+When in doubt, apply these four rules in order. If removing duplication hurts clarity, keep the duplication. If an abstraction doesn't reveal intent, inline it.
 
 ---
 
