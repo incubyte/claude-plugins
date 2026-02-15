@@ -1,6 +1,6 @@
 ---
 name: design-fundamentals
-description: Visual design principles for UI-aware agents. Accessibility rules, typography hierarchy, spacing, responsive breakpoints, and priority system adapted from ui-ux-pro-max-skill.
+description: "INVOKE THIS SKILL when making UI/UX decisions, designing layouts, writing UI specs, or reviewing visual components. Contains accessibility rules, typography hierarchy, spacing scale, responsive breakpoints, and a visual quality checklist."
 ---
 
 # Design Fundamentals
