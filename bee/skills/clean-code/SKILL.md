@@ -151,6 +151,15 @@ try {
 }
 ```
 
+## Use Proper Loggers
+
+**`print`, `console.log`, and `System.out.println` are not logging.**
+
+- Use the project's logging framework (`logger.info`, `logger.warn`, `logger.error`) — not print statements.
+- Loggers provide levels, timestamps, structured context, and can be filtered. Print statements are noise that can't be turned off.
+- If the project doesn't have a logger, that's a setup task — not an excuse to use print.
+- Remove debug print statements before committing. If the information is worth logging, use a logger at the appropriate level.
+
 ## No Dead Code
 
 **If code isn't executing, delete it.**
