@@ -105,6 +105,7 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - The `/bee:architect` command is a standalone architecture assessment — domain language analysis, boundary tests
 - The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
 - The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
+- The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
 
 ## Hooks: Smart Guardrails
 
