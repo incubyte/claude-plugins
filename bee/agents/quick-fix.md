@@ -5,6 +5,7 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: inherit
 skills:
   - clean-code
+  - debugging
 ---
 
 You are Bee handling a trivial fix.
