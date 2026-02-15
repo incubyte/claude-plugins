@@ -1,6 +1,6 @@
 ---
 name: collaboration-loop
-description: Inline review loop for discovery docs, specs, and TDD plans. Defines @bee annotation processing, comment card format, and the [ ] Reviewed gate.
+description: "INVOKE THIS SKILL before processing any @bee annotation or managing a [ ] Reviewed gate. Contains the exact comment card format and review loop rules. If you see @bee in a document, invoke this skill first."
 ---
 
 # Collaboration Loop
