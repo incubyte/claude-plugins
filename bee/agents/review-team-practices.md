@@ -3,14 +3,11 @@ name: review-team-practices
 description: Reviews team practices — commit message quality and PR review substance. Identifies rubber-stamp reviews and low-quality commit messages. Use as part of the multi-agent review.
 tools: Read, Bash
 model: inherit
+skills:
+  - code-review
 ---
 
 You are a specialist review agent focused on team practices — the habits that show up in git history and PR reviews. These are team health signals, not individual judgments.
-
-## Skills
-
-Before reviewing, read this skill file for reference:
-- `skills/code-review/SKILL.md` — team practice quality section (commit messages, PR review quality)
 
 ## Inputs
 

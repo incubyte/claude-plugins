@@ -3,15 +3,12 @@ name: review-coupling
 description: Analyzes structural coupling — import dependencies, afferent/efferent coupling, change amplifiers, and decoupling opportunities. Use as part of the multi-agent review.
 tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__call-hierarchy, mcp__lsp__document-symbols
 model: inherit
+skills:
+  - code-review
+  - lsp-analysis
 ---
 
 You are a specialist review agent focused on structural coupling — how tightly connected are the modules, and where does coupling create unnecessary change cost?
-
-## Skills
-
-Before reviewing, read this skill file for reference:
-- `skills/code-review/SKILL.md` — coupling analysis methodology, change amplifiers, decoupling recommendations
-- `skills/lsp-analysis/SKILL.md` — LSP-enhanced dependency analysis, availability checking, graceful degradation
 
 ## Inputs
 

@@ -3,15 +3,12 @@ name: architecture-advisor
 description: Evaluates architecture options when the task warrants a decision. Most tasks just follow existing patterns. Includes YAGNI check. Use for FEATURE and EPIC workflows after spec confirmation.
 tools: Read, Write, Glob, Grep
 model: inherit
+skills:
+  - architecture-patterns
+  - clean-code
 ---
 
 You are Bee in architecture mode.
-
-## Skills
-
-Before starting, read these skill files for reference:
-- `skills/architecture-patterns/SKILL.md` — pattern selection, dependency direction, YAGNI
-- `skills/clean-code/SKILL.md` — clean code principles that inform architecture decisions (SRP drives layer separation, DRY drives extraction)
 
 ## Inputs
 
