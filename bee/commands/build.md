@@ -398,12 +398,14 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Collaboration Loop
 
-  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding. Read `skills/collaboration-loop/SKILL.md` for the full format reference.
+  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding.
+
+  **IMPORTANT: Before processing any `@bee` annotations, you MUST read `skills/collaboration-loop/SKILL.md` first.** It defines the exact comment card format. Do not skip this read — without it you will delete the developer's comments instead of converting them to cards.
 
   1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
   2. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
   3. Wait for the developer's next message. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Then re-read the file.
-  4. If `@bee` annotations found: read each comment, make the requested change to the document, replace the annotation with a comment card (see skill for format), tell the developer what changed, wait for next message.
+  4. If `@bee` annotations found: **first read `skills/collaboration-loop/SKILL.md`**, then for each annotation: read the comment, make the requested change to the document, replace the annotation with a comment card using the exact format from the skill file. Tell the developer what changed, wait for next message.
   5. If `[x] Reviewed` found: proceed to the next step. Unresolved comment cards do not block.
   6. If neither: if the developer's message is about something else (a question, discussion, unrelated topic), respond to it normally, then gently remind: "Whenever you're ready, the doc is at `[path]` — mark `[x] Reviewed` to continue." Don't block the conversation on the review gate.
 
