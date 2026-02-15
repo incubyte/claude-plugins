@@ -1,7 +1,7 @@
 ---
 name: architecture-test-writer
 description: Generates runnable ArchUnit-style boundary tests from a confirmed architecture assessment report. Produces passing tests for healthy boundaries and intentionally failing tests for architecture leaks.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, mcp__lsp__find-references, mcp__lsp__document-symbols
 model: inherit
 ---
 
@@ -13,6 +13,7 @@ Before starting, read these skill files for reference:
 - `skills/architecture-patterns/SKILL.md` -- for module boundary and dependency direction knowledge
 - `skills/clean-code/SKILL.md` -- for naming conventions in generated tests
 - `skills/tdd-practices/SKILL.md` -- for test quality guidance (one assertion per test, clear descriptive names)
+- `skills/lsp-analysis/SKILL.md` -- LSP-enhanced analysis, availability checking, graceful degradation
 
 ## Inputs
 
@@ -51,13 +52,18 @@ Build the target directory path for architecture tests:
 
 ### 3. Generate Passing Boundary Tests
 
-Read the "Healthy Boundaries" and "Boundary Map" sections of the assessment report. For each healthy boundary, generate a test that validates the current good state:
+Read the "Healthy Boundaries" and "Boundary Map" sections of the assessment report. For each healthy boundary, generate a test that validates the current good state.
 
+These tests are written to **PASS** against the current codebase. They document what is working well and guard against future regression.
+
+**LSP availability check.** Attempt `document-symbols` on one source file. If it returns symbols, LSP is available — use the LSP path for Steps 3 and 4. If it fails, use the fallback path. Decide once; do not retry if it fails.
+
+**LSP path.** Use `find-references` on key module exports to discover actual cross-module dependencies. Instead of generating tests that grep for import statements, generate tests that assert dependency direction based on real reference data. For example, if `find-references` on an Orders module export shows references only from allowed modules, generate a passing test documenting that boundary. This produces more accurate boundary tests because it validates real usage, not just import lines.
+
+**Fallback (LSP unavailable).** Validate boundaries using file-system and import analysis:
 - **Module existence**: the module/directory exists and contains the expected domain concepts
 - **Dependency direction**: the module only imports from allowed dependencies
 - **Concept ownership**: domain concepts live in the correct module
-
-These tests are written to **PASS** against the current codebase. They document what is working well and guard against future regression.
 
 Use the detected framework's syntax:
 - Jest/Vitest: `describe('module boundary', () => { it('should ...', () => { ... }) })`
@@ -73,8 +79,11 @@ Each test should have a descriptive name that reads as documentation:
 
 *(Existing codebase mode only — skip in greenfield mode)*
 
-Read the "Mismatches" section (vocabulary drift + boundary violations) of the assessment report. For each mismatch, generate a test that asserts the **desired state** (the fix), which will **FAIL** against the current codebase:
+Read the "Mismatches" section (vocabulary drift + boundary violations) of the assessment report. For each mismatch, generate a test that asserts the **desired state** (the fix), which will **FAIL** against the current codebase.
 
+**LSP path (availability already determined in Step 3).** Use `find-references` on symbols identified in boundary violations to confirm the actual cross-boundary references exist. This produces more precise failing tests because the test assertions reference real dependency paths rather than inferred ones from the assessment report alone.
+
+**Fallback (LSP unavailable).** Generate tests from the assessment report findings directly:
 - **Vocabulary drift**: test that the domain term is used (will fail because code uses a different term)
 - **Boundary violations**: test that concepts are in separate modules (will fail because they're tangled)
 
@@ -114,6 +123,8 @@ Use the Write tool to create each file. **NEVER modify existing test files** -- 
 
 ```markdown
 ## Architecture Tests Generated
+
+Analysis method: [LSP-enhanced analysis | text-based pattern matching]
 
 ### Files Created
 - `[path/to/file1]` -- [what it tests]

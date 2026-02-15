@@ -1,7 +1,7 @@
 ---
 name: qc-planner
 description: Synthesizes review agent outputs into a prioritized test plan. Scores hotspots, inventories existing tests, assesses testability, and produces a fixed-format plan.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, mcp__lsp__call-hierarchy, mcp__lsp__document-symbols
 model: inherit
 ---
 
@@ -12,6 +12,7 @@ You are a specialist agent that synthesizes review outputs into a prioritized te
 Before planning, read these skill files for reference:
 - `skills/tdd-practices/SKILL.md` — test pyramid, behavior-based testing, risk-aware depth
 - `skills/clean-code/SKILL.md` — testability principles (SRP, dependency direction)
+- `skills/lsp-analysis/SKILL.md` — LSP-enhanced analysis, availability checking, graceful degradation
 
 ## Inputs
 
@@ -56,7 +57,13 @@ For "implementation-coupled" tests: recommend rewriting them to be behavior-base
 
 ### 3. Assess Testability
 
-For each hotspot that needs tests, assess whether it can be unit tested right now:
+**LSP availability check.** Attempt `document-symbols` on one hotspot file. If it returns symbols, LSP is available — use the LSP path for this step. If it fails, use the fallback path. Decide once; do not retry if it fails.
+
+**LSP path.** Use `call-hierarchy` (outgoing) on public functions of each hotspot to measure dependency chain depth. A function with shallow outgoing calls (1-2 levels) is a low-hanging fruit for unit testing. A function with deep outgoing chains (many transitive dependencies) needs more mocking or refactoring before it can be tested in isolation. This quantifies testability instead of guessing from code patterns alone.
+
+Then apply the testability assessment below (Testable as-is / Needs refactoring) using the dependency depth data to inform the judgment.
+
+**Fallback (LSP unavailable).** For each hotspot that needs tests, assess whether it can be unit tested right now:
 
 **Testable as-is:** The file has clear public methods, accepts dependencies through parameters or constructors, and doesn't rely on global state or side effects.
 
@@ -104,6 +111,8 @@ Write the plan following this **exact fixed format**. Do not deviate from this s
 Read this plan. Work through each item in the priority queue in order.
 For each item: complete the refactoring steps first (if any), then write the tests.
 Mark each checkbox done as you complete it ([ ] -> [x]).
+
+Analysis method: [LSP-enhanced analysis | text-based pattern matching]
 
 ## Analysis Summary
 

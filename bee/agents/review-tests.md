@@ -1,7 +1,7 @@
 ---
 name: review-tests
 description: Reviews test quality — behavior-based testing, isolation, naming, coverage gaps, and test-as-spec readability. Use as part of the multi-agent review.
-tools: Read, Glob, Grep
+tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__document-symbols
 model: inherit
 ---
 
@@ -11,6 +11,7 @@ You are a specialist review agent focused on test quality — not just "are ther
 
 Before reviewing, read this skill file for reference:
 - `skills/tdd-practices/SKILL.md` — behavior vs implementation testing, test isolation, naming, risk-aware depth
+- `skills/lsp-analysis/SKILL.md` — LSP-enhanced analysis, availability checking, graceful degradation
 
 ## Inputs
 
@@ -59,7 +60,16 @@ Do test names describe the scenario clearly?
 
 ### 5. Coverage Gaps
 
-Look at the source files in scope and assess whether the critical paths are tested:
+**LSP availability check.** Attempt `document-symbols` on one source file in scope. If it returns symbols, LSP is available — use the LSP path for this step. If it fails, use the fallback path. Decide once; do not retry if it fails.
+
+**LSP path.** Use `document-symbols` on source files to list public functions and methods. Then use `find-references` on each to check whether any references come from test files. Public functions with zero test-file references are coverage gaps. This turns the qualitative assessment into a precise inventory.
+
+Additionally, assess:
+- Are error paths tested?
+- Are edge cases covered?
+- Are the most complex functions tested?
+
+**Fallback (LSP unavailable).** Look at the source files in scope and assess whether the critical paths are tested:
 - Are error paths tested?
 - Are edge cases covered?
 - Are the most complex functions tested?
@@ -79,6 +89,8 @@ Tag each with effort: **quick win** (< 1 hour), **moderate** (half-day to day), 
 
 ```markdown
 ## Test Quality Review
+
+Analysis method: [LSP-enhanced analysis | text-based pattern matching]
 
 ### Working Well
 - [positive observations — good test names, behavior-focused tests, etc.]
