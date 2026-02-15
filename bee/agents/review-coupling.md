@@ -1,7 +1,7 @@
 ---
 name: review-coupling
 description: Analyzes structural coupling — import dependencies, afferent/efferent coupling, change amplifiers, and decoupling opportunities. Use as part of the multi-agent review.
-tools: Read, Glob, Grep
+tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__call-hierarchy, mcp__lsp__document-symbols
 model: inherit
 ---
 
@@ -11,6 +11,7 @@ You are a specialist review agent focused on structural coupling — how tightly
 
 Before reviewing, read this skill file for reference:
 - `skills/code-review/SKILL.md` — coupling analysis methodology, change amplifiers, decoupling recommendations
+- `skills/lsp-analysis/SKILL.md` — LSP-enhanced dependency analysis, availability checking, graceful degradation
 
 ## Inputs
 
@@ -22,21 +23,33 @@ You will receive:
 
 ### 1. Map Dependencies
 
-Scan import/require/include statements across files in scope to build a dependency picture:
+**LSP availability check.** Before scanning, attempt `document-symbols` on one target file. If it returns symbols, LSP is available — use the LSP path for this step and all subsequent steps. If it fails, use the fallback path for all steps. Decide once here; do not re-check in later steps.
+
+**LSP path.** Use `find-references` on key exports of each module to build the dependency graph from actual reference data:
+- For each module in scope, identify its main exports (public functions, classes, interfaces)
+- Run `find-references` on each export to discover which files actually use it
+- Build the dependency picture from these real reference edges — not just import statements
+
+**Fallback (LSP unavailable).** Scan import/require/include statements across files in scope to build a dependency picture:
 - What does each file/module depend on?
 - What depends on each file/module?
-
-Use Grep to find import patterns relevant to the project's language.
+- Use Grep to find import patterns relevant to the project's language
 
 ### 2. Afferent Coupling (Who depends on me?)
 
-Identify files/modules with many dependents. These are high-impact change targets — a change here ripples outward. They should be stable, well-tested, and rarely modified.
+**LSP path.** Use `find-references` on each module's exported symbols to count actual consumers — not just files that import it, but files that call its functions. "3 callers" vs "47 callers" is the difference between loosely and tightly coupled. High fan-in means changes here propagate widely.
 
-Flag files with unusually high fan-in that are also frequently changed (if you can tell from the code structure).
+**Fallback (LSP unavailable).** Identify files/modules with many dependents from the import graph built in Step 1.
+
+In either case: these are high-impact change targets — they should be stable, well-tested, and rarely modified. Flag files with unusually high fan-in that are also frequently changed.
 
 ### 3. Efferent Coupling (Who do I depend on?)
 
-Identify files/modules that depend on many others. These are fragile — any dependency changing can break them. They're candidates for simplification or for introducing an abstraction layer.
+**LSP path.** Use `call-hierarchy` (outgoing) to map what each module actually reaches into, including transitive dependencies through shared abstractions. High outgoing call depth means the module is fragile — many reasons for it to break. Outgoing depth also indicates testability: deep chains mean more things to mock.
+
+**Fallback (LSP unavailable).** Identify files/modules that depend on many others from the import graph built in Step 1.
+
+In either case: these are candidates for simplification or for introducing an abstraction layer.
 
 ### 4. Change Amplifiers
 
@@ -50,7 +63,11 @@ These reveal missing abstractions — the concept should live in one place.
 
 ### 5. Boundary Violations
 
-Check for imports that cross architectural boundaries:
+**LSP path.** Use `find-references` on boundary-defining symbols (domain interfaces, public APIs, module exports) to detect cross-boundary calls that grep misses — including references through re-exports, inherited methods, and framework-injected dependencies.
+
+**Fallback (LSP unavailable).** Check for imports that cross architectural boundaries using Grep.
+
+In either case, flag:
 - Domain/business logic importing from infrastructure
 - Inner layers depending on outer layers
 - Cross-module imports that bypass public APIs (reaching into another module's internals)
@@ -67,6 +84,8 @@ Tag each with effort: **quick win** (< 1 hour), **moderate** (half-day to day), 
 
 ```markdown
 ## Structural Coupling Review
+
+Analysis method: [LSP-enhanced analysis | text-based pattern matching]
 
 ### Working Well
 - [positive observations — clean module boundaries, low coupling, etc.]
