@@ -30,7 +30,7 @@ Client requirements gathering is ad-hoc — notes scattered across calls, transc
 - H2: The interview should ask one question at a time (not batched) to keep it conversational and thorough
 - H3: The client-shareable PRD needs sections beyond the internal format — Executive Summary, Assumptions & Risks, Open Questions — and should avoid internal jargon
 - H4: When invoked from `/bee:build`, the same agent should run the same deep interview — no "lighter" version
-- H5: State tracking via `.bee-state.md` is needed for both standalone and `/bee:build` invocations so sessions can resume
+- H5: State tracking via `bee-state.local.md` is needed for both standalone and `/bee:build` invocations so sessions can resume
 - H6: Since clients may use this directly, the persona must be warm and professional — not developer-jargon-heavy
 
 ## Out of Scope
@@ -48,7 +48,7 @@ Client requirements gathering is ad-hoc — notes scattered across calls, transc
 - PM persona interviews the user one question at a time until satisfied
 - Produces a structured, client-shareable PRD (Executive Summary, Problem, Users, Success Criteria, Scope, Assumptions & Risks, Milestones, Open Questions)
 - Collaboration loop applies — user can annotate with `@bee` and mark `[x] Reviewed`
-- State tracked in `.bee-state.md` for session resume
+- State tracked in `bee-state.local.md` for session resume
 - `/bee:build` delegates to the same enhanced discover agent
 - Existing discovery evaluation logic in `build.md` updated to use the new agent
 - Context from triage and context-gatherer flows into the discover interview as enrichment

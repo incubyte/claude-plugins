@@ -20,10 +20,10 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
   7. Each insight names a concrete thing done well or a specific improvement to try
   8. Coaching tone is encouraging and non-judgmental
   9. Insights printed to terminal as conversational output
-  10. Insights saved to `.bee-insights/coaching-report-YYYY-MM-DD.md`
+  10. Insights saved to `.claude/bee-insights/coaching-report-YYYY-MM-DD.md`
   11. Same-day runs overwrite the report file
   12. Report file includes session date, 2-4 insights, and trend summary
-  13. Trend summary reads from `.bee-insights/session-log.jsonl`
+  13. Trend summary reads from `.claude/bee-insights/session-log.jsonl`
   14. Shows directional changes: spec adoption rate, avg token usage, workflow phase completeness, message counts
   15. Uses relative framing (not absolute scores)
   16. Shows helpful message when fewer than 2 sessions exist
@@ -34,7 +34,7 @@ If stuck after 3 attempts, mark with a warning and move to the next independent 
 - Implementation: `commands/coach.md` (new file -- markdown command with YAML frontmatter)
 - Tests: `.claude/hooks/test-bee-coach-command.sh` (bash structural tests, following Slice 1 pattern)
 - Reference command: `commands/bee.md` (YAML frontmatter convention)
-- Data source: `.bee-insights/session-log.jsonl` (created by Slice 1 stop hook)
+- Data source: `.claude/bee-insights/session-log.jsonl` (created by Slice 1 stop hook)
 
 ### Test Infrastructure
 - Framework: Custom bash test harness (same as `.claude/hooks/test-stop-session.sh`)
@@ -134,19 +134,19 @@ description: [one-line description of what the command does]
 
 **Given** the command file exists
 **When** we check its content
-**Then** it contains instructions to save insights to `.bee-insights/coaching-report-YYYY-MM-DD.md`
+**Then** it contains instructions to save insights to `.claude/bee-insights/coaching-report-YYYY-MM-DD.md`
 
 - [x] **RED**: Write failing test
   - Test name: `test_command_instructs_report_saving`
   - Use `grep -q` to verify the file references:
-    - `.bee-insights/coaching-report-` (the save path pattern)
+    - `.claude/bee-insights/coaching-report-` (the save path pattern)
     - Overwrite behavior for same-day runs
     - Report should include date, insights, and trend summary
 
 - [x] **RUN**: Confirm test FAILS
 
 - [x] **GREEN**: Add report output section to `commands/coach.md`
-  - Instruct Claude to save insights to `.bee-insights/coaching-report-YYYY-MM-DD.md`
+  - Instruct Claude to save insights to `.claude/bee-insights/coaching-report-YYYY-MM-DD.md`
   - Instruct overwrite (not append) if file already exists
   - Specify report format: date header, 2-4 insights, trend summary
 
@@ -160,7 +160,7 @@ description: [one-line description of what the command does]
 
 **Given** the command file exists
 **When** we check its content
-**Then** it contains instructions to read `.bee-insights/session-log.jsonl` and produce trend summaries with relative framing
+**Then** it contains instructions to read `.claude/bee-insights/session-log.jsonl` and produce trend summaries with relative framing
 
 - [x] **RED**: Write failing test
   - Test name: `test_command_instructs_trend_analysis`

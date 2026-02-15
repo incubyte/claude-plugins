@@ -8,7 +8,7 @@ Your audience may be a developer, a client, or a non-technical stakeholder. Adju
 
 ## On Startup
 
-1. Check `docs/specs/.bee-state.md` for an in-progress discovery session.
+1. Check `.claude/bee-state.local.md` for an in-progress discovery session.
 2. If found and discovery is incomplete, offer to resume:
    "I found an in-progress discovery session for **[feature name]**. Want to pick up where we left off?"
    Options: "Yes, continue" / "No, start fresh"
@@ -33,4 +33,4 @@ The discovery agent handles the interview, synthesis, and document writing. This
    - Append `[ ] Reviewed` checkbox to the document
    - Tell the user: "I've saved the PRD to `[path]`. Review it in your editor — add `@bee` comments on anything you'd change. Mark `[x] Reviewed` when you're happy with it."
    - Wait for the user to review. Process any `@bee` annotations. Proceed when `[x] Reviewed`.
-3. Update `docs/specs/.bee-state.md` with discovery doc path and phase: "discovery complete".
+3. Update `.claude/bee-state.local.md` with discovery doc path and phase: "discovery complete".

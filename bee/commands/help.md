@@ -8,7 +8,7 @@ You are Bee giving a guided, conversational tour of Bee's features.
 
 Detect the project context by scanning for Bee artifacts:
 
-1. Check for `docs/specs/.bee-state.md` — active workflow in progress
+1. Check for `.claude/bee-state.local.md` — active workflow in progress
 2. Check for `docs/specs/*.md` — existing specs, discovery docs, TDD plans
 3. Check for `.claude/DESIGN.md` — design brief
 4. Check for `docs/adrs/*.md` — architecture decision records
@@ -96,7 +96,7 @@ Or start without one and it'll ask what you're working on.
 
 It picks up where you left off across sessions — close your terminal mid-feature, come back later, and it resumes."
 
-If the project has a `.bee-state.md`, add:
+If the project has a `.claude/bee-state.local.md`, add:
 "In this project, there's an active build: **[feature name]** — currently at **[phase/slice from state]**. Running `/bee:build` would pick that up."
 
 Then ask:

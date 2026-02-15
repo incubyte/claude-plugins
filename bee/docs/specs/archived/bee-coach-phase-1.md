@@ -15,7 +15,7 @@ Discovery document: `docs/specs/bee-coach-discovery.md`
 - [x] Script detects bee workflow usage by scanning for spec file writes (`docs/specs/*.md`), TDD plan writes, verification agent calls, and review agent calls
 - [x] Script resolves the current git branch from `cwd`
 - [x] Script computes session duration from first and last message timestamps
-- [x] Script appends one JSON line per session to `.bee-insights/session-log.jsonl`, creating the directory and file if they don't exist
+- [x] Script appends one JSON line per session to `.claude/bee-insights/session-log.jsonl`, creating the directory and file if they don't exist
 - [x] Logged JSON follows the schema defined in the discovery document (session_id, timestamp, duration_seconds, cwd, git_branch, message_counts, token_usage, tools_used, bee_workflow, files_modified, test_files_modified, errors_observed, transcript_path)
 - [x] Script exits silently on success — no output to the developer's terminal
 - [x] Script exits gracefully if the transcript file is missing or unreadable (no crash, no error output)
@@ -35,13 +35,13 @@ Discovery document: `docs/specs/bee-coach-discovery.md`
 ### Coaching Report Output
 
 - [x] Insights are printed directly to the terminal as conversational output
-- [x] Insights are also saved to `.bee-insights/coaching-report-YYYY-MM-DD.md` (using the current date)
+- [x] Insights are also saved to `.claude/bee-insights/coaching-report-YYYY-MM-DD.md` (using the current date)
 - [x] If multiple coaching runs happen on the same day, the file is overwritten with the latest report
 - [x] Report file includes the session date, the 2-4 insights, and the trend summary
 
 ### Trend Summary
 
-- [x] Trend summary reads from `.bee-insights/session-log.jsonl`
+- [x] Trend summary reads from `.claude/bee-insights/session-log.jsonl`
 - [x] Shows directional changes across sessions: spec adoption rate, average token usage, workflow phase completeness, message counts
 - [x] Uses relative framing ("your spec adoption went from 2/5 to 4/5 sessions") rather than absolute scores
 - [x] Shows a helpful message when fewer than 2 sessions exist ("not enough sessions for trends yet")
@@ -93,7 +93,7 @@ Command invocation:
 - Patterns to follow: commands use markdown with YAML frontmatter (`commands/bee.md` is the reference). Agents follow the same pattern (`agents/quick-fix.md`).
 - Files to create: `.claude/hooks/stop-session.sh`, `commands/coach.md`
 - Files to modify: `.claude/settings.json` (add Stop hook registration)
-- Directories to create (by hook, at runtime): `.bee-insights/`
+- Directories to create (by hook, at runtime): `.claude/bee-insights/`
 - The coach command is a markdown agent — Claude analyzes the transcript in-context via prompt instructions, no separate analysis engine
 - Risk level: LOW
 

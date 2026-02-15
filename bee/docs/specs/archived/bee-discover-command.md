@@ -30,8 +30,8 @@ A standalone `/bee:discover` command with a PM persona that interviews users (de
 
 ### Session Resume
 
-- [x] The agent reads `docs/specs/.bee-state.md` on startup and offers to resume an in-progress discovery session if one exists
-- [x] The agent updates `docs/specs/.bee-state.md` after producing the PRD (adds discovery doc path, sets phase to "discovery complete")
+- [x] The agent reads `.claude/bee-state.local.md` on startup and offers to resume an in-progress discovery session if one exists
+- [x] The agent updates `.claude/bee-state.local.md` after producing the PRD (adds discovery doc path, sets phase to "discovery complete")
 - [x] Standalone and `/bee:build` invocations use the same state file
 
 ### Error and Edge Cases
@@ -100,7 +100,7 @@ Greenfield: [yes/no]
 - **Patterns to follow**: Command files use markdown with YAML frontmatter (`description` field). Agent files use markdown with YAML frontmatter (`name`, `description`, `tools`, `model: inherit`). See `commands/build.md` and `agents/spec-builder.md` as references.
 - **Files to create**: `commands/discover.md`
 - **Files to modify**: `agents/discovery.md` (replace with enhanced PM persona + richer PRD format), `commands/build.md` (update discovery delegation to reference enhanced agent), `CLAUDE.md` (add `/bee:discover` as standalone entry point in workflow phases)
-- **Key dependencies**: Collaboration loop skill (`skills/collaboration-loop/SKILL.md`), state file (`docs/specs/.bee-state.md`), spec-builder agent (already accepts discovery doc path as input -- no changes needed)
+- **Key dependencies**: Collaboration loop skill (`skills/collaboration-loop/SKILL.md`), state file (`.claude/bee-state.local.md`), spec-builder agent (already accepts discovery doc path as input -- no changes needed)
 - **Risk level**: LOW
 
 - [x] Reviewed
