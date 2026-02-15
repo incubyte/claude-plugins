@@ -203,7 +203,24 @@ This one is read-only in full mode, and code-modifying in PR mode. The plan foll
 
 Then ask: "Next command?"
 
-### 7. `/bee:migrate` — Migration Planning
+### 7. `/bee:browser-test` — Browser Regression Testing
+
+"**`/bee:browser-test`** runs browser-based regression tests against your specs. It opens the app in Chrome (via Chrome MCP), walks through each acceptance criterion, checks console errors, takes screenshots, and produces a pass/fail report.
+
+Give it one or more spec names:
+```
+/bee:browser-test user-auth checkout-flow
+```
+
+It detects your dev server automatically (checks CLAUDE.md first, then package.json), asks you to confirm, and starts testing. For each spec, it produces a report at `tests/executions/{date}/{specname}-results.md` with each AC marked PASS or FAILED, screenshots for both, and any console errors.
+
+Requires the Claude in Chrome extension to be installed and connected.
+
+This one is read-only — it tests but doesn't change code. Great for verifying things still work after changes."
+
+Then ask: "Next command?"
+
+### 8. `/bee:migrate` — Migration Planning
 
 "**`/bee:migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
 
@@ -218,7 +235,7 @@ This one is read-only — it produces a plan, not code. No files in either codeb
 
 Then ask: "Next command?"
 
-### 8. `/bee:coach` — Session Coaching
+### 9. `/bee:coach` — Session Coaching
 
 "**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
@@ -235,7 +252,7 @@ Also read-only — no code changes, just insights. Needs a few sessions logged b
 
 Then ask: "Next command?"
 
-### 9. Skills (Reference Knowledge)
+### 10. Skills (Reference Knowledge)
 
 "Bee also ships with **skills** — shared reference knowledge that any agent can draw on. You can invoke them directly to learn Bee's principles:
 
@@ -251,7 +268,7 @@ Then ask: "Next command?"
 
 These are read-only references — no code changes. Pick any one to read up on a topic."
 
-### 10. Wrap-Up
+### 11. Wrap-Up
 
 After covering all commands (or if the developer says they've seen enough), close with:
 
@@ -261,6 +278,7 @@ After covering all commands (or if the developer says they've seen enough), clos
 - **`/bee:architect`** for domain-grounded architecture assessment
 - **`/bee:review`** for a health check on existing code
 - **`/bee:qc`** for strategic test coverage (hotspot-driven)
+- **`/bee:browser-test`** for browser regression testing against specs
 - **`/bee:onboard`** for getting new team members up to speed
 - **`/bee:migrate`** for planning incremental migrations between codebases
 - **`/bee:coach`** for improving your workflow over time
@@ -275,7 +293,7 @@ If there's active work: "Since there's active work on **[feature]**, running `/b
 
 If the developer asks to skip ahead, present:
 Use AskUserQuestion: "Which command do you want to know about?"
-Options: "/bee:build" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:qc" / "/bee:onboard"
+Options: "/bee:build" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:qc" / "/bee:browser-test" / "/bee:onboard"
 
 Jump to that section, then offer to continue the tour from the next command.
 

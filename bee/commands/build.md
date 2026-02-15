@@ -499,6 +499,25 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   The verifier runs tests, checks plan completion, validates ACs, and checks patterns.
 
+  **After the regular verifier returns PASS**, check if the context-gatherer flagged "UI-involved: yes". If so, delegate to the browser-verifier agent via Task in dev mode:
+
+  Pass to the browser-verifier:
+  - The spec path
+  - The slice number
+  - The context summary (including dev server info)
+  - Mode: "dev"
+  - The DESIGN.md path (if `.claude/DESIGN.md` exists)
+
+  The browser-verifier opens the app in the browser, checks ACs against the running UI, and reports console errors.
+
+  - If browser-verifier reports **"Browser verification skipped"** (Chrome MCP unavailable): the slice still passes. Browser verification is additive, not required.
+  - If browser-verifier reports **failures**: share the report with the developer. The browser-verifier will ask "Should I go ahead and fix this?" — let the developer decide. After fixes, re-run the browser-verifier.
+  - If browser-verifier reports **"Browser verification passed"**: proceed normally.
+
+  **→ Update state:** add "Browser Verification: passed/failed/skipped" to `.claude/bee-state.local.md` for the current slice.
+
+  If "UI-involved: no" or the context-gatherer did not flag UI involvement, skip browser verification entirely.
+
   - **PASS + more slices remain:** loop back to Step 3 (TDD Planning) for the next slice.
     **→ Update state:** mark slice done, increment current slice
   - **PASS + all slices done:** move to Step 5 (Review).
