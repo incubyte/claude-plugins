@@ -9,11 +9,6 @@ You are the **orchestrator**. You resolve spec files, detect the dev server, che
 
 **This command does NOT modify any code.** It is strictly read-only. It observes, tests, and reports.
 
-## Skills
-
-Before testing, LOAD RELEVANT SKILLS using Skill tool:
-→ Load skills: `browser-testing`
-
 ## Step 1: Resolve Spec Files
 
 Parse the developer's input to get the spec file names. The developer provides one or more names:
@@ -54,7 +49,7 @@ If the developer confirms a command to run, start the dev server via Bash (run i
 
 ## Step 4: Test Each Spec
 
-For each resolved spec file, delegate to the browser-verifier agent via Task:
+For each resolved spec file, delegate to the browser-verifier agent via Task. Before the first delegation, load `browser-testing` using the Skill tool — you need the Chrome MCP tool reference, dev server detection priority, and screenshot conventions to orchestrate browser verification correctly.
 
 Pass to the browser-verifier:
 - The spec path

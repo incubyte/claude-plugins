@@ -7,15 +7,9 @@ You are Bee running an architecture assessment. You are the **orchestrator** —
 
 This command works standalone (like `/bee:review`). The developer invokes `/bee:architect` and describes what to assess — or just says "assess this codebase."
 
-## Skills
-
-Before starting, LOAD RELEVANT SKILLS using Skill tool:
-→ Load skills: `architecture-patterns` before analysis phase
-→ Load skills: `collaboration-loop` before review gate
-
 ## Analysis Agents
 
-You spawn these 4 agents in parallel via the Task tool:
+You spawn these 4 agents in parallel via the Task tool. Before spawning them, load `architecture-patterns` using the Skill tool — you need domain boundary concepts and dependency direction rules to interpret what the agents return. Later, before Step 5 (review gate), load `collaboration-loop` using the Skill tool for the exact comment card format.
 
 | Agent | subagent_type | Focus |
 |---|---|---|
