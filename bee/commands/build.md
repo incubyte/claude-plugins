@@ -252,11 +252,13 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Context Gathering
 
+  Load `clean-code` and `architecture-patterns` using the Skill tool — you need these to recognize code quality signals and architectural patterns throughout this phase.
+
   First, scan the codebase — unless it's clearly greenfield (empty repo, no source files).
 
   **If there's existing code:**
   "Let me read the codebase first to understand what we're working with."
-  Delegate to the context-gatherer agent via Task, passing the task description. Before constructing the prompt, load `clean-code` and `architecture-patterns` using the Skill tool — the gatherer needs these to recognize code quality signals and architectural patterns in the codebase.
+  Delegate to the context-gatherer agent via Task, passing the task description.
   When it returns, share the summary with the developer.
   **→ Update state:** phase: "context gathered"
 
@@ -265,7 +267,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   Want to tidy first? It'll be a separate commit."
   Options: "Yes, tidy first (Recommended)" / "Skip, move on"
   If the developer says yes:
-  Delegate to the tidy agent via Task, passing the tidy opportunities from the context-gatherer summary. Before constructing the prompt, load `clean-code` using the Skill tool — the tidy agent needs these principles to know what "clean" looks like.
+  Delegate to the tidy agent via Task, passing the tidy opportunities from the context-gatherer summary.
 
   **If greenfield (empty/new repo):**
   Skip context-gatherer. Note: greenfield is an amplifying signal for discovery — no existing patterns means more open decisions.
