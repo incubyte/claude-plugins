@@ -403,7 +403,15 @@ After triage and inline clarification, present your recommendation via AskUserQu
   1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
   2. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
   3. Wait for the developer's next message. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Then re-read the file.
-  4. If `@bee` annotations found: invoke the collaboration-loop skill to get the exact comment card format, then process each annotation — make the requested change and replace the `@bee` line with a comment card in the format specified by that skill. Tell the developer what changed, wait for next message.
+  4. If `@bee` annotations found: invoke the collaboration-loop skill, then process each annotation — make the requested change and replace the `@bee` line with a comment card using **exactly** this format (no variations):
+     ```
+     <!-- -------- bee-comment -------- -->
+     > **@developer**: [the developer's original @bee comment]
+     > **@bee**: [what you changed and why]
+     > - [ ] mark as resolved
+     <!-- -------- /bee-comment -------- -->
+     ```
+     Do NOT use any other format. Do NOT use `<!-- @bee: ... -->` or `<!-- bee:resolved -->` or any shorthand. Tell the developer what changed, wait for next message.
   5. If `[x] Reviewed` found: proceed to the next step. Unresolved comment cards do not block.
   6. If neither: if the developer's message is about something else (a question, discussion, unrelated topic), respond to it normally, then gently remind: "Whenever you're ready, the doc is at `[path]` — mark `[x] Reviewed` to continue." Don't block the conversation on the review gate.
 
@@ -463,9 +471,10 @@ After triage and inline clarification, present your recommendation via AskUserQu
   Options: "Onion/Outside-In" / "MVC" / "Event-Driven" / "Simple" (add "CQRS" if applicable)
 
   Delegate to the selected planner agent via Task. Pass: the spec path, the slice to plan, the architecture recommendation, the context summary, and the risk level.
-  **→ Update state:** add plan path, current slice, set phase to "plan approved, ready to execute"
 
   **→ Run the Collaboration Loop** on the TDD plan document.
+
+  **→ Update state:** add plan path, current slice, set phase to "plan reviewed, ready to execute"
 
   #### Step 4: Execute → Verify (slice loop)
 
