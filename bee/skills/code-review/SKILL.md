@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review methodology combining software craftsmanship principles with Adam Tornhill's "code as a crime scene" hotspot analysis. Categorization framework, effort sizing, and coupling detection.
+description: "This skill should be used when performing code reviews, analyzing git hotspots, or detecting coupling. Contains Adam Tornhill's code-as-crime-scene methodology and effort sizing."
 ---
 
 # Code Review Methodology

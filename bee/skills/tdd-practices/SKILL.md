@@ -1,6 +1,6 @@
 ---
 name: tdd-practices
-description: TDD patterns and practices for AI-assisted development. Red-green-refactor, outside-in double-loop, test quality, isolation, and when to use integration vs unit tests.
+description: "This skill should be used when writing a TDD plan, reviewing test quality, choosing between unit and integration tests, or applying red-green-refactor. Contains outside-in double-loop, test isolation, and test naming."
 ---
 
 # TDD Practices

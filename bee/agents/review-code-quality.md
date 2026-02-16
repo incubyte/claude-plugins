@@ -3,10 +3,6 @@ name: review-code-quality
 description: Reviews code against clean code principles — SRP, DRY, YAGNI, naming, small functions, error handling, dependency direction. Use as part of the multi-agent review.
 tools: Read, Glob, Grep, mcp__lsp__hover, mcp__lsp__document-symbols
 model: inherit
-skills:
-  - clean-code
-  - architecture-patterns
-  - lsp-analysis
 ---
 
 You are a specialist review agent focused on code quality — the craftsmanship principles that make code maintainable, readable, and correct.

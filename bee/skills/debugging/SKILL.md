@@ -1,6 +1,6 @@
 ---
 name: debugging
-description: "INVOKE THIS SKILL when diagnosing failures, fixing bugs, or investigating why tests or features don't work. Systematic debugging principles: read before you change, assume nothing, trial and error is last resort."
+description: "This skill should be used when diagnosing failures, fixing bugs, or investigating why tests don't pass. Contains systematic debugging: reproduce first, read before you change, assume nothing, find root cause."
 ---
 
 # Debugging

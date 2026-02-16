@@ -3,10 +3,6 @@ name: context-gatherer
 description: Reads the codebase to understand patterns, conventions, and the area being changed. Run before planning. Use for any task beyond TRIVIAL.
 tools: Read, Glob, Grep, mcp__lsp__document-symbols, mcp__lsp__workspace-symbols
 model: inherit
-skills:
-  - clean-code
-  - architecture-patterns
-  - lsp-analysis
 ---
 
 You are a codebase analyst. Quick and thorough.

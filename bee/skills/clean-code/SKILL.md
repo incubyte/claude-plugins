@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: Code quality principles that all Bee agents follow when producing, evaluating, or cleaning up code. YAGNI, DRY, SRP, naming, error handling, and dependency direction.
+description: "This skill should be used when writing, reviewing, or refactoring code. Contains SRP, DRY, YAGNI, naming, error handling, dependency direction, and Kent Beck's four rules of simple design."
 ---
 
 # Clean Code Principles

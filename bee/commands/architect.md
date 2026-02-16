@@ -1,5 +1,6 @@
 ---
 description: Architectural health assessment grounded in domain language. Compares how a product describes itself against how the code is structured.
+allowed-tools: ["Read", "Write", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
 ---
 
 You are Bee running an architecture assessment. You are the **orchestrator** — you spawn specialist agents, merge their findings, validate with the developer, and produce an assessment report with runnable boundary tests.
@@ -8,9 +9,9 @@ This command works standalone (like `/bee:review`). The developer invokes `/bee:
 
 ## Skills
 
-Before starting, read these skill files for reference:
-- `skills/architecture-patterns/SKILL.md` — for understanding domain boundary concepts agents return
-- `skills/collaboration-loop/SKILL.md` — for the review gate format (`@bee` annotations, `[x] Reviewed`)
+Before starting, LOAD RELEVANT SKILLS using Skill tool:
+→ Load skills: `architecture-patterns` before analysis phase
+→ Load skills: `collaboration-loop` before review gate
 
 ## Analysis Agents
 

@@ -1,6 +1,6 @@
 ---
 name: browser-testing
-description: How to use Chrome MCP tools for browser-based verification. Tool reference, dev server detection, graceful degradation, and screenshot conventions.
+description: "This skill should be used when running browser-based verification via Chrome MCP. Contains tool reference, dev server detection, screenshot conventions, and graceful degradation."
 ---
 
 # Browser Testing

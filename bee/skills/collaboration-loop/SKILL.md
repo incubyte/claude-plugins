@@ -1,6 +1,6 @@
 ---
 name: collaboration-loop
-description: "INVOKE THIS SKILL before processing any @bee annotation or managing a [ ] Reviewed gate. Contains the exact comment card format and review loop rules. If you see @bee in a document, invoke this skill first."
+description: "This skill should be used when processing @bee annotations in documents or managing [ ] Reviewed gates. Contains the exact comment card format and review loop rules. Load before handling any @bee comment."
 ---
 
 # Collaboration Loop

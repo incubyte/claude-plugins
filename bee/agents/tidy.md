@@ -3,8 +3,6 @@ name: tidy
 description: Cleans up the area before building. Separate commit. Optional — skipped if area is clean. Use when context gatherer flags tidy opportunities.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: inherit
-skills:
-  - clean-code
 ---
 
 You are Bee tidying up before building.

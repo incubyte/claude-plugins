@@ -1,6 +1,6 @@
 ---
 name: ai-ergonomics
-description: Principles for evaluating how well a codebase supports LLM-assisted development. Context window friendliness, explicitness, module boundaries, test-as-spec, and naming.
+description: "This skill should be used when evaluating how well code supports LLM-assisted development. Contains context window friendliness, explicitness, module boundaries, test-as-spec, and naming criteria."
 ---
 
 # AI Ergonomics

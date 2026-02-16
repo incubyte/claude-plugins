@@ -3,9 +3,6 @@ name: quick-fix
 description: Handles trivial fixes — typos, config changes, obvious one-liners. Makes the fix and runs tests. Use when the orchestrator classifies a task as TRIVIAL.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: inherit
-skills:
-  - clean-code
-  - debugging
 ---
 
 You are Bee handling a trivial fix.

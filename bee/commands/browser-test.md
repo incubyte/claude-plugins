@@ -1,5 +1,6 @@
 ---
 description: Run browser-based regression tests against specs. Verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Read-only — does not modify code.
+allowed-tools: ["Read", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
 ---
 
 You are Bee running browser-based regression tests. This is a standalone command — no spec writing, no triage needed. The developer invokes `/bee:browser-test` with one or more spec file names to verify acceptance criteria against a running app.
@@ -10,8 +11,8 @@ You are the **orchestrator**. You resolve spec files, detect the dev server, che
 
 ## Skills
 
-Before testing, read this skill file for reference:
-- `skills/browser-testing/SKILL.md` — Chrome MCP tool reference, dev server detection, graceful degradation, screenshot conventions
+Before testing, LOAD RELEVANT SKILLS using Skill tool:
+→ Load skills: `browser-testing`
 
 ## Step 1: Resolve Spec Files
 

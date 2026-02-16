@@ -1,6 +1,6 @@
 ---
 name: architecture-patterns
-description: When to use onion vs MVC vs simple architecture. Dependency direction rules. YAGNI principles. How to evaluate if an abstraction is warranted.
+description: "This skill should be used when evaluating architecture options, checking dependency direction, or deciding between onion, MVC, and simple patterns. Contains YAGNI-based decision criteria."
 ---
 
 # Architecture Patterns

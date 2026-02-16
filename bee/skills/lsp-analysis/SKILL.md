@@ -1,6 +1,6 @@
 ---
 name: lsp-analysis
-description: How to use Claude Code's built-in LSP tools for precise dependency analysis. Availability checking, graph reasoning, graceful degradation, and per-language server reference.
+description: "This skill should be used when performing precise dependency analysis with LSP tools. Contains availability checking, graph reasoning, and graceful degradation."
 ---
 
 # LSP-Enhanced Analysis

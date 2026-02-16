@@ -1,6 +1,6 @@
 ---
 name: spec-writing
-description: How to write effective specs for AI-assisted development. Simple checklist ACs, vertical slicing, adaptive depth by risk, and capturing out-of-scope.
+description: "This skill should be used when writing specs, acceptance criteria, or slicing features into vertical slices. Contains adaptive depth by risk and out-of-scope capture."
 ---
 
 # Spec Writing

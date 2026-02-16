@@ -1,6 +1,6 @@
 ---
 name: ai-workflow
-description: Why spec-first, TDD-driven workflows produce better AI-generated code. The reasoning behind Bee's teaching moments. Reference this when teaching=on or teaching=subtle.
+description: "This skill should be used when explaining why Bee follows spec-first TDD workflows, or when teaching mode is on. Contains the reasoning behind spec → plan → test → code ordering."
 ---
 
 # AI-Assisted Development Workflow

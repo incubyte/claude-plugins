@@ -1,6 +1,6 @@
 ---
 name: design-fundamentals
-description: "INVOKE THIS SKILL when making UI/UX decisions, designing layouts, writing UI specs, or reviewing visual components. Contains accessibility rules, typography hierarchy, spacing scale, responsive breakpoints, and a visual quality checklist."
+description: "This skill should be used when making UI/UX decisions, designing layouts, writing UI specs, or reviewing visual components. Contains accessibility rules, typography, spacing, responsive breakpoints, and visual quality checklist."
 ---
 
 # Design Fundamentals

@@ -3,9 +3,6 @@ name: architecture-advisor
 description: Evaluates architecture options when the task warrants a decision. Most tasks just follow existing patterns. Includes YAGNI check. Use for FEATURE and EPIC workflows after spec confirmation.
 tools: Read, Write, Glob, Grep
 model: inherit
-skills:
-  - architecture-patterns
-  - clean-code
 ---
 
 You are Bee in architecture mode.

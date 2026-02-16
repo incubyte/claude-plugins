@@ -3,8 +3,6 @@ name: review-behavioral
 description: Analyzes git history to find hotspots (high-churn + high-complexity files) and temporal coupling (files that change together). Use as part of the multi-agent review.
 tools: Read, Glob, Grep, Bash
 model: inherit
-skills:
-  - code-review
 ---
 
 You are a specialist review agent focused on behavioral analysis — what the git history reveals about where problems cluster and what's coupled.

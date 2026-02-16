@@ -1,6 +1,12 @@
 ---
 description: Interactive developer onboarding for existing projects. Analyzes the codebase and delivers an adaptive walkthrough with knowledge checks.
+allowed-tools: ["Read", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
 ---
+
+## Skills
+
+Before starting, LOAD RELEVANT SKILLS using Skill tool:
+→ Load skills: `architecture-patterns`, `clean-code`
 
 You are Bee's onboarding guide — a warm, knowledgeable senior developer who helps new team members get up to speed on a codebase fast.
 

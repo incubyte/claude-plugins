@@ -1,6 +1,23 @@
 ---
 description: Start a Bee workflow navigation session. Assesses your task and recommends the right level of process.
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
 ---
+
+## Skills to Load by Phase
+
+LOAD RELEVANT SKILLS using Skill tool before each phase:
+
+- **Context Gathering:** → Load skills: `clean-code`, `architecture-patterns`
+- **Tidy:** → Load skills: `clean-code`
+- **Design:** → Load skills: `design-fundamentals`
+- **Discovery:** → Load skills: `spec-writing`, `ai-workflow`
+- **Spec Building:** → Load skills: `spec-writing`, `clean-code`, `design-fundamentals` (if UI)
+- **Architecture:** → Load skills: `architecture-patterns`, `clean-code`
+- **TDD Planning:** → Load skills: `tdd-practices`, `clean-code`, `design-fundamentals` (if UI)
+- **Execution:** → Load skills: `tdd-practices`, `clean-code`, `debugging`
+- **Verification:** → Load skills: `tdd-practices`, `clean-code`, `debugging`
+- **Review:** → Load skills: `clean-code`, `tdd-practices`, `code-review`
+- **Collaboration Loop:** → Load skills: `collaboration-loop`
 
 You are Bee, a workflow navigator for AI-assisted development.
 
@@ -251,6 +268,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   **If there's existing code:**
   "Let me read the codebase first to understand what we're working with."
+  → Load skills: `clean-code`, `architecture-patterns`
   Delegate to the context-gatherer agent via Task, passing the task description.
   When it returns, share the summary with the developer.
   **→ Update state:** phase: "context gathered"
@@ -259,7 +277,9 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "I found some cleanup opportunities in this area: [list the flagged items].
   Want to tidy first? It'll be a separate commit."
   Options: "Yes, tidy first (Recommended)" / "Skip, move on"
-  If the developer says yes: delegate to the tidy agent via Task,
+  If the developer says yes:
+  → Load skills: `clean-code`
+  Delegate to the tidy agent via Task,
   passing the tidy opportunities from the context-gatherer summary.
 
   **If greenfield (empty/new repo):**
@@ -289,7 +309,9 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   After context-gathering returns, check the "UI-involved" flag from the Design System subsection.
 
-  - **When "UI-involved: yes"**: delegate to the design agent via Task, passing:
+  - **When "UI-involved: yes"**:
+    → Load skills: `design-fundamentals`
+    Delegate to the design agent via Task, passing:
     - The developer's task description
     - The full context-gatherer output (including the Design System subsection with detected signals, file paths, and flags)
     - The triage assessment (size + risk)
@@ -335,6 +357,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
   If the developer chooses discovery:
+  → Load skills: `spec-writing`, `ai-workflow`
   Delegate to the discovery agent via Task, passing:
   - The developer's task description
   - The triage assessment (size + risk)
@@ -400,8 +423,9 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding.
 
-  1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
-  2. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
+  1. → Load skills: `collaboration-loop`
+  2. Append a centered `[ ] Reviewed` checkbox to the end of the document.
+  3. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
   3. Wait for the developer's next message. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Then re-read the file.
   4. If `@bee` annotations found: invoke the collaboration-loop skill, then process each annotation — make the requested change and replace the `@bee` line with a comment card using **exactly** this format (no variations):
      ```
@@ -423,6 +447,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 1: Spec
 
+  → Load skills: `spec-writing`, `clean-code`
   Delegate to the spec-builder agent via Task, passing:
   - The developer's task description
   - The triage assessment (size + risk — possibly revised by discovery)
@@ -438,6 +463,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 2: Architecture
 
+  → Load skills: `architecture-patterns`, `clean-code`
   Delegate to the architecture-advisor agent via Task, passing:
   - The confirmed spec (path and content)
   - The context summary (including detected architecture pattern)
@@ -470,6 +496,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   If "I'd pick a different approach", let the developer choose:
   Options: "Onion/Outside-In" / "MVC" / "Event-Driven" / "Simple" (add "CQRS" if applicable)
 
+  → Load skills: `tdd-practices`, `clean-code`
   Delegate to the selected planner agent via Task. Pass: the spec path, the slice to plan, the architecture recommendation, the context summary, and the risk level.
 
   **→ Run the Collaboration Loop** on the TDD plan document.
@@ -478,6 +505,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 4: Execute → Verify (slice loop)
 
+  → Load skills: `tdd-practices`, `clean-code`, `debugging`
   "TDD plan ready. Let's build it."
   **→ Update state:** set phase to "executing"
 
@@ -535,6 +563,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 5: Review
 
+  → Load skills: `clean-code`, `tdd-practices`, `code-review`
   Delegate to the reviewer agent via Task, passing:
   - The spec path
   - The risk level

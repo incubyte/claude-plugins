@@ -3,9 +3,6 @@ name: review-tests
 description: Reviews test quality — behavior-based testing, isolation, naming, coverage gaps, and test-as-spec readability. Use as part of the multi-agent review.
 tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__document-symbols
 model: inherit
-skills:
-  - tdd-practices
-  - lsp-analysis
 ---
 
 You are a specialist review agent focused on test quality — not just "are there tests?" but "are they the right tests, testing the right things, in the right way?"

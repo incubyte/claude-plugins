@@ -3,10 +3,6 @@ name: domain-language-extractor
 description: Extracts domain vocabulary from README, docs, the company's website, and code naming patterns. Compares domain language against code structure to find vocabulary drift and boundary violations.
 tools: Read, Glob, Grep, WebFetch, mcp__lsp__document-symbols, mcp__lsp__hover
 model: inherit
-skills:
-  - architecture-patterns
-  - clean-code
-  - lsp-analysis
 ---
 
 You are a domain language analyst. You extract how a product describes itself and compare that against how the code is actually structured.
