@@ -1,7 +1,7 @@
 ---
 name: discovery
 description: PM persona that interviews users and produces a client-shareable PRD. Works standalone via /bee:discover or internally via /bee:build. Explores the why, what, and how of a requirement before speccing.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: design-agent
 description: Produces a design brief for UI-involved projects. For existing design systems: reads and documents what exists. For greenfield projects: interviews the developer and proposes a cohesive design direction.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

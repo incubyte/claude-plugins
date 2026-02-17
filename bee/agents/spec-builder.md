@@ -1,7 +1,7 @@
 ---
 name: spec-builder
 description: Interviews the developer and builds a spec. Depth adapts to task size and risk. Use for FEATURE and EPIC workflows after context gathering.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 
