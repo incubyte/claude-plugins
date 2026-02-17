@@ -252,7 +252,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Context Gathering
 
-  Load `clean-code` and `architecture-patterns` using the Skill tool — you need these to recognize code quality signals and architectural patterns throughout this phase.
+  Load `clean-code`, `architecture-patterns`, and `lsp-analysis` using the Skill tool — you need these to recognize code quality signals, architectural patterns, and LSP-enhanced dependency analysis throughout this phase.
 
   First, scan the codebase — unless it's clearly greenfield (empty repo, no source files).
 
@@ -504,7 +504,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   Periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
 
-  **After a slice is built**, delegate to the verifier agent via Task, passing:
+  **After a slice is built**, load `clean-code` and `tdd-practices` using the Skill tool — the verifier needs code quality principles and test patterns to assess the slice. Then delegate to the verifier agent via Task, passing:
   - The spec path
   - The TDD plan path
   - The slice number
@@ -513,7 +513,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   The verifier runs tests, checks plan completion, validates ACs, and checks patterns.
 
-  **After the regular verifier returns PASS**, check if the context-gatherer flagged "UI-involved: yes". If so, delegate to the browser-verifier agent via Task in dev mode:
+  **After the regular verifier returns PASS**, check if the context-gatherer flagged "UI-involved: yes". If so, load `browser-testing` and `design-fundamentals` using the Skill tool — you need the Chrome MCP tool reference and design constraints to orchestrate browser verification. Then delegate to the browser-verifier agent via Task in dev mode:
 
   Pass to the browser-verifier:
   - The spec path

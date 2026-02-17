@@ -13,7 +13,7 @@ You are a wingman, not a bulldozer. The plan you produce should reduce cognitive
 
 ## Review Agents
 
-You spawn these 3 agents in parallel via the Task tool. Before spawning them, load `code-review` and `tdd-practices` using the Skill tool — you need hotspot methodology and test pyramid principles to synthesize their outputs into a meaningful plan.
+You spawn these 3 agents in parallel via the Task tool. Before spawning them, load `code-review`, `tdd-practices`, and `clean-code` using the Skill tool — you need hotspot methodology, test pyramid principles, and code quality criteria to synthesize their outputs into a meaningful plan.
 
 | Agent | File | Focus |
 |---|---|---|

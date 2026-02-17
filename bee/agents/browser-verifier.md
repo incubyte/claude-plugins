@@ -1,7 +1,7 @@
 ---
 name: browser-verifier
 description: Verifies a running app in the browser — checks acceptance criteria, console errors, runtime exceptions, and visual state via Chrome MCP tools. Operates in dev mode (failures only) or test mode (full report with screenshots).
-tools: Read, Glob, Grep, Bash, mcp__claude-in-chrome__tabs_context_mcp, mcp__claude-in-chrome__tabs_create_mcp, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__javascript_tool, mcp__claude-in-chrome__read_console_messages, mcp__claude-in-chrome__get_page_text
+tools: Read, Write, Glob, Grep, Bash, AskUserQuestion, mcp__claude-in-chrome__tabs_context_mcp, mcp__claude-in-chrome__tabs_create_mcp, mcp__claude-in-chrome__navigate, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__find, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__javascript_tool, mcp__claude-in-chrome__read_console_messages, mcp__claude-in-chrome__get_page_text
 model: inherit
 ---
 

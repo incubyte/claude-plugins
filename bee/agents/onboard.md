@@ -1,7 +1,7 @@
 ---
 name: onboard
 description: Analyzes a codebase and delivers an interactive onboarding walkthrough adapted to the developer's role, experience, and focus area. Use when a developer is joining an existing project.
-tools: Read, Glob, Grep, Bash
+tools: Read, Glob, Grep, Bash, AskUserQuestion
 model: inherit
 ---
 

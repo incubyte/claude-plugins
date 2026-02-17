@@ -1,7 +1,7 @@
 ---
 name: tdd-planner-onion
 description: Generates outside-in TDD plan for onion/hexagonal architecture. One plan per slice. Use when architecture decision is onion or hexagonal.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

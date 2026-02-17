@@ -1,7 +1,7 @@
 ---
 name: tdd-planner-event-driven
 description: Generates contract-first TDD plan for event-driven architectures. One plan per slice. Use when architecture decision is event-driven or message-based.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

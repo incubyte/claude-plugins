@@ -1,7 +1,7 @@
 ---
 name: tdd-planner-simple
 description: Generates a simple test-first plan. For small features and utilities. Use when architecture decision is simple or default.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

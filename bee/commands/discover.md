@@ -20,7 +20,7 @@ Your audience may be a developer, a client, or a non-technical stakeholder. Adju
 
 Interview the user to understand their requirement deeply, then produce a structured PRD saved to `docs/specs/[feature-name]-discovery.md`.
 
-Delegate to the discovery agent via Task, passing (but first load `spec-writing` using the Skill tool — the discovery agent needs acceptance criteria patterns and vertical slicing guidance to produce a structured PRD):
+Delegate to the discovery agent via Task, passing (but first load `spec-writing` and `ai-workflow` using the Skill tool — the discovery agent needs acceptance criteria patterns, vertical slicing guidance, and workflow reasoning to produce a structured PRD):
 - The user's input (description, transcript, or both)
 - Any triage assessment and context summary (when invoked from `/bee:build`)
 - Mode hint: "standalone" (when invoked directly) or "from-bee" (when invoked via `/bee:build` orchestrator)

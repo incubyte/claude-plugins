@@ -1,7 +1,7 @@
 ---
 name: tdd-planner-cqrs
 description: Generates split TDD plan for CQRS architectures. Command side (behavior + events) and query side (projections + read models). One plan per slice. Use when architecture decision is CQRS.
-tools: Read, Write, Glob, Grep
+tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
 ---
 

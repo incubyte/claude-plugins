@@ -9,7 +9,7 @@ You are the **orchestrator**. You determine the scope, spawn 7 specialist review
 
 ## Review Agents
 
-You spawn these 7 agents in parallel via the Task tool. Each is a specialist. Before spawning them, load `code-review` using the Skill tool — you need the categorization framework (Critical/Suggestions/Nitpicks), effort sizing, and improvement roadmap structure to merge their outputs into a coherent review.
+You spawn these 7 agents in parallel via the Task tool. Each is a specialist. Before spawning them, load `code-review`, `clean-code`, `tdd-practices`, and `ai-ergonomics` using the Skill tool — you need the categorization framework (Critical/Suggestions/Nitpicks), effort sizing, code quality principles, test patterns, and LLM-friendliness criteria to merge their outputs into a coherent review.
 
 | Agent | File | Focus |
 |---|---|---|

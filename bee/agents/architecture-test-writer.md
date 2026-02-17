@@ -1,7 +1,7 @@
 ---
 name: architecture-test-writer
 description: Generates runnable ArchUnit-style boundary tests from a confirmed architecture assessment report. Produces passing tests for healthy boundaries and intentionally failing tests for architecture leaks.
-tools: Read, Write, Glob, Grep, mcp__lsp__find-references, mcp__lsp__document-symbols
+tools: Read, Write, Glob, Grep, mcp__lsp__find-references, mcp__lsp__document-symbols, AskUserQuestion
 model: inherit
 ---
 
