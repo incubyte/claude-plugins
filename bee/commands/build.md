@@ -406,10 +406,9 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Collaboration Loop
 
-  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding.
+  After every document-producing agent (discovery, spec-builder, TDD planner) returns, load `collaboration-loop` using the Skill tool — you need the exact comment card format and review gate rules — then run this loop before proceeding.
 
-  1. Load `collaboration-loop` using the Skill tool — you need the exact comment card format and review gate rules before processing any annotations.
-  2. Append a centered `[ ] Reviewed` checkbox to the end of the document.
+  1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
   3. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
   3. Wait for the developer's next message. Tell them: "Type `check` when you're ready for me to re-read, or just keep chatting." Then re-read the file.
   4. If `@bee` annotations found: invoke the collaboration-loop skill, then process each annotation — make the requested change and replace the `@bee` line with a comment card using **exactly** this format (no variations):
@@ -487,11 +486,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 4: Execute → Verify (slice loop)
 
-  Before entering execution, load `tdd-practices`, `clean-code`, and `debugging` using the Skill tool — you need these to guide execution and diagnose any test failures.
-  "TDD plan ready. Let's build it."
-  **→ Update state:** set phase to "executing"
-
-  **STOP — before writing any code, you MUST ask the developer how they want to execute.** Use AskUserQuestion:
+  Load `tdd-practices`, `clean-code`, and `debugging` using the Skill tool — you need these to guide execution and diagnose any test failures. Then ask the developer how they want to execute using AskUserQuestion:
 
   "TDD plan ready. Want Ralph to execute it autonomously, or do you want to drive it yourself?"
   Options: "Let Ralph handle it (Recommended)" / "I'll drive it myself"
