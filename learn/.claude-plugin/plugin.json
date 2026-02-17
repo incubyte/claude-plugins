@@ -1,0 +1,9 @@
+{
+  "name": "learn",
+  "version": "0.1.0",
+  "description": "Learn any technology by building real projects. Claude guides you step-by-step — you write every line of code yourself.",
+  "author": {
+    "name": "Incubyte"
+  },
+  "license": "Proprietary"
+}

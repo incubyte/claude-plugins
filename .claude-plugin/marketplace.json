@@ -10,6 +10,11 @@
       "description": "Spec-driven TDD workflow navigator for AI-assisted development"
     },
     {
+      "name": "learn",
+      "source": "./learn",
+      "description": "Learn any technology by building real projects — Claude guides step-by-step, you write every line of code"
+    },
+    {
       "name": "ralph-wiggum",
       "source": {
         "source": "github",
