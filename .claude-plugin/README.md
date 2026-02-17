@@ -8,8 +8,9 @@ A plugin marketplace for Claude Code by [Incubyte](https://incubyte.co).
 # In Claude Code, add the marketplace
 /plugin marketplace add incubyte/claude-plugins
 
-# Install a plugin
+# Install plugins
 /plugin install bee@incubyte-plugins
+/plugin install learn@incubyte-plugins
 ```
 
 ## Available Plugins
@@ -17,6 +18,7 @@ A plugin marketplace for Claude Code by [Incubyte](https://incubyte.co).
 | Plugin | Description |
 |--------|-------------|
 | **bee** | Spec-driven TDD workflow navigator. Guides developers through triage, spec building, architecture decisions, TDD planning, verification, and review. |
+| **learn** | Learn any technology by building real projects. Claude guides step-by-step — you write every line of code yourself. |
 
 ## Adding New Plugins
 
