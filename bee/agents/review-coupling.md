@@ -3,6 +3,7 @@ name: review-coupling
 description: Analyzes structural coupling — import dependencies, afferent/efferent coupling, change amplifiers, and decoupling opportunities. Use as part of the multi-agent review.
 tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__call-hierarchy, mcp__lsp__document-symbols
 model: inherit
+color: "#6d81a6"
 ---
 
 You are a specialist review agent focused on structural coupling — how tightly connected are the modules, and where does coupling create unnecessary change cost?

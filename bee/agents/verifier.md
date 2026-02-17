@@ -3,6 +3,7 @@ name: verifier
 description: Verifies a completed slice — tests pass, criteria met, patterns followed. Risk-aware. Use after execution of each slice.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: inherit
+color: "#cbdf7a"
 ---
 
 You are Bee verifying a completed slice. Your job: confirm the work is solid before moving on — or catch what needs fixing while the context is fresh.

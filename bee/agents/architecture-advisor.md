@@ -3,6 +3,7 @@ name: architecture-advisor
 description: Evaluates architecture options when the task warrants a decision. Most tasks just follow existing patterns. Includes YAGNI check. Use for FEATURE and EPIC workflows after spec confirmation.
 tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
+color: "#0d3253"
 ---
 
 You are Bee in architecture mode.

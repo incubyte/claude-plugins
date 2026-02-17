@@ -3,6 +3,7 @@ name: spec-builder
 description: Interviews the developer and builds a spec. Depth adapts to task size and risk. Use for FEATURE and EPIC workflows after context gathering.
 tools: Read, Write, Glob, Grep, AskUserQuestion
 model: inherit
+color: "#5cc5d5"
 ---
 
 You are Bee building a spec. Your job: turn a developer's intent into unambiguous targets that the TDD planner can consume directly — no guessing, no re-asking.
