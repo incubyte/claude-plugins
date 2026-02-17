@@ -39,6 +39,24 @@ Teaching moment (if teaching=on): "This follows the MVC layer order — route, c
 
 ---
 
+## View-First: Start From Where the User Is
+
+**MVC has a V — use it. When a feature has a UI, the View is the outermost layer.**
+
+When the spec or context-gatherer flags UI involvement, the plan starts from the View (component/page). The component test drives out the API contract the view needs. Then the controller implements that contract.
+
+### How to detect UI involvement
+
+Check the spec and context-gatherer output for:
+- UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+- Frontend file patterns (`components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`)
+- Design brief from the design-agent (`.claude/DESIGN.md`)
+
+**If UI is involved:** Start with Layer 0 (View), then proceed to Layer 1 (Controller), and inward.
+**If API-only:** Skip Layer 0, start with Layer 1 (Controller) as the outermost layer.
+
+---
+
 ## Why TDD Drives Clean MVC
 
 Outside-in TDD naturally produces clean MVC when you follow one rule:
@@ -61,9 +79,26 @@ The tests enforce the layering. If a controller test needs to mock a database, s
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │  OUTER LOOP: Integration Test                                                │
 │  Written FIRST. Stays RED until all layers are built and wired.              │
-│  Tests the full HTTP request → response cycle.                               │
+│                                                                              │
+│  When UI-involved: outer test renders the view, interacts, asserts.          │
+│  When API-only: outer test sends HTTP request, asserts response.             │
+│                                                                              │
 │  Mocks ONLY external services (third-party APIs, email, etc.)                │
 │                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │  INNER LOOP 0: View / UI Component (WHEN UI-INVOLVED)                 │  │
+│  │                                                                        │  │
+│  │    RED:    Component test — render, interact, assert visible output    │  │
+│  │    GREEN:  Implement view — calls API / uses props                     │  │
+│  │    REFACTOR                                                            │  │
+│  │                                                                        │  │
+│  │    View does: render data, handle user interactions, call API          │  │
+│  │    View does NOT: business logic, direct DB access, data validation   │  │
+│  │                                                                        │  │
+│  │    ✗ Outer test RED → "API endpoint not found" or "fetch failed"     │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                               │                                              │
+│                               ▼                                              │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
 │  │  INNER LOOP 1: Route / Controller                                     │  │
 │  │                                                                        │  │
@@ -117,7 +152,8 @@ The tests enforce the layering. If a controller test needs to mock a database, s
 │  └────────────────────────────────────────────────────────────────────────┘  │
 │                                                                              │
 │  RESULT:                                                                     │
-│    1 passing integration test (full request → response)                      │
+│    1 passing integration/component test                                      │
+│    N passing view/component tests (when UI-involved)                         │
 │    N passing controller tests (mock service)                                 │
 │    M passing service tests (mock repository, real business logic)            │
 │    K passing model/repo tests (real DB)                                      │
@@ -184,11 +220,19 @@ The outer test's failure tells you what layer to build next:
 
 | Layer | Responsibility | Depends On | Tested With |
 |-------|---------------|------------|-------------|
+| **View / UI Component** (when UI-involved) | Render data, handle interactions, call API | API contract / props | Component test (render + interact + assert) |
 | **Route / Controller** | Parse request, call service, format response | Service (injected or imported) | Mock service |
 | **Service** | Business logic, validation, orchestration, error handling | Model / Repository | Mock repository, real logic |
 | **Model / Repository** | Data access, schema, queries, data validation | Database | Integration test (real DB) |
 
 ### What Goes Where
+
+**View / UI Component** — the user-facing surface (when UI-involved):
+- Pages and views that render data
+- Forms that collect user input
+- Interactive elements (buttons, modals, lists)
+- Tested with component tests (render → interact → assert visible output)
+- Depends on API contract / props — never on services or models directly
 
 **Controller** — the translator between HTTP and application:
 - Request parsing (body, params, query, headers)
@@ -328,7 +372,14 @@ Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI s
 ### Phase 2: Codebase Analysis
 Before writing the plan, analyze:
 
-1. **Existing MVC structure**: What conventions are already in place?
+1. **UI involvement**: Does this feature have a user-facing component?
+    - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+    - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
+    - Check for `.claude/DESIGN.md` (design brief from design-agent)
+    - **If UI-involved:** Plan starts with Layer 0 (View / component tests)
+    - **If API-only:** Plan starts with Layer 1 (Controller)
+
+2. **Existing MVC structure**: What conventions are already in place?
     - Look for: `controllers/`, `services/`, `models/`, `routes/`, `repositories/`
     - What's the naming convention? (`UserController`, `userController`, `user.controller`)
     - Are controllers class-based or functional?
@@ -365,6 +416,27 @@ Before planning inner loops, clearly define the integration test:
 ### Phase 4: Map Layer Progression
 Map out the layers and what each one needs:
 
+**When UI-involved:**
+```markdown
+Outer Test: "User fills order form, submits, sees confirmation"
+
+0. View: OrderForm component
+   DEFINES: API contract it needs (POST /orders, response shape)
+   → After completion, outer test fails with: "API endpoint not found"
+
+1. Route / Controller: POST /orders handler
+   Needs: OrderService
+   → After completion, outer test fails with: "Service not implemented"
+
+2. Service: OrderService.create()
+   Needs: OrderRepository, ProductRepository
+   → After completion (mocked repos), outer test fails with: "Repository not implemented"
+
+3. Model / Repository: PostgresOrderRepository
+   → After completion, wire up, outer test PASSES
+```
+
+**When API-only:**
 ```markdown
 Outer Test: "User creates an order and receives confirmation"
 
@@ -374,11 +446,9 @@ Outer Test: "User creates an order and receives confirmation"
 
 2. Service: OrderService.create()
    Needs: OrderRepository, ProductRepository
-   Business logic: calculate total, check stock, apply discounts
    → After completion (mocked repos), outer test fails with: "Repository not implemented"
 
-3. Model / Repository: PostgresOrderRepository, PostgresProductRepository
-   + Database migration for orders table
+3. Model / Repository: PostgresOrderRepository
    → After completion, wire up, outer test PASSES
 ```
 
@@ -412,6 +482,7 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 ### Directory Structure
 | Layer | Directory | Test Directory |
 |-------|-----------|----------------|
+| Views / UI Components (when UI-involved) | `src/components/` or `src/pages/` | co-located or `__tests__/` |
 | Routes / Controllers | `src/controllers/` or `src/routes/` | `__tests__/controllers/` |
 | Services | `src/services/` | `__tests__/services/` |
 | Models / Repositories | `src/models/` or `src/repositories/` | `__tests__/models/` |
@@ -451,13 +522,65 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 - [ ] [Response body shape]
 - [ ] [Side effects — data persisted, events emitted]
 
-### Expected Failure Progression
+### Expected Failure Progression (UI-involved)
+| After Layer | Expected Failure |
+|-------------|-----------------|
+| (none) | "Component not found" or "page blank" |
+| View / Component | "API endpoint not found" or "fetch failed" |
+| Controller | "service method not implemented" |
+| Service (mocked repos) | "repository not implemented" or "relation does not exist" |
+| Model / Repository | ✅ PASSES |
+
+### Expected Failure Progression (API-only)
 | After Layer | Expected Failure |
 |-------------|-----------------|
 | (none) | "404 Not Found" or "route not defined" |
 | Controller | "service method not implemented" |
 | Service (mocked repos) | "repository not implemented" or "relation does not exist" |
 | Model / Repository | ✅ PASSES |
+
+---
+
+## Layer 0: View / UI Component (WHEN UI-INVOLVED — skip if API-only)
+
+**The V in MVC. Build this FIRST when the feature has a user interface.**
+
+### 0.1 Component Test: [What the user sees/does]
+
+**Behavior**: [User interacts with view, sees expected output]
+
+- [ ] **RED**: Write component test
+  - Location: `[test file path]`
+  - Test name: `test('[user sees / user does behavior]')`
+  - Render: Component with mocked API / stubbed props
+  - Interact: [click button, fill form, navigate]
+  - Assert: [visible text, element presence, state change]
+
+- [ ] **RUN**: Confirm test FAILS
+
+- [ ] **GREEN**: Implement view/component
+  - Location: `[component file path]`
+  - Depends on: API contract (fetch calls or props) — never imports services directly
+  - Follow `.claude/DESIGN.md` constraints if present
+
+- [ ] **RUN**: Confirm test PASSES
+
+- [ ] **REFACTOR**: [If needed]
+
+### 0.2 Component Test: [Error / loading state]
+
+- [ ] **RED**: Write test for loading and error states
+  - Test name: `test('[shows loading indicator while fetching]')` or `test('[shows error when API fails]')`
+  - Mock: API returns pending / error
+  - Assert: [loading spinner visible, error message shown]
+
+- [ ] **RUN → GREEN → REFACTOR**
+
+- [ ] **ARCHITECTURE CHECK**: View calls API endpoints only — no direct imports from services, models, or repositories
+
+### After Layer 0
+- [ ] **RUN OUTER TEST**: Confirm it fails with: `[API endpoint not found / fetch failed]`
+- [ ] **COMMIT**: "feat(view): [feature] component + API contract definition"
 
 ---
 
@@ -641,16 +764,18 @@ Based on risk level, add additional tests:
 
 After all tests pass, verify the layer boundaries:
 
+- [ ] **Views/Components** (when present) import only: API client / fetch, framework code — never services or models
 - [ ] **Controllers** import only: services, request/response types
 - [ ] **Services** import only: repositories/models, domain/business types
 - [ ] **Models/Repositories** import only: database client, schema definitions
 - [ ] **No upward dependencies**: model never imports service, service never imports controller
-- [ ] **No layer skipping**: controller never imports repository directly
+- [ ] **No layer skipping**: controller never imports repository directly, view never imports service directly
 
 ## Test Summary
 | Layer | Type | # Tests | Mocks Used | Status |
 |-------|------|---------|------------|--------|
 | Outer (Integration) | E2E | 1 | External only | ✅ |
+| View / Component (when present) | Component | [N] | API / props | ✅ |
 | Controller | Unit | [N] | Service | ✅ |
 | Service | Unit | [N] | Repository | ✅ |
 | Model / Repository | Integration | [N] | None (real DB) | ✅ |
@@ -727,6 +852,12 @@ Step 1-10: Build everything
 Step 11: Write integration test  ← WRONG order
 ```
 The integration test is written FIRST and guides all development.
+
+### ❌ Starting with Controller When There's a View
+```markdown
+Step 1: Build POST /orders endpoint  ← WRONG when there's a form
+```
+If the feature has a UI, start from the View component. The component test drives out what API shape it needs. Then build the controller to match. MVC has a V — use it.
 
 ### ❌ Starting with Database
 ```markdown

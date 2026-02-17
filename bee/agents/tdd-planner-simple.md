@@ -185,18 +185,26 @@ Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI s
 ### Phase 2: Codebase Analysis
 Before writing the plan, analyze:
 
-1. **Existing test conventions**:
+1. **UI involvement**: Does this feature have a user-facing component?
+    - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+    - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
+    - Check for `.claude/DESIGN.md` (design brief from design-agent)
+    - **If UI-involved:** Order behaviors so UI behaviors come first — the component test drives out what data/API shape it needs, then build the logic to satisfy it
+    - **If no UI:** Order behaviors from simplest input → output to most complex
+
+2. **Existing test conventions**:
     - What test framework? (Jest, Vitest, Mocha, Pytest, RSpec, Go test)
     - Where do tests live? (co-located, `__tests__/`, `test/`, `*_test.go`)
     - What's the naming convention? (`*.test.ts`, `*.spec.ts`, `test_*.py`)
     - Are there test utilities or helpers already?
+    - For UI: Is there a component testing setup? (Testing Library, Cypress component, Storybook)
 
-2. **File structure**:
+3. **File structure**:
     - Where will the implementation live?
     - Is there a pattern for similar features?
     - What's the import/module convention?
 
-3. **Existing code to integrate with**:
+4. **Existing code to integrate with**:
     - Does this feature extend existing code or is it greenfield?
     - Are there types, interfaces, or utilities to reuse?
 
@@ -207,7 +215,11 @@ Turn each acceptance criterion into a concrete test specification:
 2. **When**: What action or function call happens?
 3. **Then**: What's the expected output or side effect?
 
-Order behaviors from simplest to most complex. Build up incrementally — later tests can assume earlier behaviors work.
+**Ordering rule — start from the outside:**
+- **When UI-involved:** UI behaviors come first (render, interact, assert visible output), then the logic/data behaviors that support them. The component test drives out what the backing code needs to provide.
+- **When no UI:** Order from simplest to most complex input → output.
+
+Build up incrementally — later tests can assume earlier behaviors work.
 
 ### Phase 4: Generate the Plan
 Create the TDD plan with a step-by-step red-green-refactor sequence.
@@ -244,7 +256,12 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ---
 
-## Behavior 1: [Plaintext description from AC1]
+## UI Behaviors First (WHEN UI-INVOLVED — skip if no UI)
+
+When the feature has UI, start with component behaviors before logic behaviors.
+The component test drives out what data shape the backing code must provide.
+
+## Behavior 1: [UI behavior from AC — e.g., "user sees order list" / or non-UI AC1]
 
 **Given** [starting state or input]
 **When** [action or function call]
@@ -388,6 +405,13 @@ function add(a: number, b: number): number {
 }
 ```
 Let tests drive complexity. Start simple, add only when a test requires it.
+
+### ❌ Building Logic Before UI When There's a UI
+```markdown
+Step 1: Write calculateTotal function  ← WRONG when there's a form
+Step 2: Write OrderForm component
+```
+If the feature has a UI, start with the component behavior. The component test tells you what data shape the logic needs to produce. Build outside-in.
 
 ### ❌ Skipping the RED Phase
 ```markdown

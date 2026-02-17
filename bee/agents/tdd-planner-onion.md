@@ -55,6 +55,24 @@ The tests aren't just verifying behavior — they're designing the architecture.
 
 ---
 
+## UI-First: Start From Where the User Is
+
+**The outermost layer is wherever the user interacts — not always the API.**
+
+When the spec or context-gatherer flags UI involvement (React components, pages, forms, views), the plan starts from the UI. The UI component test drives out the API contract the component needs. Then the API adapter implements that contract.
+
+### How to detect UI involvement
+
+Check the spec and context-gatherer output for:
+- UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+- Frontend file patterns (`components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`)
+- Design brief from the design-agent (`.claude/DESIGN.md`)
+
+**If UI is involved:** Start with Layer 0 (UI), then proceed to Layer 1 (API adapter), and inward.
+**If API-only:** Skip Layer 0, start with Layer 1 (API adapter) as the outermost layer.
+
+---
+
 ## The Onion Double-Loop
 
 ```
@@ -63,8 +81,24 @@ The tests aren't just verifying behavior — they're designing the architecture.
 │  Written FIRST. Stays RED until all layers are built and wired.              │
 │  Mocks ONLY external services (GitHub API, Stripe, etc.)                     │
 │                                                                              │
+│  When UI-involved: outer test renders the component, interacts, asserts.     │
+│  When API-only: outer test sends HTTP request, asserts response.             │
+│                                                                              │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │  INNER LOOP 1: Inbound Adapter (Controller / UI)                      │  │
+│  │  INNER LOOP 0: UI Component (WHEN UI-INVOLVED)                        │  │
+│  │                                                                        │  │
+│  │    DEFINE: API contract the component needs (endpoint shape, props)    │  │
+│  │    RED:    Component test — render, interact, assert visible output    │  │
+│  │    GREEN:  Implement component — calls API port / uses props           │  │
+│  │    REFACTOR                                                            │  │
+│  │                                                                        │  │
+│  │    Deliverables: component + API contract it depends on                │  │
+│  │    ✗ Outer test RED → "API endpoint not found" or "data not loaded"   │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                               │                                              │
+│                               ▼                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │  INNER LOOP 1: Inbound Adapter (API Controller)                       │  │
 │  │                                                                        │  │
 │  │    DEFINE: Use Case port interface (what the adapter needs to call)    │  │
 │  │    RED:    Test adapter calls the use case port correctly              │  │
@@ -125,7 +159,8 @@ The tests aren't just verifying behavior — they're designing the architecture.
 │  └────────────────────────────────────────────────────────────────────────┘  │
 │                                                                              │
 │  RESULT:                                                                     │
-│    1 passing integration test                                                │
+│    1 passing integration/component test                                      │
+│    N passing UI component tests (when UI-involved)                           │
 │    N passing unit tests (adapter + use case layers with mocks)               │
 │    M passing pure tests (domain layer — no mocks at all)                     │
 │    Explicit port interfaces connecting every layer                           │
@@ -186,12 +221,20 @@ The outer test's failure tells you what layer to build next:
 
 | Layer | Direction | Purity | Depends On | Tested With |
 |-------|-----------|--------|------------|-------------|
-| **Inbound Adapter** (controller, UI, CLI) | Outermost | Impure | Use case port (interface) | Mock of use case port |
+| **UI Component** (page, form, view) — when UI-involved | Outermost | Impure | API contract / props | Component test (render + interact + assert) |
+| **Inbound Adapter** (API controller, CLI) | Outer | Impure | Use case port (interface) | Mock of use case port |
 | **Use Case / Application Service** | Middle | Impure | Domain core + outbound ports | Real domain + mock of outbound ports |
 | **Domain Core** (entities, value objects, domain services, rules) | Center | **PURE** | **Nothing** | **No mocks. Input → output.** |
 | **Outbound Adapter** (repository, API client, queue publisher) | Outermost | Impure | Implements outbound port interface | Integration test (real DB, real queue) |
 
 ### What Goes Where
+
+**UI Component** — the user-facing surface (when UI-involved):
+- Pages and views that render data
+- Forms that collect user input
+- Interactive elements (buttons, modals, lists)
+- Tested with component tests (render → interact → assert visible output)
+- Depends on API contract / props — never on use cases or domain directly
 
 **Domain Core** — the beating heart, zero dependencies:
 - Entities with behavior (`AnalysisResult`, `CoachingMoment`)
@@ -390,13 +433,22 @@ Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI s
 ### Phase 2: Codebase Analysis
 Before writing the plan, analyze:
 
-1. **Existing structure**: Does onion architecture already exist?
+1. **UI involvement**: Does this feature have a user-facing component?
+    - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+    - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
+    - Check for `.claude/DESIGN.md` (design brief from design-agent)
+    - Check context-gatherer output for "UI-involved: yes"
+    - **If UI-involved:** Plan starts with Layer 0 (UI component tests)
+    - **If API-only:** Plan starts with Layer 1 (inbound adapter)
+
+2. **Existing structure**: Does onion architecture already exist?
     - Look for: `domain/`, `ports/`, `adapters/`, `use-cases/`, `application/`
     - Look for: existing port interfaces, dependency injection setup
     - If the codebase is greenfield or layered, the plan will INTRODUCE onion structure
 
-2. **Layer identification**: Where will each layer live?
-    - Inbound adapters: API routes, edge functions, UI components
+3. **Layer identification**: Where will each layer live?
+    - UI components: React/Vue/Svelte component files (when UI-involved)
+    - Inbound adapters: API routes, edge functions
     - Use cases: Application service files
     - Domain: Pure business logic files
     - Outbound adapters: Repository implementations, API client wrappers
@@ -427,8 +479,35 @@ Before planning inner loops, clearly define the integration test:
 ### Phase 4: Map Layer Progression and Ports
 This is the key architectural design step. Map out:
 
+**When UI-involved:**
 ```markdown
-Outer Test: "User triggers analysis, sees progress, receives result"
+Outer Test: "User clicks Analyze, sees progress bar, views result summary"
+
+0. UI Component: AnalysisDashboard
+   DEFINES: API contract it needs (GET /analysis/:id, POST /analyze)
+   → After completion, outer test fails with: "API endpoint not found"
+
+1. Inbound Adapter: POST /analyze handler, GET /analysis/:id handler
+   DEFINES: StartAnalysisUseCase port
+   → After completion, outer test fails with: "Use case not implemented"
+
+2. Use Case: StartAnalysisUseCaseImpl
+   DEFINES: AnalysisResultRepository port, EventSourcePort
+   DISCOVERS: Domain needs — AnalysisResult entity, scoring logic
+   → After completion (with mocked ports), outer test fails with: "Repository port not implemented"
+
+   2a. Domain Core (nested within use case development):
+       - AnalysisResult.fromEvents() — pure scoring
+       - TimeWindow value object — pure date logic
+
+3. Outbound Adapter: PostgresAnalysisResultRepository
+   IMPLEMENTS: AnalysisResultRepository port
+   → After completion, wire up, outer test PASSES
+```
+
+**When API-only:**
+```markdown
+Outer Test: "User triggers analysis, receives result"
 
 1. Inbound Adapter: POST /analyze handler
    DEFINES: StartAnalysisUseCase port
@@ -480,6 +559,7 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 ### Directory Structure
 | Layer | Directory | Test Directory |
 |-------|-----------|----------------|
+| UI Components (when UI-involved) | `src/components/` or `src/pages/` | co-located or `__tests__/` |
 | Inbound Adapters | `src/adapters/inbound/` or `supabase/functions/` | co-located or `__tests__/` |
 | Use Cases | `src/use-cases/` or `src/application/` | co-located |
 | Ports | `src/ports/` | (tested via use case and adapter tests) |
@@ -520,13 +600,65 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 - [ ] [Observable outcome 1]
 - [ ] [Observable outcome 2]
 
-### Expected Failure Progression
+### Expected Failure Progression (UI-involved)
+| After Layer | Expected Failure |
+|-------------|-----------------|
+| (none) | "Component not found" or "page blank" |
+| UI Component | "API endpoint not found" or "fetch failed" |
+| Inbound Adapter | "use case method not implemented" |
+| Use Case (mocked ports) | "repository port not wired" |
+| Outbound Adapter | ✅ PASSES |
+
+### Expected Failure Progression (API-only)
 | After Layer | Expected Failure |
 |-------------|-----------------|
 | (none) | "404 Not Found" or "route not defined" |
 | Inbound Adapter | "use case method not implemented" |
 | Use Case (mocked ports) | "repository port not wired" |
 | Outbound Adapter | ✅ PASSES |
+
+---
+
+## Layer 0: UI Component (WHEN UI-INVOLVED — skip if API-only)
+
+**The user-facing surface. Build this FIRST when the feature has UI.**
+
+### 0.1 Component Test: [What the user sees/does]
+
+**Behavior**: [User interacts with component, sees expected output]
+
+- [ ] **RED**: Write component test
+  - Location: `[test file path]`
+  - Test name: `test('[user sees / user does behavior]')`
+  - Render: Component with mocked API / stubbed props
+  - Interact: [click button, fill form, navigate]
+  - Assert: [visible text, element presence, state change]
+
+- [ ] **RUN**: Confirm test FAILS
+
+- [ ] **GREEN**: Implement component
+  - Location: `[component file path]`
+  - Depends on: API contract (fetch calls or props) — never imports use cases directly
+  - Follow `.claude/DESIGN.md` constraints if present
+
+- [ ] **RUN**: Confirm test PASSES
+
+- [ ] **REFACTOR**: [If needed]
+
+### 0.2 Component Test: [Error / loading state]
+
+- [ ] **RED**: Write test for loading and error states
+  - Test name: `test('[shows loading indicator while fetching]')` or `test('[shows error when API fails]')`
+  - Mock: API returns pending / error
+  - Assert: [loading spinner visible, error message shown]
+
+- [ ] **RUN → GREEN → REFACTOR**
+
+- [ ] **ARCHITECTURE CHECK**: Component calls API endpoints only — no direct imports from use cases, domain, or adapters
+
+### After Layer 0
+- [ ] **RUN OUTER TEST**: Confirm it fails with: `[API endpoint not found / fetch failed]`
+- [ ] **COMMIT**: "feat(ui): [feature] component + API contract definition"
 
 ---
 
@@ -700,6 +832,7 @@ Connect all layers with real implementations.
 
 After all tests pass, verify the dependency direction:
 
+- [ ] **UI components** (when present) import only: API client / fetch, framework code — never use cases or domain
 - [ ] **Inbound adapters** import only: port interfaces, framework code
 - [ ] **Use cases** import only: domain types, outbound port interfaces
 - [ ] **Domain** imports: NOTHING from outside its own directory
@@ -710,6 +843,7 @@ After all tests pass, verify the dependency direction:
 | Layer | Type | # Tests | Mocks Used | Status |
 |-------|------|---------|------------|--------|
 | Outer (Integration) | E2E | 1 | External only | ✅ |
+| UI Component (when present) | Component | [N] | API / props | ✅ |
 | Inbound Adapter | Unit | [N] | Use case port | ✅ |
 | Use Case | Unit | [N] | Outbound ports | ✅ |
 | Domain Core | **Pure** | [N] | **None** | ✅ |
@@ -731,6 +865,7 @@ Before finalizing the plan, verify:
 
 ### Double-Loop Structure
 - [ ] **Outer test is Step 1**: Written before any implementation
+- [ ] **UI-first when applicable**: If the feature has UI, Layer 0 (component) comes before Layer 1 (API)
 - [ ] **Failure progression documented**: Expected outer test failure after each layer
 - [ ] **Domain nested inside use case development**: Pure domain logic emerges while building the use case layer
 
@@ -847,6 +982,12 @@ Step 1-10: Build everything
 Step 11: Write integration test  ← WRONG order
 ```
 The integration test is written FIRST and guides all development.
+
+### ❌ Starting with API When There's a UI
+```markdown
+Step 1: Build POST /orders endpoint  ← WRONG when there's a form
+```
+If the feature has a UI, start from the component. The component test drives out what API shape it needs. Then build the API to match.
 
 ### ❌ Starting with Database
 ```markdown

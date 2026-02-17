@@ -342,7 +342,13 @@ Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI s
 ### Phase 2: Codebase Analysis
 Before writing the plan, analyze:
 
-1. **Existing CQRS structure**: Does CQRS already exist?
+1. **UI involvement**: Does this feature have a user-facing component?
+    - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+    - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
+    - **If UI-involved:** Add a UI component layer BEFORE the command/query handler layers. The component test drives out what API shape the command endpoint and query endpoint need to provide. Build the view first, then the command side, then the query side.
+    - **If API-only:** Start with the command handler as the entry point.
+
+2. **Existing CQRS structure**: Does CQRS already exist?
     - Look for: `commands/`, `queries/`, `projections/`, `events/`, `read-models/`
     - Is there an event store? (Postgres with events table, EventStoreDB, in-memory)
     - Is there a command/query bus?

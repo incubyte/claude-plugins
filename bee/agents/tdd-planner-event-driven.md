@@ -319,7 +319,13 @@ Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI s
 ### Phase 2: Codebase Analysis
 Before writing the plan, analyze:
 
-1. **Existing event infrastructure**: What messaging system is used?
+1. **UI involvement**: Does this feature have a user-facing component?
+    - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
+    - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
+    - **If UI-involved:** Add a UI component layer BEFORE the producer/consumer layers. The component test drives out what API or event subscription shape the UI needs. Build the view first, then the event contract, then producer, then consumer.
+    - **If API-only:** Start with the event contract as the entry point.
+
+2. **Existing event infrastructure**: What messaging system is used?
     - Look for: Kafka, RabbitMQ, SQS, SNS, Supabase Realtime, Redis Pub/Sub, in-process event bus
     - How are events published? How are consumers registered?
     - Is there an existing event schema format?
