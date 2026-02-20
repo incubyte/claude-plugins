@@ -1,0 +1,33 @@
+---
+description: Bee workflow — run bee-build, bee discover, bee review from chat
+alwaysApply: true
+---
+
+# Bee workflow — when the user says "bee-build", "bee build", "/bee:build", "start bee workflow", "run bee", or similar
+
+You are integrating with **Bee**, a spec-driven TDD workflow navigator. Bee's files are installed at **BEE_ROOT** on this machine:
+
+- **BEE_ROOT** = `~/.config/Cursor/bee` (symlink to the Bee repo). Resolve `~` as the user's home directory.
+
+**Path resolution:**
+
+- Paths like `agents/`, `skills/`, `commands/` → resolve from **BEE_ROOT** (e.g. `BEE_ROOT/agents/context-gatherer.md`, `BEE_ROOT/commands/build.md`).
+- Paths like `docs/specs/`, `.claude/`, `docs/adrs/` → resolve from the **current workspace root** (the project the user has open in Cursor).
+
+**What to do:**
+
+1. **bee-build (or "bee build", "/bee:build", "start bee workflow")**
+   - Read and follow the instructions in **BEE_ROOT/commands/build.md** from start to finish.
+   - When that file refers to "agents/", "skills/", or other Bee assets, read them from BEE_ROOT.
+   - When it refers to "docs/specs/.bee-state.md" or "docs/specs/", use the current workspace.
+   - If the user added a task description (e.g. "bee-build add user auth"), treat it as the initial task description for the workflow.
+
+2. **bee-discover (or "bee discover", "/bee:discover")**
+   - Read and follow **BEE_ROOT/commands/discover.md**.
+   - Same path rules: Bee assets from BEE_ROOT, project paths from workspace.
+
+3. **bee-review (or "bee review", "/bee:review")**
+   - Read and follow **BEE_ROOT/commands/review.md**.
+   - Same path rules as above.
+
+**Cursor vs Claude:** Cursor has no "Task" tool for subagents. When the build/discover/review command says "Delegate to X via Task" or "spawn agent Y", you perform that agent's role yourself by reading **BEE_ROOT/agents/<agent-name>.md** (or the path given in the command) and following its instructions in this conversation. You are the single agent executing the Bee workflow.

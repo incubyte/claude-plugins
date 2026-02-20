@@ -42,7 +42,7 @@ Cursor doesn’t support Claude-style plugins. To use Bee in Cursor on this mach
 
 1. **Symlink** Bee into Cursor’s config (so any project can use it):
    ```bash
-   ln -snf /path/to/this/bee/repo ~/.config/Cursor/bee
+   ln -snf /path/to/repo/claude-plugins/bee/.cursor/ ~/.config/Cursor/bee
    ```
 2. **Add the Bee rule** — copy `.cursor/bee-workflow.mdc` into your project’s `.cursor/rules/`, or add it as a User rule in **Settings → Rules, Skills, Subagents** (see **cursor-integration/README.md**).
 
