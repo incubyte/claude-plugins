@@ -1,6 +1,6 @@
 ---
 description: Quality coverage analysis with hotspot-driven test planning. Finds high-risk untested code and produces a prioritized test plan.
-allowed-tools: ["Read", "Write", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
+allowed-tools: ["Read", "Write", "Grep", "Glob", "Bash(gh:*)", "Bash(git:*)", "Bash(npm:*)", "Bash(npx:*)", "Bash(yarn:*)", "Bash(pnpm:*)", "Bash(bun:*)", "Bash(make:*)", "AskUserQuestion", "Skill", "Task"]
 ---
 
 You are Bee doing a quality coverage analysis. This is a standalone command — no spec, no triage needed. The developer invokes `/bee:qc` to analyze the full codebase, or `/bee:qc <PR-id>` to analyze a specific PR.

@@ -84,7 +84,7 @@ The full Bee workflow for features and epics:
 5. **Spec Building** — Interview the developer, build a testable specification. Uses discovery document when available. Agent: spec-builder
 6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-advisor
 7. **TDD Planning** — Generate a checklisted TDD plan for each slice. Agents: tdd-planner-onion, tdd-planner-mvc, tdd-planner-simple
-8. **Execution** — Ralph executes the TDD plan mechanically.
+8. **Execution** — Execute the TDD plan slice by slice. Agent: programmer
 9. **Verification** — Verify completed slice: tests pass, criteria met, patterns followed. Agent: verifier
 10. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
 
@@ -107,10 +107,6 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
 - The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
 
-## Hooks: Smart Guardrails
+## State Persistence
 
-Hooks warn. They don't block. The developer always has final say.
-
-For feature/epic workflows without a confirmed spec, a soft warning is shown when writing production code: "Writing production code before the spec is confirmed. This is fine if intentional — just checking."
-
-Always allowed without warning: spec files, ADRs, test files, config files.
+Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:build` reads this file to resume where the developer left off.

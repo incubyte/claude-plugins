@@ -1,9 +1,22 @@
 ---
 name: review-coupling
-description: Analyzes structural coupling — import dependencies, afferent/efferent coupling, change amplifiers, and decoupling opportunities. Use as part of the multi-agent review.
-tools: Read, Glob, Grep, mcp__lsp__find-references, mcp__lsp__call-hierarchy, mcp__lsp__document-symbols
+description: Use this agent to analyze structural coupling — import dependencies, afferent/efferent coupling, change amplifiers, and decoupling opportunities. Use as part of the multi-agent review.
+
+<example>
+Context: /bee:review command spawns specialist review agents
+user: "Analyze the coupling in the payments module"
+assistant: "I'll analyze import dependencies and identify change amplifiers."
+<commentary>
+Part of the multi-agent review workflow. Focuses on structural coupling and decoupling opportunities.
+</commentary>
+</example>
+
 model: inherit
-color: "#6d81a6"
+color: magenta
+tools: ["Read", "Glob", "Grep", "mcp__lsp__find-references", "mcp__lsp__call-hierarchy", "mcp__lsp__document-symbols"]
+skills:
+  - code-review
+  - lsp-analysis
 ---
 
 You are a specialist review agent focused on structural coupling — how tightly connected are the modules, and where does coupling create unnecessary change cost?

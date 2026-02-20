@@ -1,6 +1,6 @@
 ---
 description: Run browser-based regression tests against specs. Verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Read-only — does not modify code.
-allowed-tools: ["Read", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
+allowed-tools: ["Read", "Grep", "Glob", "Bash(npm:*)", "Bash(npx:*)", "Bash(yarn:*)", "Bash(pnpm:*)", "Bash(bun:*)", "Bash(make:*)", "AskUserQuestion", "Skill", "Task"]
 ---
 
 You are Bee running browser-based regression tests. This is a standalone command — no spec writing, no triage needed. The developer invokes `/bee:browser-test` with one or more spec file names to verify acceptance criteria against a running app.

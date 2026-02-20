@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven, test-first engineering disc
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
 
-**What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture *why* things were built — not just *what*. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -14,23 +14,39 @@ Bee doesn't enforce process — it suggests. The developer always has final say.
 
 ## Install
 
+On Copilot CLI and Claude Code run this and you're good to go:
+
 ```bash
 # Add the Incubyte marketplace
-claude plugin marketplace add incubyte/claude-plugins
+/plugin marketplace add incubyte/claude-plugins
 
 # Install Bee
-claude plugin install bee@incubyte-plugins
+/plugin install bee@incubyte-plugins
 ```
+
+> Make sure to restart your tool after installing the plugin
 
 ### Optional: Autonomous Execution with Ralph
 
 Bee can hand off TDD plan execution to [Ralph Wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum), a persistent loop plugin by Anthropic. When installed, Bee detects it automatically and offers autonomous execution during the build phase.
 
 ```bash
-claude plugin install ralph-wiggum@incubyte-plugins
+/plugin install ralph-wiggum@incubyte-plugins
 ```
 
 Without Ralph, you drive execution manually by following the TDD plan checklist. Both paths work — Ralph just lets you walk away while it builds.
+
+### Cursor Support
+
+Cursor doesn’t support Claude-style plugins. To use Bee in Cursor on this machine:
+
+1. **Symlink** Bee into Cursor’s config (so any project can use it):
+   ```bash
+   ln -snf /path/to/this/bee/repo ~/.config/Cursor/bee
+   ```
+2. **Add the Bee rule** — copy `.cursor/bee-workflow.mdc` into your project’s `.cursor/rules/`, or add it as a User rule in **Settings → Rules, Skills, Subagents** (see **cursor-integration/README.md**).
+
+Then in any project you can say **bee-build**, **bee discover**, or **bee review** in chat to start the same workflows.
 
 ## Usage
 
@@ -42,11 +58,11 @@ Without Ralph, you drive execution manually by following the TDD plan checklist.
 
 **How it works:** Tell it what you want to build. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
 
-| Task size | What Bee does |
-|-----------|--------------|
-| Typo / config fix | Just fixes it |
-| Small bug / UI tweak | Quick confirmation, then builds |
-| New feature | Spec, architecture, TDD plan, verify, review |
+| Task size            | What Bee does                                         |
+| -------------------- | ----------------------------------------------------- |
+| Typo / config fix    | Just fixes it                                         |
+| Small bug / UI tweak | Quick confirmation, then builds                       |
+| New feature          | Spec, architecture, TDD plan, verify, review          |
 | Epic / new subsystem | Breaks into shippable phases, full workflow per phase |
 
 ```
@@ -128,20 +144,20 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 
 ### Size
 
-| Size | What it looks like | Bee's approach |
-|------|-------------------|----------------|
-| TRIVIAL | Typo, config change, one-liner | Fix it immediately |
-| SMALL | Single-file bug, UI tweak | Quick confirmation, then build |
-| FEATURE | New endpoint, new screen, multi-file | Spec, architecture, TDD plan, verify, review |
-| EPIC | New subsystem, cross-cutting concern | Discovery, phased delivery, full workflow per phase |
+| Size    | What it looks like                   | Bee's approach                                      |
+| ------- | ------------------------------------ | --------------------------------------------------- |
+| TRIVIAL | Typo, config change, one-liner       | Fix it immediately                                  |
+| SMALL   | Single-file bug, UI tweak            | Quick confirmation, then build                      |
+| FEATURE | New endpoint, new screen, multi-file | Spec, architecture, TDD plan, verify, review        |
+| EPIC    | New subsystem, cross-cutting concern | Discovery, phased delivery, full workflow per phase |
 
 ### Risk
 
-| Risk | Examples | Effect on workflow |
-|------|----------|-------------------|
-| LOW | Internal tool, easy to revert | Lighter spec, simpler plan |
-| MODERATE | User-facing, business logic | Standard spec, proper TDD, team review recommended |
-| HIGH | Payments, auth, data migration | Thorough spec, defensive tests, feature flag + QA recommended |
+| Risk     | Examples                       | Effect on workflow                                            |
+| -------- | ------------------------------ | ------------------------------------------------------------- |
+| LOW      | Internal tool, easy to revert  | Lighter spec, simpler plan                                    |
+| MODERATE | User-facing, business logic    | Standard spec, proper TDD, team review recommended            |
+| HIGH     | Payments, auth, data migration | Thorough spec, defensive tests, feature flag + QA recommended |
 
 ## The Workflow
 
@@ -201,14 +217,14 @@ Close your terminal mid-feature? No problem. Bee persists progress in `.claude/b
 
 ## Artifacts Produced
 
-| Artifact | Location | Purpose |
-|----------|----------|---------|
-| Design Brief | `.claude/DESIGN.md` | Project-level visual constraints for UI work |
-| Specs | `docs/specs/[feature].md` | Requirements with acceptance criteria |
-| Discovery Docs | `docs/specs/[feature]-discovery.md` | Problem statement, hypotheses, milestone map |
-| TDD Plans | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
-| ADRs | `docs/adrs/NNN-[decision].md` | Architecture decisions with rationale |
-| State | `.claude/bee-state.local.md` | Session resume tracking |
+| Artifact       | Location                                   | Purpose                                           |
+| -------------- | ------------------------------------------ | ------------------------------------------------- |
+| Design Brief   | `.claude/DESIGN.md`                        | Project-level visual constraints for UI work      |
+| Specs          | `docs/specs/[feature].md`                  | Requirements with acceptance criteria             |
+| Discovery Docs | `docs/specs/[feature]-discovery.md`        | Problem statement, hypotheses, milestone map      |
+| TDD Plans      | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
+| ADRs           | `docs/adrs/NNN-[decision].md`              | Architecture decisions with rationale             |
+| State          | `.claude/bee-state.local.md`               | Session resume tracking                           |
 
 These artifacts are knowledge capture — when a new developer joins, they can read the specs, discovery docs, and design brief to understand not just what was built, but why and how.
 
@@ -216,34 +232,34 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 Bee ships with 26 specialist agents:
 
-| Agent | Role |
-|-------|------|
-| `quick-fix` | Handle trivial fixes end-to-end |
-| `context-gatherer` | Read codebase — patterns, conventions, and design system signals |
-| `tidy` | Clean up the area before building |
-| `design-agent` | Produce a design brief from existing design systems or greenfield interviews |
-| `discovery` | PM persona that interviews users and produces a client-shareable PRD |
-| `spec-builder` | Interview developer, write testable and design-aware specs |
-| `architecture-advisor` | Evaluate architecture options, YAGNI check |
-| `tdd-planner-onion` | Outside-in TDD for onion/hexagonal architecture |
-| `tdd-planner-mvc` | Layer-by-layer TDD for MVC codebases |
-| `tdd-planner-cqrs` | Split command/query TDD for CQRS systems |
-| `tdd-planner-event-driven` | Contract-first TDD for event-driven systems |
-| `tdd-planner-simple` | Straightforward test-implement-verify |
-| `verifier` | Post-slice quality gate |
-| `reviewer` | Final review with ship recommendation |
-| `browser-verifier` | Browser-based AC verification via Chrome MCP |
-| `domain-language-extractor` | Extract domain vocabulary; flag vocabulary drift |
-| `architecture-test-writer` | Generate runnable ArchUnit-style boundary tests |
-| `onboard` | Interactive developer onboarding |
-| `qc-planner` | Synthesize review outputs into a prioritized test plan |
-| `review-code-quality` | SRP, DRY, YAGNI, naming review |
-| `review-coupling` | Import dependencies, change amplifiers |
-| `review-tests` | Test quality, coverage gaps |
-| `review-behavioral` | Git hotspots, temporal coupling |
-| `review-team-practices` | Commit messages, PR review substance |
-| `review-org-standards` | Project CLAUDE.md conventions |
-| `review-ai-ergonomics` | LLM-friendliness review |
+| Agent                       | Role                                                                         |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `quick-fix`                 | Handle trivial fixes end-to-end                                              |
+| `context-gatherer`          | Read codebase — patterns, conventions, and design system signals             |
+| `tidy`                      | Clean up the area before building                                            |
+| `design-agent`              | Produce a design brief from existing design systems or greenfield interviews |
+| `discovery`                 | PM persona that interviews users and produces a client-shareable PRD         |
+| `spec-builder`              | Interview developer, write testable and design-aware specs                   |
+| `architecture-advisor`      | Evaluate architecture options, YAGNI check                                   |
+| `tdd-planner-onion`         | Outside-in TDD for onion/hexagonal architecture                              |
+| `tdd-planner-mvc`           | Layer-by-layer TDD for MVC codebases                                         |
+| `tdd-planner-cqrs`          | Split command/query TDD for CQRS systems                                     |
+| `tdd-planner-event-driven`  | Contract-first TDD for event-driven systems                                  |
+| `tdd-planner-simple`        | Straightforward test-implement-verify                                        |
+| `verifier`                  | Post-slice quality gate                                                      |
+| `reviewer`                  | Final review with ship recommendation                                        |
+| `browser-verifier`          | Browser-based AC verification via Chrome MCP                                 |
+| `domain-language-extractor` | Extract domain vocabulary; flag vocabulary drift                             |
+| `architecture-test-writer`  | Generate runnable ArchUnit-style boundary tests                              |
+| `onboard`                   | Interactive developer onboarding                                             |
+| `qc-planner`                | Synthesize review outputs into a prioritized test plan                       |
+| `review-code-quality`       | SRP, DRY, YAGNI, naming review                                               |
+| `review-coupling`           | Import dependencies, change amplifiers                                       |
+| `review-tests`              | Test quality, coverage gaps                                                  |
+| `review-behavioral`         | Git hotspots, temporal coupling                                              |
+| `review-team-practices`     | Commit messages, PR review substance                                         |
+| `review-org-standards`      | Project CLAUDE.md conventions                                                |
+| `review-ai-ergonomics`      | LLM-friendliness review                                                      |
 
 ## Skills
 
@@ -339,4 +355,4 @@ bee/
 
 ## License
 
-Proprietary.
+MIT

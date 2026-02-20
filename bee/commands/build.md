@@ -1,13 +1,13 @@
 ---
 description: Start a Bee workflow navigation session. Assesses your task and recommends the right level of process.
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "AskUserQuestion", "Skill", "Task"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh:*)", "AskUserQuestion", "Skill", "Task"]
 ---
 
 ## Mandatory Rules
 
-**Rule 1 — Load skills before every phase.** Each phase section below lists skills to load. Call the Skill tool for each one BEFORE delegating to the agent. If you skip the Skill call, the agent works without principles — producing lower quality output. This applies to ALL phases including execution and verification.
+**Rule 1 — Load relevant skills as needed.** Before any activity — coding, reviewing, debugging, designing — use the Skill tool to load skills that match what you're about to do. Don't use a hardcoded list; let the skill system match based on the activity. Agents have their own skills preloaded via frontmatter, so skill loading here is for YOUR work in the build command (especially during execution).
 
-**Rule 2 — Delegate to specialist agents. Do NOT do their work yourself.** You are a navigator, not an executor. When the instructions say "delegate to the verifier agent via Task," you MUST use the Task tool. If you find yourself writing code, running tests, building specs, or doing reviews directly — STOP. You are violating this rule. Delegate instead.
+**Rule 2 — Delegate to specialist agents. Do NOT do their work yourself.** Planning agents (context-gatherer, spec-builder, architecture-advisor, TDD planners), the programmer agent, and quality agents (verifier, reviewer, browser-verifier) are specialists — ALWAYS delegate to them via the Task tool. If you find yourself writing code, running tests, building specs, or doing reviews directly — STOP. You are violating this rule. Delegate instead.
 
 **Rule 3 — One test at a time during execution.** TDD means RED-GREEN-REFACTOR for ONE test, then move to the next. Never write multiple tests before making the first one pass. Never batch steps. This is non-negotiable — it is the core discipline that makes TDD work.
 
@@ -19,147 +19,66 @@ Your job: guide the developer through the right process so the AI produces the b
 
 Bee tracks progress in `.claude/bee-state.local.md`. This file is the source of truth for where we are across sessions. Read it on startup. Update it after every phase transition.
 
+**CRITICAL: Use the state script for ALL state writes.** Never use Write or Edit tools on `bee-state.local.md` — that triggers permission prompts for the user. Instead, call the update script via Bash. The script is pre-approved in allowed-tools and writes silently.
+
+### State Script Reference
+
+The script lives at `${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh`. It supports these commands:
+
+**Initialize** (after triage):
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" init --feature "User auth" --size FEATURE --risk MODERATE
+```
+
+**Update fields** (incremental — only pass what changed):
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "single-phase" --phase-spec "docs/specs/user-auth.md — confirmed"
+```
+
+**Read state** (on startup):
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" get
+```
+
+**Read single field**:
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" get --field feature
+```
+
+**Clear** (when done):
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" clear
+```
+
+Available flags: `--feature`, `--size`, `--risk`, `--discovery`, `--design-brief`, `--boundaries`, `--current-phase`, `--phase-spec`, `--architecture`, `--tdd-plan`, `--current-slice`, `--phase-progress`, `--slice-progress`
+
+For multi-line fields (phase-progress, slice-progress), use `|` as line separator:
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --phase-progress "Phase 1: done — Cart|Phase 2: executing|Phase 3: not started"
+```
+
 ### When to Update State
 
-Update the state file after each of these transitions:
-- Triage complete → write initial state (feature name, size, risk)
-- Context gathered → add context summary path
-- Design brief produced → add design brief path (`.claude/DESIGN.md`)
-- Discovery complete → add discovery doc path and phase list
-- Phase started → set current phase number and name
-- Spec confirmed → add spec path for the current phase
-- Architecture decided → add architecture and planner
-- TDD plan written → add plan path, set phase to "planning complete"
-- Execution started → set phase to "executing", track current slice
-- Slice verified → update slice progress, move to next slice or phase review
-- Phase reviewed → mark phase done in phase progress, move to next phase
-- All phases done → set phase to "done"
-
-### State File Format
-
-Write the state file as natural markdown. Keep it concise — just enough for a fresh session to pick up exactly where we left off.
-
-```markdown
-# Bee State
-
-## Feature
-[Feature name from the developer's description]
-
-## Triage
-Size: [TRIVIAL/SMALL/FEATURE/EPIC]
-Risk: [LOW/MODERATE/HIGH]
-
-## Discovery
-[Path to discovery doc, or "not done"]
-
-## Current Phase
-[Phase number and name, or "single-phase" if no discovery]
-
-## Phase Spec
-[Path to current phase's spec file, or "not yet written"]
-
-## Architecture
-[Architecture decision and which planner, or "not yet decided"]
-
-## Current Slice
-[Which slice we're on within the current phase]
-
-## TDD Plan
-[Path to current plan file, or "not yet written"]
-
-## Phase Progress
-[Which phases are done, which remain — only present when discovery produced multiple phases]
-
-## Slice Progress
-[Which slices within the current phase are done, which remain]
-```
-
-Example — single-phase feature (no discovery):
-
-```markdown
-# Bee State
-
-## Feature
-User authentication with email/password
-
-## Triage
-Size: FEATURE
-Risk: MODERATE
-
-## Discovery
-not done
-
-## Current Phase
-single-phase
-
-## Phase Spec
-docs/specs/user-auth.md — confirmed by developer
-
-## Architecture
-Onion/Hexagonal → tdd-planner-onion
-
-## Current Slice
-Slice 1 — Registration (signup form + API + DB)
-
-## TDD Plan
-docs/specs/user-auth-slice-1-tdd-plan.md
-
-## Phase Progress
-n/a — single phase
-
-## Slice Progress
-Slice 1: executing (4/9 steps done)
-Slice 2: not started
-Slice 3: not started
-```
-
-Example — multi-phase epic mid-workflow:
-
-```markdown
-# Bee State
-
-## Feature
-E-commerce checkout system
-
-## Triage
-Size: EPIC (revised from FEATURE during discovery)
-Risk: HIGH
-
-## Discovery
-docs/specs/checkout-discovery.md
-
-## Current Phase
-Phase 2: Payment integration
-
-## Phase Spec
-docs/specs/checkout-phase-2.md — confirmed by developer
-
-## Architecture
-Onion/Hexagonal → tdd-planner-onion (carried from Phase 1)
-
-## Current Slice
-Slice 1 — Stripe checkout session
-
-## TDD Plan
-docs/specs/checkout-phase-2-slice-1-tdd-plan.md
-
-## Phase Progress
-Phase 1: done — Cart management (shipped)
-Phase 2: executing
-Phase 3: not started — Order confirmation
-Phase 4: not started — Email notifications
-
-## Slice Progress
-Slice 1: executing (3/7 steps done)
-Slice 2: not started
-```
+Update state after each of these transitions:
+- Triage complete → `init` with feature name, size, risk
+- Context gathered → `set --current-phase "context gathered"`
+- Design brief produced → `set --design-brief ".claude/DESIGN.md"`
+- Discovery complete → `set --discovery "docs/specs/feature-discovery.md"`
+- Phase started → `set --current-phase "Phase N: Name"`
+- Spec confirmed → `set --phase-spec "docs/specs/feature.md — confirmed"`
+- Architecture decided → `set --architecture "Onion/Hexagonal → tdd-planner-onion"`
+- TDD plan written → `set --tdd-plan "docs/specs/feature-slice-1-tdd-plan.md"`
+- Execution started → `set --current-slice "Slice 1 — Description"`
+- Slice verified → `set --slice-progress "Slice 1: done|Slice 2: executing"`
+- Phase reviewed → `set --phase-progress "Phase 1: done|Phase 2: executing"`
+- All phases done → `set --current-phase "done — shipped"`
 
 ## ON STARTUP — SESSION RESUME
 
 Before anything, check for in-progress work:
 
-1. Look for `.claude/bee-state.local.md`
-2. If found, read it. It tells you exactly where we left off — feature, current phase, spec path, plan path, slice and phase progress.
+1. Run `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" get` via Bash. If it prints "No active Bee state.", skip to step 5.
+2. If state exists, read the output. It tells you exactly where we left off — feature, current phase, spec path, plan path, slice and phase progress.
 3. Use AskUserQuestion:
    "I found in-progress work on **[feature name]** — [phase description]. Pick up where we left off?"
    Options: "Yes, continue" / "No, start something new"
@@ -195,7 +114,7 @@ Risk flows to every downstream phase:
 - Moderate risk: standard spec, proper TDD plan, review recommends team review
 - High risk: thorough spec (edge cases, failure modes), defensive TDD plan (more error handling tests), review recommends feature flag + team review + QA
 
-**→ Update state:** Write initial `.claude/bee-state.local.md` with feature name, size, risk, phase: "triaged, starting inline clarification".
+**→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" init --feature "[feature name]" --size [SIZE] --risk [RISK] --current-phase "triaged"`
 
 ## INLINE CLARIFICATION — CLARIFY BEFORE DOING
 
@@ -246,17 +165,31 @@ After triage and inline clarification, present your recommendation via AskUserQu
   When it returns, summarize what it found in 2-3 sentences.
 
   Check the "UI-involved" flag from the context-gatherer's Design System subsection:
-  - **When "UI-involved: yes"**: delegate to the design agent via Task, passing the developer's task description, the full context-gatherer output (including the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
+  - **When "UI-involved: yes"**:
+    Delegate to the design agent via Task, passing the developer's task description, the full context-gatherer output (including the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
   - **When "UI-involved: no"**: skip the design agent.
 
-  Then report:
-  "The lightweight confirm-and-build workflow is coming in a future slice. For now, here's my assessment: **SMALL**, **[risk]**, recommended workflow: **lightweight confirm-and-build**"
+  Confirm the approach with the developer via AskUserQuestion:
+  "Here's what I'll change: [brief plan based on context-gatherer findings]. Sound right?"
+  Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
+
+  Load relevant skills, then implement the change. Write a failing test first, make it pass, refactor. One change at a time.
+
+  After implementation, delegate to the verifier agent via Task, passing:
+  - The task description
+  - The risk level
+  - The context summary
+
+  If the context-gatherer flagged "UI-involved: yes":
+  Delegate to the browser-verifier agent via Task in dev mode, passing:
+  - The task description
+  - The context summary (including dev server info)
+  - Mode: "dev"
+  - The DESIGN.md path (if `.claude/DESIGN.md` exists)
 
 - If FEATURE or EPIC:
 
   ### Context Gathering
-
-  → Load skills: `clean-code`, `architecture-patterns`, `lsp-analysis`
 
   First, scan the codebase — unless it's clearly greenfield (empty repo, no source files).
 
@@ -264,7 +197,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   "Let me read the codebase first to understand what we're working with."
   Delegate to the context-gatherer agent via Task, passing the task description.
   When it returns, share the summary with the developer.
-  **→ Update state:** phase: "context gathered"
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "context gathered"`
 
   If the context-gatherer flagged tidy opportunities, use AskUserQuestion:
   "I found some cleanup opportunities in this area: [list the flagged items].
@@ -275,7 +208,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   **If greenfield (empty/new repo):**
   Skip context-gatherer. Note: greenfield is an amplifying signal for discovery — no existing patterns means more open decisions.
-  **→ Update state:** phase: "context gathered (greenfield — skipped scan)"
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "context gathered (greenfield)"`
 
   **Greenfield design check:** Since there's no context-gatherer output to provide a "UI-involved" flag, do a lightweight UI-signal scan:
   - Scan the developer's task description and any inline clarification answers for UI keywords: screen, form, dashboard, page, UI, UX, frontend, display, view, layout, chart, table, component, button, widget
@@ -290,7 +223,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
   - The triage assessment (size + risk)
   - A note that this is greenfield (no existing design system to detect)
   The design agent produces a design brief at `.claude/DESIGN.md` in the target project.
-  **→ Update state:** add design brief path
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
 
   **→ Run the Collaboration Loop** on the design brief.
 
@@ -301,13 +234,12 @@ After triage and inline clarification, present your recommendation via AskUserQu
   After context-gathering returns, check the "UI-involved" flag from the Design System subsection.
 
   - **When "UI-involved: yes"**:
-    → Load skills: `design-fundamentals`
     Delegate to the design agent via Task, passing:
     - The developer's task description
     - The full context-gatherer output (including the Design System subsection with detected signals, file paths, and flags)
     - The triage assessment (size + risk)
     The design agent produces a design brief at `.claude/DESIGN.md` in the target project.
-    **→ Update state:** add design brief path
+    **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
 
     **→ Run the Collaboration Loop** on the design brief.
 
@@ -348,14 +280,13 @@ After triage and inline clarification, present your recommendation via AskUserQu
   Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
   If the developer chooses discovery:
-  → Load skills: `spec-writing`, `ai-workflow`
   Delegate to the discovery agent via Task, passing:
   - The developer's task description
   - The triage assessment (size + risk)
   - The context summary from the context-gatherer
   - Any inline discovery Q&A answers already collected
   The discovery agent will produce a discovery document, get developer confirmation, and return the document path.
-  **→ Update state:** add discovery doc path, phase: "discovery complete"
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --discovery "[discovery-doc-path]" --current-phase "discovery complete"`
 
   **→ Run the Collaboration Loop** on the discovery document (see Collaboration Loop section above).
 
@@ -404,7 +335,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
      If yes, append a line to CLAUDE.md: `Read .claude/BOUNDARIES.md for module boundary rules.`
 
   6. Report to the developer which modules and boundaries were saved.
-     **→ Update state:** add boundaries path (`.claude/BOUNDARIES.md`)
+     **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --boundaries ".claude/BOUNDARIES.md"`
 
   **When Module Structure is absent** (non-greenfield or discovery skipped): skip this step entirely — no change to existing behavior.
 
@@ -412,8 +343,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   ### Collaboration Loop
 
-  → Load skills: `collaboration-loop`
-  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding.
+  After every document-producing agent (discovery, spec-builder, TDD planner) returns, run this loop before proceeding. Load the `collaboration-loop` skill before processing annotations.
 
   1. Append a centered `[ ] Reviewed` checkbox to the end of the document.
   3. Tell the developer: "I've saved the doc to `[path]`. You can review it in your editor — if anything needs changing, add `@bee` followed by your comment on the line you want to change (e.g., `@bee this AC is too vague`). I'll read your annotations, make the changes, and leave a comment card so you can see what I did. When you're happy with the doc, mark `[x] Reviewed` at the bottom to move on."
@@ -438,7 +368,6 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 1: Spec
 
-  → Load skills: `spec-writing`, `clean-code`
   Delegate to the spec-builder agent via Task, passing:
   - The developer's task description
   - The triage assessment (size + risk — possibly revised by discovery)
@@ -448,20 +377,19 @@ After triage and inline clarification, present your recommendation via AskUserQu
   - For single-phase: no phase constraint. Spec saves to `docs/specs/[feature].md`.
 
   The spec-builder interviews the developer, writes the spec, and gets confirmation before returning.
-  **→ Update state:** add spec path, set phase to "spec confirmed" (or "phase N spec confirmed")
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --phase-spec "[spec-path] — confirmed" --current-phase "spec confirmed"`
 
   **→ Run the Collaboration Loop** on the spec document.
 
   #### Step 2: Architecture
 
-  → Load skills: `architecture-patterns`, `clean-code`
   Delegate to the architecture-advisor agent via Task, passing:
   - The confirmed spec (path and content)
   - The context summary (including detected architecture pattern)
   - The triage assessment (size + risk)
 
   The architecture-advisor will either confirm existing patterns or present options. It returns the architecture recommendation.
-  **→ Update state:** add architecture decision and planner name
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --architecture "[pattern] → [planner-name]"`
 
   For multi-phase after Phase 1: the architecture decision typically carries forward. Confirm: "Phase 1 used **[pattern]**. Same for Phase [N]?"
   Options: "Yes, same approach (Recommended)" / "Re-evaluate for this phase"
@@ -487,37 +415,28 @@ After triage and inline clarification, present your recommendation via AskUserQu
   If "I'd pick a different approach", let the developer choose:
   Options: "Onion/Outside-In" / "MVC" / "Event-Driven" / "Simple" (add "CQRS" if applicable)
 
-  → Load skills: `tdd-practices`, `clean-code`
   Delegate to the selected planner agent via Task, passing the spec path, the slice to plan, the architecture recommendation, the context summary, and the risk level.
 
   **→ Run the Collaboration Loop** on the TDD plan document.
 
-  **→ Update state:** add plan path, current slice, set phase to "plan reviewed, ready to execute"
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --tdd-plan "[plan-path]" --current-slice "Slice 1 — [description]" --current-phase "plan reviewed, ready to execute"`
 
   #### Step 4: Execute → Verify (slice loop)
 
-  → Load skills: `tdd-practices`, `clean-code`, `debugging`
+  "TDD plan reviewed. Let's build."
 
-  Ask the developer how they want to execute using AskUserQuestion:
+  Delegate to the programmer agent via Task, passing:
+  - The TDD plan path
+  - The spec path
+  - The slice number
+  - The risk level
+  - The context summary
 
-  "TDD plan ready. Want Ralph to execute it autonomously, or do you want to drive it yourself?"
-  Options: "Let Ralph handle it (Recommended)" / "I'll drive it myself"
+  The programmer works through the TDD plan step by step — RED-GREEN-REFACTOR, one test at a time. It has clean-code, tdd-practices, debugging, design-fundamentals, architecture-patterns, ai-ergonomics, lsp-analysis, and code-review skills preloaded. Do NOT do the coding yourself — delegate to the programmer.
 
-  **If the developer chooses Ralph:**
-  Output the exact command for the developer to copy and paste. Replace [plan-path] with the actual TDD plan path from state:
-  ```
-  /ralph-loop:ralph-loop "Execute the TDD plan at [plan-path]. Follow each step in order: write the failing test, make it pass, refactor. Check off each step as you go. When done output <promise>SLICE COMPLETE</promise>" --completion-promise "SLICE COMPLETE" --max-iterations 40
-  ```
-  Tell the developer: "Copy and paste this command. Ralph will take over from here. Come back when he's done and we'll verify the slice."
-  Note: Due to Claude Code's security model, slash commands can only be invoked by the user — Bee cannot trigger Ralph programmatically.
+  When the programmer returns, update state with the result.
 
-  **If the developer chooses manual:**
-  The developer executes the TDD plan — follow the checklist, write tests, make them pass. Bee monitors but doesn't drive execution.
-
-  Periodically update state with step progress (e.g., "executing, 5 of 12 steps done").
-
-  → Load skills: `clean-code`, `tdd-practices`
-  **After a slice is built**, delegate to the verifier agent via Task, passing:
+  **After a slice is built**, you MUST delegate to the verifier agent via Task, passing:
   - The spec path
   - The TDD plan path
   - The slice number
@@ -527,7 +446,6 @@ After triage and inline clarification, present your recommendation via AskUserQu
   The verifier runs tests, checks plan completion, validates ACs, and checks patterns.
 
   **After the regular verifier returns PASS**, check if the context-gatherer flagged "UI-involved: yes". If so:
-  → Load skills: `browser-testing`, `design-fundamentals`
   Delegate to the browser-verifier agent via Task in dev mode:
 
   Pass to the browser-verifier:
@@ -543,14 +461,14 @@ After triage and inline clarification, present your recommendation via AskUserQu
   - If browser-verifier reports **failures**: share the report with the developer. The browser-verifier will ask "Should I go ahead and fix this?" — let the developer decide. After fixes, re-run the browser-verifier.
   - If browser-verifier reports **"Browser verification passed"**: proceed normally.
 
-  **→ Update state:** add "Browser Verification: passed/failed/skipped" to `.claude/bee-state.local.md` for the current slice.
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --slice-progress "[updated slice progress with browser verification status]"`
 
   If "UI-involved: no" or the context-gatherer did not flag UI involvement, skip browser verification entirely.
 
   - **PASS + more slices remain:** loop back to Step 3 (TDD Planning) for the next slice.
-    **→ Update state:** mark slice done, increment current slice
+    **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-slice "Slice [N+1] — [description]" --slice-progress "[updated progress]"`
   - **PASS + all slices done:** show the execution summary (slice table, files created, test count), then append a **"Try it yourself"** section and move to Step 5 (Review).
-    **→ Update state:** set phase to "all slices verified, ready for review"
+    **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "all slices verified, ready for review"`
   - **NEEDS FIXES:** share verifier report with developer. After fixes, re-verify.
 
   #### Try It Yourself
@@ -591,7 +509,6 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   #### Step 5: Review
 
-  → Load skills: `clean-code`, `tdd-practices`, `code-review`
   Delegate to the reviewer agent via Task, passing:
   - The spec path
   - The risk level
@@ -614,11 +531,11 @@ After triage and inline clarification, present your recommendation via AskUserQu
   1. Run the Build Cycle for this phase.
   2. After review passes: "Phase [N] shipped. **[N of M] phases done.** Ready for Phase [N+1]: **[next phase name]**?"
      Options: "Yes, let's spec Phase [N+1] (Recommended)" / "Take a break, I'll come back"
-     **→ Update state:** mark phase done in Phase Progress, move to next phase
+     **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --phase-progress "[updated progress]" --current-phase "Phase [N+1]: [name]"`
   3. Repeat until all phases shipped.
 
   When all phases are done: "All phases shipped. Nice work."
-  **→ Update state:** phase: "done — shipped"
+  **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
   ### Single-Phase Delivery
 
@@ -628,7 +545,7 @@ After triage and inline clarification, present your recommendation via AskUserQu
 
   1. Run the Build Cycle for the whole feature.
   2. After review passes: "Ship it. Nice work."
-     **→ Update state:** phase: "done — shipped"
+     **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
 ## HOW YOU NAVIGATE
 
@@ -673,5 +590,6 @@ Follow CLAUDE.md conventions strictly.
 - tdd-planner-mvc: **live** — layer-by-layer for MVC codebases
 - tdd-planner-event-driven: **live** — contract-first for event-driven/message-based systems
 - tdd-planner-simple: **live** — test-implement-verify, no layers
+- programmer: **live** — writes code for TDD plan slices with RED-GREEN-REFACTOR, one test at a time
 - verifier: **live** — post-slice quality gate, risk-aware checks
 - reviewer: **live** — final review, risk-aware ship recommendation
