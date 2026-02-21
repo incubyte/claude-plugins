@@ -12,6 +12,62 @@ Bee is a Claude Code plugin that brings spec-driven, test-first engineering disc
 
 Bee doesn't enforce process — it suggests. The developer always has final say.
 
+## The Workflow
+
+For features and epics, Bee navigates you through these phases:
+
+```
+"Tell me what we're working on"
+         |
+         v
+   [ TRIAGE ]        Assess size + risk. Route to the right workflow.
+         |
+         v
+   [ CONTEXT ]       Read the codebase. Understand patterns, conventions,
+         |            and design system signals.
+         v
+   [ TIDY ]          (Optional) Clean up the area before building. Separate commit.
+         |
+         v
+   [ DESIGN ]        (When UI involved) Produce a design brief from the existing
+         |            design system or interview for greenfield projects.
+         v
+   [ DISCOVERY ]     (When needed) Explore requirements when scope is uncertain.
+         |
+         v
+   [ SPEC ]          Interview the developer. Build testable, design-aware
+         |            acceptance criteria.
+         v
+   [ ARCHITECTURE ]  Evaluate options when warranted. Most tasks: follow existing patterns.
+         |
+         v
+   [ TDD PLAN ]      Generate a step-by-step test-first implementation plan.
+         |
+         v
+   For each slice:
+   [ EXECUTE ]  -->  [ VERIFY ]  -->  [ next slice ]
+         |
+         v
+   [ REVIEW ]        Full picture. Risk-aware ship recommendation.
+```
+
+### Design Awareness
+
+Bee detects UI signals in the codebase — frontend frameworks, Tailwind configs, CSS custom properties, component libraries, design tokens. When UI work is detected:
+
+- **Existing design system**: Bee extracts the color palette, typography, spacing, component patterns, and accessibility constraints into a design brief (`.claude/DESIGN.md`). All downstream work is constrained to the existing system — no invented colors, no off-system components.
+- **Greenfield**: Bee interviews the developer about visual preferences (mood, brand colors, reference sites, logo) and proposes a cohesive design direction grounded in accessibility and design principles.
+
+The design brief is a project-level artifact. It's created once and referenced by every subsequent UI task, so the project maintains a consistent visual language.
+
+### Collaboration Loop
+
+After discovery, spec, design brief, and TDD plan documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Type `check` when you're ready for Bee to re-read, or just keep chatting — Bee won't block the conversation while you review.
+
+### Session Resume
+
+Close your terminal mid-feature? No problem. Bee persists progress in `.claude/bee-state.local.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
+
 ## Install
 
 On Copilot CLI and Claude Code run this and you're good to go:
@@ -158,62 +214,6 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 | LOW      | Internal tool, easy to revert  | Lighter spec, simpler plan                                    |
 | MODERATE | User-facing, business logic    | Standard spec, proper TDD, team review recommended            |
 | HIGH     | Payments, auth, data migration | Thorough spec, defensive tests, feature flag + QA recommended |
-
-## The Workflow
-
-For features and epics, Bee navigates you through these phases:
-
-```
-"Tell me what we're working on"
-         |
-         v
-   [ TRIAGE ]        Assess size + risk. Route to the right workflow.
-         |
-         v
-   [ CONTEXT ]       Read the codebase. Understand patterns, conventions,
-         |            and design system signals.
-         v
-   [ TIDY ]          (Optional) Clean up the area before building. Separate commit.
-         |
-         v
-   [ DESIGN ]        (When UI involved) Produce a design brief from the existing
-         |            design system or interview for greenfield projects.
-         v
-   [ DISCOVERY ]     (When needed) Explore requirements when scope is uncertain.
-         |
-         v
-   [ SPEC ]          Interview the developer. Build testable, design-aware
-         |            acceptance criteria.
-         v
-   [ ARCHITECTURE ]  Evaluate options when warranted. Most tasks: follow existing patterns.
-         |
-         v
-   [ TDD PLAN ]      Generate a step-by-step test-first implementation plan.
-         |
-         v
-   For each slice:
-   [ EXECUTE ]  -->  [ VERIFY ]  -->  [ next slice ]
-         |
-         v
-   [ REVIEW ]        Full picture. Risk-aware ship recommendation.
-```
-
-### Design Awareness
-
-Bee detects UI signals in the codebase — frontend frameworks, Tailwind configs, CSS custom properties, component libraries, design tokens. When UI work is detected:
-
-- **Existing design system**: Bee extracts the color palette, typography, spacing, component patterns, and accessibility constraints into a design brief (`.claude/DESIGN.md`). All downstream work is constrained to the existing system — no invented colors, no off-system components.
-- **Greenfield**: Bee interviews the developer about visual preferences (mood, brand colors, reference sites, logo) and proposes a cohesive design direction grounded in accessibility and design principles.
-
-The design brief is a project-level artifact. It's created once and referenced by every subsequent UI task, so the project maintains a consistent visual language.
-
-### Collaboration Loop
-
-After discovery, spec, design brief, and TDD plan documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Type `check` when you're ready for Bee to re-read, or just keep chatting — Bee won't block the conversation while you review.
-
-### Session Resume
-
-Close your terminal mid-feature? No problem. Bee persists progress in `.claude/bee-state.local.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
 
 ## Artifacts Produced
 
