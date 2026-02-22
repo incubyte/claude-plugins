@@ -100,7 +100,9 @@ The context-gatherer already scanned the codebase. Use that information:
 
 The developer already provided a task description and answered discovery questions. Don't re-ask what's already answered.
 
-## Vertical Slicing (EPIC Only)
+## Vertical Slicing and Outside-In Thinking
+
+These principles apply at every size — not just EPIC. Even a FEATURE with a single slice should order ACs outside-in.
 
 Each slice must be:
 - **Independently releasable** — It works on its own
@@ -110,6 +112,8 @@ Each slice must be:
 
 Vertical: UI + backend + data for one capability.
 Horizontal (bad): "build all the database tables first, then all the APIs."
+
+**Outside-in AC ordering:** Within each slice, describe what the user experiences first, then the API contract, then the data. The spec should read like a user journey, not a technical blueprint.
 
 ## Writing Good Acceptance Criteria
 

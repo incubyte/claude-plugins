@@ -53,9 +53,11 @@ BAD — Implementation logic:
 
 Use code to show contracts and shapes. Never use code to show logic — that's the TDD planner's job.
 
-## Vertical Slicing
+## Vertical Slicing and Outside-In Thinking
 
-Slice features by user-visible capability, not by technical layer.
+These principles apply at every size — SMALL, FEATURE, and EPIC. They are not optional techniques for large tasks.
+
+**Always slice by user-visible capability, not by technical layer.**
 
 **Vertical (correct):**
 - Slice 1: User can register with email and password (UI + API + DB + validation)
@@ -74,7 +76,9 @@ Why vertical wins:
 
 **A good slice is:** independently releasable, testable in isolation, small enough for one TDD plan, and delivers user-visible value.
 
-**Ordering:** Start with the walking skeleton — the simplest end-to-end path. Each subsequent slice adds capability. Later slices can assume earlier slices work.
+**Ordering:** Start with the walking skeleton — the thinnest end-to-end path. Each subsequent slice adds capability. Later slices can assume earlier slices work.
+
+**Outside-in within each slice:** Order ACs from what the user experiences inward — UI behavior first, then API contract, then data. This ensures the spec reads like a user journey, not a technical blueprint.
 
 ## Adaptive Depth by Risk
 
