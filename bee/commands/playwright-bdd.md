@@ -349,14 +349,79 @@ The developer provides: `$ARGUMENTS`
 - Write updated step definitions/POMs/services with utility imports
 - Confirm: "Utilities generated and integrated."
 
-### Step 13: Continue to Next Scenario
+### Step 13: Phase 5 (Optional) — Scenario Outline Conversion
+
+**Ask if developer wants outline analysis:**
+- Use AskUserQuestion: "Analyze for scenario outline opportunities? [Yes / No]"
+- If "No": skip to Step 14
+
+**Delegate to outline converter:**
+- Invoke `bee:playwright-outline-converter` agent via Task tool
+- Pass: complete feature file content, all scenarios
+- Agent detects scenarios with identical structure but varying data
+- Returns: conversion suggestions with Examples tables
+
+**Skip if no opportunities:**
+- If agent finds zero conversion opportunities: "No outline opportunities detected."
+- Go to Step 14
+
+**Show conversion suggestions:**
+- For each suggested conversion:
+  - Show before/after preview
+  - Show which step definitions need updating
+  - Show which other feature files would be affected
+- Use AskUserQuestion: "Convert these scenarios to outline? [Yes / No]" (per conversion)
+
+**Apply approved conversions:**
+- Update feature file: replace scenarios with scenario outline
+- Update step definitions: add parameter support (e.g., hardcoded → `{string}`)
+- Update other affected feature files if developer approved
+
+**Create outline review file:**
+- Show updated feature file with scenario outline
+- Show updated step definitions
+- Wait for `[x] Reviewed` approval
+
+**Write updated files:**
+- Write feature file with scenario outlines
+- Write parameterized step definitions
+- Confirm: "Scenario outlines created."
+
+### Step 14: Phase 5 (Optional) — Test Execution
+
+**Ask if developer wants to run tests:**
+- Use AskUserQuestion: "Run generated tests now? [Yes / No]"
+- If "No": skip to Step 15
+
+**Delegate to test executor:**
+- Invoke `bee:playwright-test-executor` agent via Task tool
+- Pass: package.json path, feature file name
+- Agent detects test scripts (test:bdd, test:e2e, playwright)
+- Returns: detected scripts
+
+**Ask which script to use:**
+- Show detected scripts
+- Use AskUserQuestion: "Which script should I use? [script1 / script2 / Custom]"
+
+**Execute tests:**
+- Agent runs selected script
+- Captures stdout, stderr, exit code
+- Returns results with pass/fail summary
+
+**Show test results:**
+- Format output
+- Show: "X tests passed, Y failed"
+- If failures: show error details
+- Confirm: "Test execution complete."
+
+### Step 15: Continue to Next Scenario
 
 - Check if more scenarios exist in feature file
 - If yes:
   - Use AskUserQuestion: "Continue to next scenario in this feature? [Yes / No]"
   - If "Yes": repeat from Step 4 (parse next scenario)
   - If "No": exit with "Feature processing complete. Re-invoke command for remaining scenarios."
-- If no more scenarios: "All scenarios complete. Step definitions written."
+- If no more scenarios: "All scenarios complete. All phases done."
 
 ## Error Handling
 
