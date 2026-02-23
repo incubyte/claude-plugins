@@ -1,0 +1,9 @@
+{
+  "name": "daily-insights",
+  "description": "Daily AI usage insights for Claude Code. Tracks tokens, cost, sessions, and projects from your local session data. Use /daily-insights to generate your report.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Incubyte"
+  },
+  "license": "Proprietary"
+}
