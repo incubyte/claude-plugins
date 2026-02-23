@@ -52,7 +52,8 @@ The developer provides: `$ARGUMENTS`
 **Hybrid Repo Handling:**
 - If structure is "hybrid":
   - Use AskUserQuestion: "What needs to be implemented? [UI only / API only / Both]"
-  - Store answer for future phases (not used in Phase 1)
+  - Store answer: `hybrid_mode = "UI" | "API" | "Both"`
+  - If "Both": implement UI path completely (Phase 2), then API path (Phase 3)
   - Note: Phase 1 only generates step definitions, no POMs or services yet
 
 ### Step 3: Step Definition Indexing
@@ -176,8 +177,11 @@ The developer provides: `$ARGUMENTS`
 ### Step 10: Phase 2 — Page Object Generation (UI Tests Only)
 
 **Check if Phase 2 should run:**
-- If repo structure is "API-only": skip Phase 2 entirely, go to Step 11
-- If repo structure is "UI-only" or "hybrid": proceed with Phase 2
+- If repo structure is "API-only": skip Phase 2, go to Step 11
+- If repo structure is "UI-only": proceed with Phase 2
+- If repo structure is "hybrid":
+  - If `hybrid_mode = "API"`: skip Phase 2, go to Step 11
+  - If `hybrid_mode = "UI"` or `hybrid_mode = "Both"`: proceed with Phase 2
 
 **Delegate to POM matcher:**
 - Invoke `bee:playwright-pom-matcher` agent via Task tool
@@ -276,8 +280,11 @@ The developer provides: `$ARGUMENTS`
 ### Step 11: Phase 3 — Service Layer Generation (API Tests Only)
 
 **Check if Phase 3 should run:**
-- If repo structure is "UI-only": skip Phase 3 entirely, go to Step 12
-- If repo structure is "API-only" or "hybrid": proceed with Phase 3
+- If repo structure is "UI-only": skip Phase 3, go to Step 12
+- If repo structure is "API-only": proceed with Phase 3
+- If repo structure is "hybrid":
+  - If `hybrid_mode = "UI"`: skip Phase 3, go to Step 12
+  - If `hybrid_mode = "API"` or `hybrid_mode = "Both"`: proceed with Phase 3
 
 **Delegate to service matcher:**
 - Invoke `bee:playwright-service-matcher` agent via Task tool
@@ -314,7 +321,35 @@ The developer provides: `$ARGUMENTS`
 - Write updated step definition files
 - Confirm: "Services and step definitions updated."
 
-### Step 12: Continue to Next Scenario
+### Step 12: Phase 4 — Utility Generation
+
+**Detect utility opportunities:**
+- Invoke `bee:playwright-utility-generator` agent via Task tool
+- Pass: all generated code (step definitions, POMs, services)
+- Agent detects: data transformation, duplicated logic, complex calculations
+
+**Skip if no opportunities:**
+- If agent finds zero utility opportunities: go to Step 13
+
+**Ask developer for each opportunity:**
+- Use AskUserQuestion for each detected opportunity
+- "Should this logic be a utility function? [Yes / No / Inline]"
+- Show code snippet
+
+**Generate utilities if approved:**
+- Agent generates utility functions following existing patterns
+- Agent updates calling code to import and use utilities
+
+**Create utility review file:**
+- Format same as previous review files
+- Wait for `[x] Reviewed` approval
+
+**Write utility files and updated code:**
+- Write new utility files to `src/utils/`
+- Write updated step definitions/POMs/services with utility imports
+- Confirm: "Utilities generated and integrated."
+
+### Step 13: Continue to Next Scenario
 
 - Check if more scenarios exist in feature file
 - If yes:
