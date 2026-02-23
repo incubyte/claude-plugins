@@ -18,6 +18,7 @@ A plugin marketplace for Claude Code by [Incubyte](https://incubyte.co).
 | Plugin | Description |
 |--------|-------------|
 | **bee** | Spec-driven TDD workflow navigator. Guides developers through triage, spec building, architecture decisions, TDD planning, verification, and review. |
+| **daily-insights** | Daily AI usage report — tokens, cost, sessions, and projects from your local Claude Code session data. Use `/daily-insights [today\|yesterday\|YYYY-MM-DD\|7d]`. |
 | **learn** | Learn any technology by building real projects. Claude guides step-by-step — you write every line of code yourself. |
 
 ## Adding New Plugins
