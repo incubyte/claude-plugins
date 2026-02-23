@@ -273,7 +273,48 @@ The developer provides: `$ARGUMENTS`
 - Write updated step definition files (with POM calls instead of TODOs)
 - Confirm: "Page objects and step definitions updated."
 
-### Step 11: Continue to Next Scenario
+### Step 11: Phase 3 — Service Layer Generation (API Tests Only)
+
+**Check if Phase 3 should run:**
+- If repo structure is "UI-only": skip Phase 3 entirely, go to Step 12
+- If repo structure is "API-only" or "hybrid": proceed with Phase 3
+
+**Delegate to service matcher:**
+- Invoke `bee:playwright-service-matcher` agent via Task tool
+- Pass: generated step definitions, services directory path
+- Agent classifies steps as API vs non-API
+- Agent performs semantic matching against existing services
+- Returns: API steps with service matches, non-API steps
+
+**Skip if no API steps:**
+- If all steps are non-API: show "No API steps detected. Skipping service generation."
+- Go to Step 12
+
+**Generate service approval file:**
+- Create file: `docs/specs/playwright-bdd-service-approval-[feature]-scenario-[N].md`
+- Show service candidates with confidence scores
+- Developer decides: reuse method / add new method / create new service
+
+**Collect API response structures:**
+- For new methods/services: ask developer for JSON response example or schema
+- Store for type-safe parsing
+
+**Delegate to service generator:**
+- Invoke `bee:playwright-service-generator` agent via Task tool
+- Pass: approved decisions, response structures, existing service patterns
+- Agent generates service methods or classes
+- Agent updates step definitions (replaces TODO with service calls)
+
+**Create service review file:**
+- Format same as POM review file but for services
+- Wait for `[x] Reviewed` approval
+
+**Write service files and updated step definitions:**
+- Write new/updated service files
+- Write updated step definition files
+- Confirm: "Services and step definitions updated."
+
+### Step 12: Continue to Next Scenario
 
 - Check if more scenarios exist in feature file
 - If yes:
