@@ -168,12 +168,112 @@ The developer provides: `$ARGUMENTS`
 - If not checked: wait for developer
 - If checked: proceed to write files
 
-### Step 9: Write Files to Disk
+### Step 9: Write Step Definition Files to Disk
 
 - Write generated step definition files to their target paths
-- Confirm completion: "Step definitions written to [file paths]. Scenario [N] complete."
+- Confirm completion: "Step definitions written to [file paths]."
 
-### Step 10: Continue to Next Scenario
+### Step 10: Phase 2 — Page Object Generation (UI Tests Only)
+
+**Check if Phase 2 should run:**
+- If repo structure is "API-only": skip Phase 2 entirely, go to Step 11
+- If repo structure is "UI-only" or "hybrid": proceed with Phase 2
+
+**Delegate to POM matcher:**
+- Invoke `bee:playwright-pom-matcher` agent via Task tool
+- Pass: generated step definitions, page objects directory path
+- Agent classifies steps as UI vs non-UI
+- Agent performs semantic matching against existing page objects
+- Returns: UI steps with POM matches, non-UI steps, ambiguous steps
+
+**Handle ambiguous classifications:**
+- If ambiguous steps found: use AskUserQuestion for each
+- "Is this step UI or non-UI? [UI / non-UI]"
+- Update classification based on developer input
+
+**Skip if no UI steps:**
+- If all steps are non-UI: show "No UI steps detected. Skipping page object generation."
+- Go to Step 11
+
+**Generate POM approval file:**
+- Create file: `docs/specs/playwright-bdd-pom-approval-[feature]-scenario-[N].md`
+- For each UI step, show POM candidates:
+  ```markdown
+  ## Step: "[step text]"
+
+  Page Object Candidates:
+  1. "[POM class name]" - [confidence]% confidence
+     Methods: "[method name]" ([confidence]%)
+     Used in: [step-file-1] (line X)
+
+  Decision:
+  - [ ] Reuse existing method from candidate #1
+  - [ ] Add new method to candidate #1
+  - [ ] Create new page object class
+  ```
+- If no candidates found: only show "Create new page object class" option
+
+**Wait for POM approval:**
+- Tell developer: "Review POM approval file at [path]. Check one decision per UI step."
+- Wait for developer to check boxes
+- Validate: exactly one box per UI step
+- Parse decisions
+
+**Collect outerHTML for new methods/classes:**
+- For each step marked "Add new method" or "Create new":
+  - Use AskUserQuestion: "Provide outerHTML for '[step text]' element:"
+  - Accept HTML string input
+  - If empty: skip or re-prompt
+- Store outerHTML for each UI element
+
+**Delegate to locator generator:**
+- Invoke `bee:playwright-locator-generator` agent via Task tool
+- Pass: outerHTML for each UI element, action type (click/fill/select)
+- Agent generates Playwright locators with stability assessment
+- Returns: locator string, strategy, stability, warnings
+
+**Delegate to POM generator:**
+- Invoke `bee:playwright-pom-generator` agent via Task tool
+- Pass: approved decisions, generated locators, existing POM patterns, step definitions to update
+- Agent generates new POM methods or classes
+- Agent updates step definitions (replaces TODO with POM method calls)
+- Returns: generated POMs, updated step definitions
+
+**Create POM review file:**
+- Create file: `docs/specs/playwright-bdd-pom-review-[feature]-scenario-[N].md`
+- Format:
+  ```markdown
+  # Generated Page Objects - [Feature] - Scenario [N]
+
+  ## Page Objects
+
+  ### src/pages/SearchPage.ts
+  ```typescript
+  [generated POM code]
+  ```
+
+  ## Updated Step Definitions
+
+  ### src/steps/search.steps.ts
+  ```typescript
+  [updated step definition with POM calls]
+  ```
+
+  - [ ] Reviewed
+  ```
+
+**Wait for POM review approval:**
+- Tell developer: "Review generated POMs at [path]. Mark [x] Reviewed when ready."
+- Read review file
+- Check for `[x] Reviewed` checkbox
+- If checked: proceed to write files
+
+**Write POM files and updated step definitions:**
+- Write new/updated page object files
+- Write updated step definition files (with POM calls instead of TODOs)
+- Confirm: "Page objects and step definitions updated."
+
+### Step 11: Continue to Next Scenario
 
 - Check if more scenarios exist in feature file
 - If yes:
