@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven, test-first engineering disc
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
 
-**What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 11 commands, 36 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -189,6 +189,12 @@ Analyze a legacy and new codebase to produce a prioritized, independently-shippa
 Analyze your Claude Code sessions and get actionable coaching insights — workflow adoption, prompt quality, session efficiency, and code quality signals. Tracks trends over time.
 
 ```
+/bee:playwright /path/to/feature.feature
+```
+
+Generate Playwright-BDD test automation from Gherkin feature files. Full 5-phase workflow: semantic step matching and generation → Page Object Model (POM) generation for UI tests → Service layer generation for API tests → Utility extraction and generation → Scenario outline conversion and test execution. Supports UI-only, API-only, and hybrid repos. Learns from existing code patterns and generates type-safe, stable locators following Playwright best practices.
+
+```
 /bee:help
 ```
 
@@ -230,7 +236,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 26 specialist agents:
+Bee ships with 36 specialist agents:
 
 | Agent                       | Role                                                                         |
 | --------------------------- | ---------------------------------------------------------------------------- |
@@ -260,6 +266,17 @@ Bee ships with 26 specialist agents:
 | `review-team-practices`     | Commit messages, PR review substance                                         |
 | `review-org-standards`      | Project CLAUDE.md conventions                                                |
 | `review-ai-ergonomics`      | LLM-friendliness review                                                      |
+| **Playwright-BDD Agents**   | **Automated test generation from Gherkin feature files**                     |
+| `playwright-step-matcher`   | Semantic step matching with confidence scoring                               |
+| `playwright-code-generator` | Generate step definitions following repo patterns                            |
+| `playwright-pom-matcher`    | UI step classification and POM semantic matching                             |
+| `playwright-pom-generator`  | Generate Page Object Models with stable locators                             |
+| `playwright-locator-generator` | Generate Playwright locators from outerHTML with stability assessment     |
+| `playwright-service-matcher` | API step classification and service semantic matching                       |
+| `playwright-service-generator` | Generate service layer for API tests                                      |
+| `playwright-utility-generator` | Detect and extract reusable utility functions                             |
+| `playwright-outline-converter` | Convert scenarios to parameterized scenario outlines                      |
+| `playwright-test-executor`  | Detect and execute test scripts with result reporting                        |
 
 ## Skills
 
@@ -292,6 +309,7 @@ bee/
 │   ├── help.md                    # /bee:help interactive guided tour
 │   ├── migrate.md                 # /bee:migrate migration planning
 │   ├── onboard.md                # /bee:onboard interactive developer onboarding
+│   ├── playwright-bdd.md         # /bee:playwright Playwright-BDD test generation
 │   ├── qc.md                     # /bee:qc quality coverage analysis
 │   └── review.md                 # /bee:review standalone code review
 ├── agents/
@@ -320,7 +338,18 @@ bee/
 │   ├── review-behavioral.md
 │   ├── review-team-practices.md
 │   ├── review-org-standards.md
-│   └── review-ai-ergonomics.md
+│   ├── review-ai-ergonomics.md
+│   └── playwright/               # Playwright-BDD test generation agents
+│       ├── playwright-step-matcher.md
+│       ├── playwright-code-generator.md
+│       ├── playwright-pom-matcher.md
+│       ├── playwright-pom-generator.md
+│       ├── playwright-locator-generator.md
+│       ├── playwright-service-matcher.md
+│       ├── playwright-service-generator.md
+│       ├── playwright-utility-generator.md
+│       ├── playwright-outline-converter.md
+│       └── playwright-test-executor.md
 ├── skills/
 │   ├── clean-code/
 │   ├── tdd-practices/
