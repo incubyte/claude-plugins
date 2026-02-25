@@ -47,7 +47,7 @@ You will receive:
 - Discovery answers (from the orchestrator's clarifying questions)
 - The triage assessment (size + risk — may have been revised by discovery)
 - The context summary from the context-gatherer (existing code, patterns, dependencies)
-- The discovery document path (if discovery was done) — read this file first. It contains the problem statement, hypotheses to validate, and a milestone map that shapes how you structure the spec
+- The discovery document path (if discovery was done) — read this file first. It contains the problem statement, hypotheses to validate, and a milestone map. Use the discovery doc for WHAT to build, but always apply outside-in ordering when writing ACs — don't mirror the discovery doc's structure.
 - The design brief path (if the design agent produced one) — check for `.claude/DESIGN.md` in the target project. If it exists, read it and use it to write design-aware ACs for any UI-related criteria.
 - Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and use module boundaries to inform acceptance criteria.
 - Which phase to spec (if discovery produced multiple phases) — spec ONLY this phase
@@ -113,7 +113,7 @@ Each slice must be:
 Vertical: UI + backend + data for one capability.
 Horizontal (bad): "build all the database tables first, then all the APIs."
 
-**Outside-in AC ordering:** Within each slice, describe what the user experiences first, then the API contract, then the data. The spec should read like a user journey, not a technical blueprint.
+**Outside-in AC ordering:** Within each slice, describe what the user experiences first, then the API contract, then the data. The spec should read like a user journey, not a technical blueprint. This applies even when the discovery doc lists capabilities in a different order — always reorder ACs from the outermost layer (what the user sees) inward.
 
 ## Writing Good Acceptance Criteria
 
