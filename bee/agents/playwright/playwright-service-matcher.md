@@ -67,8 +67,54 @@ Respond with ONLY: API or non-API
 
 Return structured results with matches.
 
+## Error Handling
+
+**LLM API failure:**
+- Track API failure rate across all classification calls
+- If > 30% of classification calls fail: **STOP workflow**
+  - Error: "API failures exceeded threshold ([N] of [M] calls failed). Check API connectivity and authentication."
+- For individual failures < 30% threshold:
+  - Retry once (with logging)
+  - If retry fails: classify as "ambiguous" with annotation
+- After classification: If ANY steps ambiguous due to API errors, warn user
+
+**File read errors:**
+- If service file cannot be read:
+  - Log error: "Failed to read service file [path]: [error]"
+  - Track skipped file with reason
+  - Continue with remaining services
+- After indexing: If ANY services skipped, warn user with file list and reasons
+
+**Parse errors:**
+- If class/method extraction fails for a service:
+  - Log error: "Failed to parse service class from [file-path]: [error]"
+  - Track skipped service
+  - Continue with remaining services
+- After indexing complete:
+  - If ANY services skipped due to parse errors:
+    ```
+    Warning: [N] service files could not be parsed:
+    [list files with errors]
+
+    These services will not be available for reuse.
+    New services may duplicate existing functionality.
+
+    Fix parse errors and re-run for complete matching.
+    ```
+  - If ALL services fail to parse but files found:
+    ```
+    Error: Cannot parse any service files in [directory]
+    Manual service creation required.
+    ```
+
+**Confidence threshold:**
+- 50% threshold for service class matching (same rationale as step matching)
+- 70% threshold for method-level matching (higher precision needed)
+- These thresholds can be adjusted based on team preference
+
 ## Notes
 
 - Parallel to POM matcher but for API layer
 - Same confidence scoring approach (50% threshold, 70% for method matching)
 - Detects REST, GraphQL, database operations
+- All errors logged with actionable recovery steps

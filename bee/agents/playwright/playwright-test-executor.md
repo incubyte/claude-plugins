@@ -94,11 +94,72 @@ Return:
 - "No test scripts detected in package.json. Run tests manually."
 
 **Execution timeout:**
-- "Tests exceeded 2 minute timeout. Check for hanging tests."
+- "Tests exceeded 2 minute timeout. Check for hanging tests or increase timeout."
 
-**Non-zero exit code:**
-- Capture output, show failure details
-- Don't treat as error - tests failing is expected outcome
+**Exit code handling (distinguish failure types):**
+
+1. **Analyze exit code semantics**:
+   - Exit 0: All tests passed
+   - Exit 1: Test failures (expected outcome)
+   - Exit 2+: Syntax errors, runner crash, config issues (unexpected)
+
+2. **Parse stderr for error patterns**:
+   - "SyntaxError": Generated code has syntax errors **[CRITICAL]**
+   - "Cannot find module": Import paths wrong **[HIGH]**
+   - "Step definition undefined": Missing step mapping **[EXPECTED]**
+   - "Timeout": Test hung (implementation or environment issue)
+   - "ECONNREFUSED": Server not running **[SETUP ISSUE]**
+
+3. **Categorize and report accordingly**:
+
+**Category: Test Failures (exit 1, step definition errors)**
+```
+Test execution complete: [N] tests, [X] passed, [Y] failed
+
+Failed tests:
+  - [test name]: [assertion failure]
+  - [test name]: [step implementation missing]
+
+This is expected for newly generated tests.
+Next steps:
+- Review failed tests in output
+- Implement step definitions marked TODO
+- Re-run tests as implementation progresses
+```
+
+**Category: Generated Code Errors (exit 1+, syntax errors)**
+```
+ERROR: Generated code has syntax errors
+
+Syntax errors detected:
+  - [file]:[line]: [syntax error]
+  - [file]:[line]: [syntax error]
+
+Cannot run tests with syntax errors.
+
+Possible causes:
+- Code generator bug (report to maintainers)
+- Unsupported TypeScript/JavaScript syntax
+- Missing imports or dependencies
+
+Next steps:
+- Fix syntax errors in listed files
+- If generator bug: report with repro case
+- Manual edit, then re-run tests
+```
+
+**Category: Environment Issues (exit 2+, ECONNREFUSED, etc.)**
+```
+ERROR: Test environment not ready
+
+[specific error: server not running, database unavailable, etc.]
+
+Cannot run tests - environment prerequisites not met.
+
+Fix environment issues:
+- [specific steps based on error]
+Then re-run tests.
+```
 
 ## Output Example
 

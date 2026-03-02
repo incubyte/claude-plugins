@@ -95,8 +95,41 @@ Return utilities and updated code (do NOT write files).
 - Test-specific setup that won't be reused
 - Framework-provided utilities already exist
 
+## Error Handling
+
+**File read errors:**
+- If generated code file cannot be read:
+  - Log error: "Cannot read file for utility extraction: [path] - [error]"
+  - Skip that file
+  - Continue with remaining files
+- If ALL files fail to read:
+  - Error: "Cannot read any files for utility extraction. Check file paths and permissions."
+
+**Pattern analysis fails:**
+- If existing utility files cannot be read:
+  - Log warning: "Cannot analyze existing utility patterns: [error]"
+  - Use default utility patterns (exported functions, clear naming)
+  - Notify user: "Using default utility patterns. Generated utilities may not match existing style."
+
+**User decision timeout:**
+- If developer doesn't respond to AskUserQuestion:
+  - Default to "No" (don't extract)
+  - Log: "No response received for utility extraction. Keeping logic inline."
+
+**Code update fails:**
+- If replacement of inline logic with utility call fails:
+  - Log error: "Failed to update [file] with utility import: [error]"
+  - Return utility function BUT mark update as failed
+  - Notify user: "Utility generated but code update failed. Manual import required in [file]."
+
+**Import resolution errors:**
+- If import path calculation fails:
+  - Use relative path as fallback: `../utils/[utilityFile]`
+  - Log warning: "Could not calculate optimal import path. Using relative path."
+
 ## Notes
 
 - Phase 4 adds utility generation (Phases 1-3 didn't extract utilities)
 - Only extracts when genuinely beneficial (not every helper)
 - Follows existing utility patterns in repo
+- All errors are logged and reported to user with actionable next steps

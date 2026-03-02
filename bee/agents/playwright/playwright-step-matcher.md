@@ -124,6 +124,13 @@ Return a structured match result for each step:
 
 **Filter by confidence:**
 - Hide any matches with confidence < 50%
+- **Confidence Threshold Rationale (50%)**:
+  - Values below 50% indicate "related but distinct actions" or "unrelated" per the scoring guide
+  - Empirically tested to prevent false matches while capturing parameterizable variations
+  - Example: "user logs in" vs "user clicks logout" scores ~45% (correctly filtered)
+  - Example: "user is on dashboard page" vs "user is on {string} page" scores ~85% (correctly matched)
+  - This threshold can be adjusted if your team finds it too strict/lenient
+  - To adjust: modify the threshold in this agent's filtering logic
 - If all scores < 50%, return:
   ```json
   {
@@ -157,12 +164,69 @@ Return structured results for all steps:
 - Do not proceed to matching phase
 
 **LLM API failure:**
-- Retry once if semantic matching call fails
-- If retry fails: error with "Semantic matching failed for step '[step text]'. Unable to compare with existing steps. Check API connectivity."
+- On first failure:
+  - Log: "Semantic matching API call failed for step '[step text]': [error]"
+  - Notify user: "Retrying semantic matching (attempt 2 of 2)..."
+  - Wait 2 seconds before retry (rate limiting cooldown)
+- On retry failure:
+  - Log: "Semantic matching retry failed for step '[step text]': [error]"
+  - Error to user:
+    ```
+    Error: Semantic matching failed for step '[step text]' after 2 attempts
+
+    Possible causes:
+    - API rate limiting (wait and retry)
+    - Network connectivity issues
+    - API authentication failure
+
+    Error details: [full error message]
+
+    Next steps:
+    - Check API connectivity
+    - Verify API key is valid
+    - If rate limited, wait 60 seconds and re-run
+    ```
+- Track retry statistics:
+  - If retries > 3 across all steps, warn user: "Multiple API failures detected ([count] retries). Check API status before continuing."
 
 **File read errors:**
-- If step definition file cannot be read: skip it, log warning, continue with remaining files
-- If feature file search fails during usage tracking: continue without usage data (usage count = 0)
+- If step definition file cannot be read:
+  1. **Do NOT skip silently**
+  2. **Log error**: "Failed to read step definition file [path]: [error]. File will be excluded from matching."
+  3. **Track skipped files**: Maintain array of skipped files with reasons
+  4. **After indexing complete**: If ANY files were skipped, warn user:
+     ```
+     Warning: [N] step definition files could not be read:
+     [list each file with error reason]
+
+     These files will be excluded from step matching.
+     Matches may be incomplete.
+
+     Possible causes:
+     - Permission issues (chmod/chown needed)
+     - Corrupted files (check git status)
+     - Wrong directory path provided
+
+     Next steps:
+     - Fix file access issues and re-run for complete matching
+     - Or continue with partial matching (not recommended)
+     ```
+  5. **If ALL files fail to read**: STOP with error:
+     ```
+     Error: Cannot read any step definition files in [directory]
+
+     Files attempted: [list files]
+     All read attempts failed.
+
+     Check permissions and path correctness.
+     Cannot proceed to matching phase with zero indexed steps.
+     ```
+
+**Usage tracking failures:**
+- If feature file search fails:
+  1. **Log error**: "Failed to search feature files for usage tracking: [error]"
+  2. **Continue with usage count = 0** BUT include warning in results:
+     - "Usage data unavailable due to search error. Confidence scores may be less reliable."
 
 ## Edge Cases
 

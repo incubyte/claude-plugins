@@ -181,16 +181,81 @@ Return structured result with:
 
 ## Error Handling
 
+All errors must be returned in a structured format for proper propagation to orchestrator:
+
+```typescript
+{
+  success: false,
+  error: {
+    type: "INVALID_HTML" | "EMPTY_HTML" | "NO_VIABLE_STRATEGY",
+    message: string,
+    userMessage: string,
+    suggestions: string[]
+  }
+}
+```
+
 **Invalid HTML:**
-- If outerHTML cannot be parsed: return error
-- Message: "Invalid HTML provided. Cannot generate locator."
+- If outerHTML cannot be parsed:
+  ```json
+  {
+    "success": false,
+    "error": {
+      "type": "INVALID_HTML",
+      "message": "HTML parse error: [technical details]",
+      "userMessage": "Cannot parse HTML for step '[step text]'",
+      "suggestions": [
+        "Verify HTML is well-formed (matching open/close tags)",
+        "Check for special characters that need escaping",
+        "Inspect element again in browser DevTools",
+        "Copy outerHTML from Elements panel, not Console"
+      ]
+    }
+  }
+  ```
 
 **Empty outerHTML:**
-- Return error: "outerHTML is empty. Please provide HTML element."
+- If outerHTML is empty or null:
+  ```json
+  {
+    "success": false,
+    "error": {
+      "type": "EMPTY_HTML",
+      "message": "outerHTML is empty or null",
+      "userMessage": "No HTML provided for locator generation",
+      "suggestions": [
+        "Ensure element is properly inspected",
+        "Check if element exists in DOM",
+        "Verify DevTools copy operation succeeded"
+      ]
+    }
+  }
+  ```
 
 **No viable strategy:**
-- If absolutely no attributes or text: return error
-- Message: "Element has no identifiable attributes. Add data-testid or aria-label."
+- If absolutely no attributes or text available:
+  ```json
+  {
+    "success": false,
+    "error": {
+      "type": "NO_VIABLE_STRATEGY",
+      "message": "Element has no identifiable attributes: no data-testid, role, label, text",
+      "userMessage": "Cannot generate stable locator for this element",
+      "suggestions": [
+        "Add data-testid attribute to element",
+        "Add aria-label for accessibility",
+        "Add role attribute",
+        "Use parent element with better attributes"
+      ]
+    }
+  }
+  ```
+
+**Orchestrator handling:**
+When locator generator returns error:
+1. **STOP POM generation for that step**
+2. **Show error to user** with context from error.userMessage and error.suggestions
+3. **Ask user how to proceed**: Fix HTML and retry / Skip step / Abort workflow
 
 ## Output Examples
 

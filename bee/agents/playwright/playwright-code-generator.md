@@ -158,14 +158,57 @@ Then('[step text 3]', async ({ page }) => {
 
 ## Error Handling
 
-**Pattern analysis fails:**
-- If existing file cannot be read: skip it, try next file
-- If no readable files found: fall back to minimal template
-- Never error on pattern detection — always have a fallback
+**Pattern analysis failures:**
+
+1. **Track failure reasons for each file**:
+   - Permission denied
+   - File not found
+   - Parse error
+   - Read timeout
+
+2. **If some files succeed**:
+   - Use patterns from successful files
+   - Log: "Pattern analysis: [N] files analyzed, [M] files failed"
+   - Continue with partial patterns
+
+3. **If ALL files fail to read**:
+   - Check: Is this truly an empty repo (no files exist)?
+     - If YES (no files exist): Log "No existing step definitions found. Using minimal template for new project."
+     - If NO (files exist but unreadable): **WARN USER** instead of silent fallback:
+       ```
+       Warning: Cannot analyze existing step definition patterns
+
+       Files found but unreadable: [list files with error reasons]
+
+       Possible causes:
+       - Permission issues (chmod/chown needed)
+       - Wrong directory path provided
+       - Corrupted files
+
+       Generated code quality will be limited without patterns.
+
+       Options:
+       - Fix file access and re-run for pattern-based generation
+       - Continue with minimal template (basic code quality)
+       ```
+     - Require user acknowledgment before proceeding with fallback
+
+4. **Never silently fall back to minimal template for production errors**:
+   - Fallbacks are for EXPECTED scenarios (empty repo)
+   - Warnings/errors are for UNEXPECTED scenarios (can't read existing files)
 
 **Invalid step text:**
-- If step text is empty or malformed: skip that step, log warning
-- Continue generating remaining valid steps
+- If step text is empty or malformed:
+  - Log error: "Invalid step text: '[text]' - cannot generate step definition"
+  - Skip that step
+  - Continue generating remaining valid steps
+  - After generation: Warn user: "[N] steps skipped due to invalid text: [list steps]"
+
+**LLM API failure:**
+- If pattern analysis uses LLM and API fails:
+  - Retry once with logging
+  - If retry fails: Fall back to minimal template BUT notify user:
+    "API failure during pattern analysis. Using minimal template. Code style may not match existing patterns."
 
 ## Edge Cases
 

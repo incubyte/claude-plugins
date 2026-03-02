@@ -163,9 +163,56 @@ Developer decides per conversion: approve or skip.
 }
 ```
 
+## Error Handling
+
+**Feature file parse errors:**
+- If feature file cannot be read or parsed:
+  - Log error: "Cannot parse feature file [path]: [error]"
+  - Skip that file
+  - Continue analyzing remaining files
+- After analysis: Warn user about skipped files with reasons
+
+**Pattern detection fails:**
+- If no similar scenarios detected:
+  - Return empty suggestions list
+  - Message: "No scenario outline opportunities detected. All scenarios have unique structures."
+- This is NOT an error (valid outcome)
+
+**Step parameterization conflicts:**
+- If step cannot be parameterized without breaking other usages:
+  - Log warning: "Step '[step]' used in multiple scenarios with incompatible patterns"
+  - Mark as "requires manual review" in suggestions
+  - Provide both patterns in output for developer decision
+
+**Examples table generation errors:**
+- If parameter extraction produces inconsistent columns:
+  - Log error: "Cannot generate consistent Examples table for scenarios [list]"
+  - Mark suggestion as "invalid - manual conversion required"
+  - Show conflicting values to developer
+
+**Step definition update fails:**
+- If step definition file cannot be updated with new pattern:
+  - Log error: "Cannot update step definition [file]: [error]"
+  - Return conversion suggestion BUT mark as "manual update required"
+  - Provide both old and new patterns for manual editing
+
+**Cross-file dependency errors:**
+- If step is used in other feature files that would break:
+  - Analyze all usages across repository
+  - Error: "Step '[step]' used in [N] other feature files. Conversion would break: [list files]"
+  - Suggest: "Convert all usages together OR create new parameterized step alongside existing one"
+
+**LLM API failures:**
+- If similarity analysis fails:
+  - Retry once
+  - If retry fails: Log warning and continue with remaining scenarios
+  - Track failure count: If > 30% fail, warn user about incomplete analysis
+
 ## Notes
 
 - Scenario outline conversion is OPTIONAL (only if developer requests)
 - "On-demand" per discovery doc (not automatic)
 - Step definition updates cascade to all feature files using those steps
 - Pattern-based approach: detects identical flows with varying data
+- All errors logged with actionable recovery steps
+- Cross-file impact analysis prevents breaking existing tests

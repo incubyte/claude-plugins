@@ -187,16 +187,86 @@ Return:
 ## Error Handling
 
 **LLM API failure:**
-- Retry once for each classification/matching call
-- If retry fails: classify as "ambiguous" and let developer decide
+- Track API failure rate across all classification calls
+- If > 30% of classification calls fail: **STOP workflow**
+  - Error:
+    ```
+    Error: API failures exceeded threshold ([N] of [M] calls failed)
+
+    Likely causes:
+    - API authentication failure (check API key)
+    - Rate limiting (slow down or wait)
+    - Service outage (check status page)
+
+    Cannot continue with reliable classification.
+    Fix API issues and re-run.
+    ```
+- For individual failures < 30% threshold:
+  - Retry once (with logging: "Retrying classification for step '[text]'...")
+  - If retry fails:
+    - Mark as "ambiguous"
+    - Log: "Classification failed for step '[text]' after retry: [error]"
+    - Include in ambiguous steps list with annotation: "(Failed to classify due to API error)"
+- After classification complete:
+  - If ANY steps ambiguous due to API errors, warn:
+    ```
+    Warning: Some steps could not be classified due to API failures
+
+    You'll need to classify them manually.
+    If many steps are ambiguous, consider:
+    - Checking API connectivity
+    - Retrying the entire workflow
+    ```
 
 **File read errors:**
-- If POM file cannot be read: skip it, log warning
-- Continue with remaining POMs
+- If POM file cannot be read:
+  - Log error: "Failed to read POM file [path]: [error]"
+  - Track skipped file with reason
+  - Continue with remaining POMs
+- After indexing complete:
+  - If ANY POMs skipped, warn user with recovery options
 
 **Parse errors:**
-- If class/method extraction fails: skip that POM
-- Do not error entire workflow
+- If class/method extraction fails for a POM:
+  1. **Log error**: "Failed to parse POM class from [file-path]: [parse error details]"
+  2. **Track**: file path, error reason, line number if available
+  3. **Add to skipped POMs list**
+- After indexing complete:
+  - If ANY POMs skipped due to parse errors, **WARN USER**:
+    ```
+    Warning: [N] page object files could not be parsed:
+
+    [list each file with error details]
+
+    These POMs will not be available for reuse.
+    New POMs may duplicate existing functionality.
+
+    Possible causes:
+    - Syntax errors in POM files (check with linter)
+    - Unsupported TypeScript/JavaScript syntax
+    - Encoding issues
+
+    Next steps:
+    - Review listed files for syntax errors
+    - Fix errors and re-run for complete POM matching
+    - Or continue (may create duplicate POMs)
+    ```
+- If ALL POMs fail to parse but files were found:
+  - **ERROR instead of continuing**:
+    ```
+    Error: Cannot parse any page object files in [directory]
+
+    Files found: [count]
+    All parse attempts failed.
+
+    This indicates:
+    - Parser implementation issue (bug in agent)
+    - Unsupported code patterns (report to maintainers)
+    - Corrupted codebase (git merge issues)
+
+    Cannot proceed with POM matching.
+    Manual POM creation required.
+    ```
 
 ## Output Example
 

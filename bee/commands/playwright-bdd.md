@@ -5,7 +5,12 @@ allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(${CLAUDE_PLUGIN_R
 
 # Playwright-BDD Test Generation Command
 
-You are orchestrating Phase 1 of the Playwright-BDD plugin: semantic step matching and step definition generation.
+You are orchestrating the complete Playwright-BDD workflow across 5 phases:
+- **Phase 1**: Semantic step matching and step definition generation
+- **Phase 2**: Page Object Model generation (UI tests)
+- **Phase 3**: Service layer generation (API tests)
+- **Phase 4**: Utility extraction and generation
+- **Phase 5**: Scenario outline conversion and test execution
 
 ## Command Invocation
 
@@ -22,18 +27,71 @@ The developer provides: `$ARGUMENTS`
 **Path Validation:**
 - Extract file path from arguments
 - Check if path is absolute (starts with `/` on Unix or drive letter on Windows)
-- If relative path: error immediately with "Please provide absolute path to .feature file"
+- If relative path: error with helpful conversion suggestions:
+  ```
+  Error: Relative path provided: '[input-path]'
+
+  Playwright-BDD requires absolute paths.
+
+  Did you mean one of these?
+  - [cwd]/[input-path] (current directory)
+  - [repo-root]/[input-path] (repository root)
+
+  Or provide full path starting with / (Unix) or C:\ (Windows)
+  ```
 - Check if path points to a directory (not a .feature file)
-- If directory: error with "Path must be a .feature file, not a directory"
+- If directory: error with file listing:
+  ```
+  Error: Path is a directory, not a .feature file: '[path]'
+
+  Feature files in this directory:
+  [list .feature files in directory, max 10]
+
+  Specify which file to process, for example:
+  /bee:playwright [path-to-specific-file]
+  ```
 - Check if file exists at the provided path
-- If not found: error with "Feature file not found at [path]"
+- If not found: error with diagnostics:
+  ```
+  Error: Feature file not found: '[path]'
+
+  Checking for common issues:
+  - File exists with different case? [check case-insensitive match]
+  - File has typo in extension? [check .features, .gherkin]
+  - File in different directory? [search repo for filename]
+
+  [If alternatives found:]
+  Did you mean: '[found-path]'?
+
+  [If not found:]
+  Create the feature file first, then run /bee:playwright
+  ```
 - Check file extension is `.feature`
-- If wrong extension: error with "Path must point to a .feature file"
+- If wrong extension: error with suggestion:
+  ```
+  Error: File must have .feature extension: '[path]' (has '[actual-ext]')
+
+  [If extension is .features, .gherkin, .spec, .test:]
+  This appears to be a feature file with non-standard extension.
+  Rename to: '[path-with-feature-ext]'
+  Then re-run /bee:playwright
+  ```
 
 **Gherkin Syntax Validation:**
 - Read the feature file content
 - Validate Gherkin syntax using basic parser (check for Feature:, Scenario:, Given/When/Then keywords)
-- If syntax errors found: error with "Invalid Gherkin syntax at line X: [description]"
+- If syntax errors found: error with detailed guidance:
+  ```
+  Error: Invalid Gherkin syntax in '[path]'
+
+  Line [X]: [line content]
+  Error: [specific syntax error description]
+
+  Example of correct syntax:
+  [show corrected line or similar valid example]
+
+  Fix the syntax and re-run /bee:playwright
+  ```
 - Do not proceed to matching if validation fails
 
 ### Step 2: Repository Structure Detection
@@ -425,11 +483,107 @@ The developer provides: `$ARGUMENTS`
 
 ## Error Handling
 
-- **Context-gatherer fails**: "Could not analyze repo structure. [error details]"
-- **Semantic matching fails**: Retry once, then error: "Semantic matching failed for step '[step text]'. [error details]"
-- **Code generation fails**: "Could not generate step definition for '[step text]'. [error details]"
-- **File write fails**: "Could not write file [path]. [error details]"
-- All errors include actionable next steps
+### Agent Delegation Error Handling
+
+For EVERY agent invocation via Task tool, implement robust error handling:
+
+1. **On agent failure (invocation, crash, or invalid output)**:
+   - Log error: "Agent [agent-name] failed at [phase-name]: [error message]"
+   - Include context: agent name, input parameters, phase description
+   - Show user:
+     ```
+     Error: Playwright-BDD failed during [phase name]
+
+     Agent: [agent-name]
+     Phase: [description]
+     Error: [error message]
+
+     Possible causes:
+     - [specific cause based on error type]
+     - [additional causes]
+
+     Next steps:
+     - Check [file] for partial results
+     - Re-run from Step X, or
+     - Abort and investigate error
+     ```
+
+2. **On agent timeout**:
+   - Do NOT silently continue to next phase
+   - Error:
+     ```
+     Error: Agent [name] timed out after [duration]
+
+     This may indicate:
+     - Large repository (too many files to analyze)
+     - Network issues (API calls)
+     - Resource constraints (memory/CPU)
+
+     Next steps:
+     - Try with smaller feature file (fewer scenarios)
+     - Check system resources
+     - Re-run with increased timeout
+     ```
+
+3. **On malformed agent output**:
+   - Validate agent response structure before using
+   - Error:
+     ```
+     Error: Agent [name] returned invalid output
+
+     Expected: [structure description]
+     Received: [summary of what was received]
+
+     This indicates an agent implementation issue.
+     Next steps:
+     - Report this issue with repro steps
+     - Abort current workflow
+     ```
+
+### Specific Phase Errors
+
+- **Context-gatherer fails**:
+  ```
+  Error: Could not analyze repo structure
+
+  [Technical error details in collapsible/log]
+
+  Cannot automatically detect repository structure.
+
+  Options:
+  1. Specify structure manually:
+     - Step definitions directory: [provide path]
+     - POMs directory (if UI tests): [provide path]
+     - Services directory (if API tests): [provide path]
+
+  2. Fix context gathering issue:
+     - [Specific guidance based on error type]
+     Then re-run /bee:playwright
+
+  3. Abort workflow
+  ```
+
+- **Semantic matching fails**: Retry once with user notification, then error:
+  ```
+  Error: Semantic matching failed for step '[step text]' after 2 attempts
+
+  Possible causes:
+  - API rate limiting (wait and retry)
+  - Network connectivity issues
+  - API authentication failure
+
+  Error details: [full error message]
+
+  Next steps:
+  - Check API connectivity
+  - Verify API key is valid
+  - If rate limited, wait 60 seconds and re-run
+  ```
+
+- **Code generation fails**: "Could not generate step definition for '[step text]'. [error details with recovery options]"
+- **File write fails**: "Could not write file [path]. [error details - check permissions, disk space, path validity]"
+- **Approval validation fails**: Specify WHICH steps have invalid selections with line numbers for easy navigation
+- All errors include actionable next steps and context for debugging
 
 ## State Management
 

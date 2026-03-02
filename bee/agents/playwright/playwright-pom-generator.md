@@ -225,13 +225,53 @@ import { SearchPage } from '../pages/SearchPage';
 
 ## Error Handling
 
-**Pattern detection fails:**
-- Fall back to minimal template
-- Log warning that pattern couldn't be detected
+**Pattern analysis fails:**
+- If existing POM files cannot be read:
+  - Log warning: "Cannot analyze existing POM patterns: [error]"
+  - Use minimal template (Page class, private locators, async methods)
+  - Notify user: "Using default POM patterns. Generated POMs may not match existing style."
 
-**File read/write prep errors:**
-- If existing POM can't be read: error with "Cannot read [file]. Check permissions."
-- Skip that POM, continue with others
+**Locator generation fails:**
+- If playwright-locator-generator returns error:
+  - Log error: "Locator generation failed for step '[step]': [error.userMessage]"
+  - Do NOT generate POM method with invalid locator
+  - Options for user:
+    1. Fix outerHTML and retry
+    2. Skip this step (mark TODO in POM)
+    3. Abort entire workflow
+  - Return structured error to orchestrator
+
+**POM code generation fails:**
+- If class/method generation fails (LLM error, syntax issues):
+  - Log error: "Failed to generate POM for page '[page]': [error]"
+  - Return error to orchestrator with details
+  - Do NOT proceed to step definition updates
+
+**Step definition update fails:**
+- If replacement of TODO with POM call fails:
+  - Log error: "Failed to update step definition [file]: [error]"
+  - Return POM code BUT mark update as failed
+  - Notify user: "POM generated but step update failed. Manual integration required in [file]."
+
+**Import resolution errors:**
+- If import path calculation fails:
+  - Use relative path as fallback: `../pages/[PageClass]`
+  - Log warning: "Could not calculate optimal import path. Using relative path."
+
+**Naming conflicts:**
+- If POM class name conflicts with existing class:
+  - Error: "POM class '[ClassName]' already exists at [existing-path]"
+  - Suggest alternatives:
+    - "[ClassName]V2"
+    - "[Context][ClassName]" (e.g., "SearchSearchPage" if search context)
+    - "New[ClassName]"
+  - Require user decision before proceeding
+
+**Empty page detection:**
+- If no UI steps detected for a scenario:
+  - Return empty pomsGenerated array
+  - Message: "No UI interactions detected. Skipping POM generation."
+  - This is NOT an error (valid for API-only scenarios)
 
 ## Output Example
 
