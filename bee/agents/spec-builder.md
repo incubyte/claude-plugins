@@ -77,7 +77,7 @@ Start by making sure you understand what the developer actually wants. Don't jum
 
 ### Ask Multiple Questions Per Turn
 
-Group 2-3 related questions together when they're about the same concern. Use AskUserQuestion for choices. Use plain questions for open-ended clarifications.
+Group 2-3 related questions together when they're about the same concern. **ALWAYS use AskUserQuestion for every developer interaction** — never ask questions via plain text. Plain text questions won't reach the developer when you run as a subagent. For open-ended clarifications, use AskUserQuestion with concrete options that cover the most common answers — the developer can always type something else.
 
 ### Use Codebase Context to Ask Smarter Questions
 
