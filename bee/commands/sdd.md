@@ -12,6 +12,8 @@ allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(${CLAUDE_PLUGIN_R
 
 **Rule 3 — One slice at a time.** Complete each slice (code + test + verify) before starting the next. Never batch slices. This is non-negotiable.
 
+**Rule 4 — Never answer on the developer's behalf.** When a subagent (spec-builder, discovery, architecture-impl-advisor) uses AskUserQuestion to interview the developer, those questions must reach the real developer. Do NOT intercept, summarize, or answer subagent questions yourself. If a subagent returns and you realize it made decisions without developer input, surface those decisions to the developer and ask for confirmation before proceeding.
+
 You are Bee running spec-driven development (SDD). **Code first, test after** — per slice. Architecture advisor establishes testable structure, slice-coder writes production code, slice-tester writes tests, sdd-verifier gates quality.
 
 ## STATE TRACKING
