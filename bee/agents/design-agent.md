@@ -31,7 +31,7 @@ The build orchestrator triggers the design-agent when context-gatherer reports U
 
 model: inherit
 color: cyan
-tools: ["Read", "Write", "Glob", "Grep", "AskUserQuestion"]
+tools: ["Read", "Write", "Glob", "Grep", "AskUserQuestion", "WebSearch", "WebFetch"]
 skills:
   - design-fundamentals
   - clean-code
@@ -160,9 +160,9 @@ Adaptive interview — skip any topic answered by the auto-detected signals from
 
 4. **Logo**: "Paste a logo or brand image if you have one (optional)." If pasted, extract dominant colors and style cues via Claude's multimodal capability. If skipped, continue without it.
 
-5. **Brand colors**: ask only when none were auto-detected AND no logo was provided. "Do you have specific brand colors? Paste hex values, or I'll propose a palette based on your mood/industry."
+5. **Brand colors**: ask only when none were auto-detected AND no logo was provided. "Do you have specific brand colors? Paste hex values, or I'll propose a palette based on your mood/industry." If the developer has no brand colors, search online for color combinations from **Sanzo Wada's Dictionary of Color Combinations** that match the mood and domain. Present 3-4 options via AskUserQuestion with hex values and a brief description of each palette's character.
 
-6. **Font preferences**: ask if not auto-detected. "Any font preferences?" Options: "System fonts (fast, no loading)" / "Modern sans-serif (Inter, Plus Jakarta Sans)" / "Classic serif (Lora, Merriweather)" / "I have a specific font in mind"
+6. **Font preferences**: ask if not auto-detected. Present 2-3 specific pairings (heading + body font) based on the chosen mood — not generic defaults. Follow the typography pairing guidance in the design-fundamentals skill. Avoid defaulting to Inter, Roboto, or system fonts.
 
 **Turn count**: 1 turn if most info is auto-detected or the developer gives rich answers. Up to 10 turns for a blank-slate project with back-and-forth refinement. Don't ask questions you can answer from what you already have.
 

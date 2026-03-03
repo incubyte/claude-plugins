@@ -603,7 +603,6 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ### After Layer 0
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[API endpoint not found / fetch failed]`
-- [ ] **COMMIT**: "feat(view): [feature] component + API contract definition"
 
 ---
 
@@ -647,7 +646,6 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ### After Layer 1
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[expected message]`
-- [ ] **COMMIT**: "feat(controller): [feature] route + controller"
 
 ---
 
@@ -694,7 +692,6 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ### After Layer 2
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[expected message]`
-- [ ] **COMMIT**: "feat(service): [feature] service + business logic"
 
 ---
 
@@ -743,7 +740,6 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ### After Layer 3
 - [ ] **RUN OUTER TEST**: Should be very close to passing or passing
-- [ ] **COMMIT**: "feat(model): [feature] repository + migration"
 
 ---
 
@@ -757,8 +753,6 @@ Connect all layers with real implementations.
   - Service receives real repository instance
 
 - [ ] **RUN OUTER TEST**: Confirm it PASSES ✅
-
-- [ ] **COMMIT**: "feat: wire [feature] — integration test green"
 
 ---
 
@@ -779,8 +773,6 @@ Based on risk level, add additional tests:
 - [ ] [Concurrency — e.g., race condition, duplicate submission]
 - [ ] [Data integrity — e.g., partial failure, transaction rollback]
 
-- [ ] **COMMIT**: "test: [feature] edge cases and risk-aware tests"
-
 ---
 
 ## Final Architecture Verification
@@ -793,6 +785,7 @@ After all tests pass, verify the layer boundaries:
 - [ ] **Models/Repositories** import only: database client, schema definitions
 - [ ] **No upward dependencies**: model never imports service, service never imports controller
 - [ ] **No layer skipping**: controller never imports repository directly, view never imports service directly
+- [ ] **COMMIT**: "feat: [slice name] — [brief summary of behaviors implemented]"
 
 ## Test Summary
 | Layer | Type | # Tests | Mocks Used | Status |
