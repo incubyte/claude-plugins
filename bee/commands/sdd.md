@@ -186,6 +186,32 @@ After triage, before delegating to any agent, ask clarifying questions to fill i
 
 Pass the developer's answers as enriched context to every downstream agent.
 
+### B2.5. Navigation by Size
+
+After triage and clarification, route by size:
+
+**TRIVIAL:**
+"This looks like a quick fix. I'll make the change and run tests. Go ahead?"
+Options: "Yes, go ahead (Recommended)" / "Let me explain more first"
+If yes → delegate to the **slice-coder** agent via Task, passing the task description and context. When it returns, run tests. Done — skip the rest of the workflow.
+**→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+
+**SMALL:**
+Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather → confirm approach → slice-coder → slice-tester → sdd-verifier → done.
+
+1. Delegate to **context-gatherer** agent via Task, passing the task description.
+2. Summarize findings. Use AskUserQuestion: "Here's what I'll change: [brief plan]. Sound right?"
+   Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
+3. Delegate to **slice-coder** agent via Task, passing the task description, context summary, and the approach.
+4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and the context summary.
+5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and context summary.
+6. If verifier passes → report and done. If needs fixes → share report with developer, fix, re-verify.
+
+**→ Update state after verifier passes:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+
+**FEATURE / EPIC:**
+Continue to B3 (Context Gathering) and the full workflow below.
+
 ### B3. Context Gathering
 
 **If there's existing code:**
