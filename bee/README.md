@@ -66,7 +66,7 @@ After discovery, spec, design brief, and TDD plan documents are produced, you ca
 
 ### Session Resume
 
-Close your terminal mid-feature? No problem. Bee persists progress in `.claude/bee-state.local.md`. Next time you run `/bee:build`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
+Close your terminal mid-feature? No problem. Bee persists progress in `.claude/bee-state.local.md`. Next time you run `/bee:sdd`, it picks up exactly where you left off — including design brief status, discovery doc path, current phase, and slice progress.
 
 ## Install
 
@@ -102,40 +102,46 @@ Cursor doesn’t support Claude-style plugins. To use Bee in Cursor on this mach
    ```
 2. **Add the Bee rule** — copy `.cursor/bee-workflow.mdc` into your project’s `.cursor/rules/`, or add it as a User rule in **Settings → Rules, Skills, Subagents** (see **cursor-integration/README.md**).
 
-Then in any project you can say **bee-build**, **bee discover**, or **bee review** in chat to start the same workflows.
+Then in any project you can say **bee-sdd**, **bee discover**, or **bee review** in chat to start the same workflows.
 
 ## Usage
 
-### `/bee:build` — The Main Event
+### `/bee:sdd` — The Main Event
 
-**What it is:** An opinionated workflow that codifies engineering discipline as a command. Spec before code. Tests before shipping. Review before merging. That's the default path — not a hope.
+**What it is:** Spec-driven development that codifies engineering discipline as a command. Works with or without a pre-built spec. Code first, test after — per slice. Architecture advisor establishes testable structure, slice-coder writes production code, slice-tester writes tests, sdd-verifier gates quality.
 
-**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. A TDD plan means every line of code has a reason. Bee makes that the path of least resistance.
+**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. Verification after each slice means nothing ships untested. Bee makes that the path of least resistance.
 
-**How it works:** Tell it what you want to build. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
+**How it works:** Tell it what you want to build, or pass a spec path. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
 
 | Task size            | What Bee does                                         |
 | -------------------- | ----------------------------------------------------- |
 | Typo / config fix    | Just fixes it                                         |
 | Small bug / UI tweak | Quick confirmation, then builds                       |
-| New feature          | Spec, architecture, TDD plan, verify, review          |
+| New feature          | Spec, architecture, code, test, verify, review        |
 | Epic / new subsystem | Breaks into shippable phases, full workflow per phase |
 
 ```
-/bee:build add user authentication
+/bee:sdd add user authentication
+```
+
+Or pass a pre-built spec to skip straight to building:
+
+```
+/bee:sdd docs/specs/feature.md
 ```
 
 Or start without a task — Bee asks what you're working on:
 
 ```
-/bee:build
+/bee:sdd
 ```
 
 Picks up where you left off across sessions. Close your terminal mid-feature, come back later, it resumes.
 
-**Working with Bee during a build:**
+**Working with Bee during SDD:**
 
-Bee produces documents along the way — discovery docs, specs, TDD plans. After each one, you review it in your editor. Two things to know:
+Bee produces documents along the way — discovery docs, specs, architecture recommendations. After each one, you review it in your editor. Two things to know:
 
 1. **`@bee` annotations** — Add `@bee` followed by your comment on any line you want changed (e.g., `@bee this AC is too vague`). Type `check` in the chat and Bee reads your annotations, makes the changes, and leaves a comment card showing what it did.
 
@@ -149,7 +155,7 @@ You're never locked in. Ask questions, go off-topic, or push back at any point �
 /bee:discover
 ```
 
-A PM persona that interviews you (or synthesizes from meeting transcripts) and produces a client-shareable PRD. Works standalone for early-stage requirement exploration, or let `/bee:build` invoke it automatically when decision density is high.
+A PM persona that interviews you (or synthesizes from meeting transcripts) and produces a client-shareable PRD. Works standalone for early-stage requirement exploration, or let `/bee:sdd` invoke it automatically when decision density is high.
 
 ```
 /bee:review
@@ -285,7 +291,7 @@ bee/
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
-│   ├── build.md                   # /bee:build orchestrator
+│   ├── sdd.md                     # /bee:sdd orchestrator
 │   ├── coach.md                   # /bee:coach session coaching insights
 │   ├── architect.md              # /bee:architect architecture assessment
 │   ├── discover.md               # /bee:discover standalone discovery
@@ -343,7 +349,7 @@ bee/
 
 ## Design Decisions
 
-**Why `/bee:build` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 14 agents, it must run as a command in the main conversation context.
+**Why `/bee:sdd` is a command, not an agent.** Claude Code subagents cannot spawn other subagents. Since the orchestrator delegates to 14 agents, it must run as a command in the main conversation context.
 
 **Navigator, not enforcer.** Bee suggests the right process but never blocks. Say "just code it" and Bee asks one clarifying question, then proceeds.
 

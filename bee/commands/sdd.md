@@ -59,7 +59,7 @@ Before anything, check for in-progress work:
    - Mid-slice (coding/testing/verifying) → resume at that phase of that slice
    - Slice verified, more slices remain → start next slice
    - All slices verified → run review
-5. If not resuming or no state: proceed to entry mode detection.
+5. If not resuming or no state: fall back to checking `docs/specs/*.md` for unchecked boxes. If specs with unchecked ACs exist, offer to resume from there. If nothing found, proceed to entry mode detection.
 
 ### Entry Mode Detection
 
@@ -148,9 +148,9 @@ Listen to the developer's description. Do a quick scan (Glob, Grep) to understan
 **RISK:** LOW / MODERATE / HIGH
 
 Risk flows to every downstream phase:
-- Low risk: lighter spec, simpler verification
-- Moderate risk: standard spec, thorough verification
-- High risk: thorough spec (edge cases, failure modes), defensive verification
+- Low risk: lighter spec (fewer questions), simpler verification, review defaults to "ready to merge"
+- Moderate risk: standard spec, thorough verification, review recommends team review
+- High risk: thorough spec (edge cases, failure modes), defensive verification, review recommends feature flag + team review + QA
 
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" init --feature "[feature name]" --size [SIZE] --risk [RISK] --current-phase "triaged"`
 
@@ -186,6 +186,32 @@ After triage, before delegating to any agent, ask clarifying questions to fill i
 
 Pass the developer's answers as enriched context to every downstream agent.
 
+### B2.5. Navigation by Size
+
+After triage and clarification, route by size:
+
+**TRIVIAL:**
+"This looks like a quick fix. I'll make the change and run tests. Go ahead?"
+Options: "Yes, go ahead (Recommended)" / "Let me explain more first"
+If yes → delegate to the **slice-coder** agent via Task, passing the task description and context. When it returns, run tests. Done — skip the rest of the workflow.
+**→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+
+**SMALL:**
+Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather → confirm approach → slice-coder → slice-tester → sdd-verifier → done.
+
+1. Delegate to **context-gatherer** agent via Task, passing the task description.
+2. Summarize findings. Use AskUserQuestion: "Here's what I'll change: [brief plan]. Sound right?"
+   Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
+3. Delegate to **slice-coder** agent via Task, passing the task description, context summary, and the approach.
+4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and the context summary.
+5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and context summary.
+6. If verifier passes → report and done. If needs fixes → share report with developer, fix, re-verify.
+
+**→ Update state after verifier passes:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+
+**FEATURE / EPIC:**
+Continue to B3 (Context Gathering) and the full workflow below.
+
 ### B3. Context Gathering
 
 **If there's existing code:**
@@ -215,19 +241,26 @@ The design agent produces a design brief at `.claude/DESIGN.md`.
 
 For greenfield: do a lightweight UI-signal scan of the developer's description for UI keywords (screen, form, dashboard, page, UI, UX, frontend, display, view, layout, chart, table, component, button, widget). If detected, offer the design agent.
 
-### B6. Discovery Evaluation
+### B6. Discovery Evaluation (ALWAYS RUNS)
+
+This step is mandatory for FEATURE and EPIC. Do NOT skip it, even for greenfield projects. Greenfield makes discovery MORE important, not less — every decision is open.
 
 Decide whether discovery is needed by assessing **decision density** — how many unresolved decisions are in this task, and do they affect each other?
 
 **High decision density — discovery needed:**
-- 2+ unresolved decisions that are interdependent
-- Amplifying signals: goal framing, unbounded scope, no existing patterns, multiple integrations
+- 2+ unresolved decisions that are interdependent (choosing one constrains the others)
+- Amplifying signals (any + 2+ open decisions = definitely discover): goal framing ("build a system that...", "replace X"), unbounded scope ("at least", "similar to"), no existing patterns, multiple providers/integrations, replacement framing
 
 **Low decision density — skip discovery, go straight to spec:**
-- 0-1 open decisions, or multiple independent decisions
+- 0-1 open decisions, or multiple decisions that are independent of each other
+
+**Decision:**
+- High decision density → recommend discovery
+- Low decision density → skip discovery, go straight to spec
+- Uncertain → recommend discovery. It's a few minutes of exploration vs. hours of building the wrong thing.
 
 When discovery is recommended, use AskUserQuestion:
-"I count [N] design decisions that affect each other here — [list them]. I'd suggest a quick discovery pass to map these out before we spec."
+"I count [N] design decisions that affect each other here — [list them briefly]. I'd suggest a quick discovery pass to map these out before we spec. Takes a few minutes but prevents building the wrong thing."
 Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
 If the developer chooses discovery:
@@ -237,6 +270,10 @@ Delegate to the **discovery** agent via Task, passing the task description, tria
 **→ Run the Collaboration Loop** on the discovery document.
 
 If discovery revised the triage size (e.g., FEATURE → EPIC), update state with the new size.
+
+### B6.5. Greenfield Boundary Generation
+
+After discovery completes on a greenfield project, check if the discovery document contains a **Module Structure** section. If present, load the `boundary-generation` skill using the Skill tool and follow its procedure to generate `.claude/BOUNDARIES.md`. If absent or the developer declines, skip this step.
 
 ### B7. Spec Building
 

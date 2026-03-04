@@ -150,7 +150,7 @@ Each migration unit must explain **WHY** it is ordered where it is. Reference sp
 
 ### Migration Unit Detail (Two Levels)
 
-Each unit has two levels of detail so it can feed directly into `/bee:build`:
+Each unit has two levels of detail so it can feed directly into `/bee:sdd`:
 
 **Discovery-level summary:**
 - What module/capability is being moved
