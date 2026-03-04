@@ -80,6 +80,7 @@ In a Cursor project where the Bee rule is active, open the chat and say:
 | **bee-build** or **bee build** or **start bee workflow** | Full Bee build workflow: triage → spec → plan → execute → review. |
 | **bee-build** *&lt;task&gt;* (e.g. **bee-build add user authentication**) | Same workflow, with your task as the starting description. |
 | **bee-discover** or **bee discover** | Discovery session: PM-style interview, outputs a PRD. |
+| **bee-playwright** *&lt;path&gt;* (e.g. **bee-playwright /path/to/feature.feature**) | Generate Playwright-BDD tests from Gherkin: step definitions → POMs → services → utilities → scenario outlines. |
 | **bee-review** or **bee review** | Standalone code review: hotspots, tech debt, coaching. |
 
 State and artifacts (e.g. `docs/specs/.bee-state.md`, specs, plans) are stored in the **current project**, so you can close and reopen the project and resume later.
