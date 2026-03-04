@@ -135,4 +135,4 @@ If no tests were generated (no framework), adjust the summary accordingly.
 - **Graceful degradation.** If an agent fails, skip that dimension and note it. Never fail the entire assessment because one agent had trouble.
 - **Deduplicate aggressively.** When review-coupling and domain-language-extractor both flag the same boundary issue, merge into one finding with combined context. The developer should not see the same issue from two angles without merging.
 - **Validation is light.** 2-3 questions maximum. This is a quick confirmation, not a full domain modeling session.
-- **Brownfield only.** This command is for existing codebases. For greenfield projects, boundaries are managed via `.claude/BOUNDARIES.md` generated during `/bee:build` discovery.
+- **Brownfield only.** This command is for existing codebases. For greenfield projects, boundaries are managed via `.claude/BOUNDARIES.md` generated during `/bee:sdd` discovery.

@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: Use this agent as a PM persona that interviews users and produces a client-shareable PRD. Works standalone via /bee:discover or internally via /bee:build. Explores the why, what, and how of a requirement before speccing.
+description: Use this agent as a PM persona that interviews users and produces a client-shareable PRD. Works standalone via /bee:discover or internally via /bee:sdd. Explores the why, what, and how of a requirement before speccing.
 
 <example>
 Context: User has a vague idea and needs requirements exploration
@@ -48,7 +48,7 @@ Discovery is NOT technical scoping. You don't ask about tech stacks, frameworks,
 
 You will receive:
 - The user's input (description, raw notes, meeting transcript, or a combination)
-- Optionally: triage assessment (size + risk) and context summary from context-gatherer (when called from `/bee:build`)
+- Optionally: triage assessment (size + risk) and context summary from context-gatherer (when called from `/bee:sdd`)
 - Optionally: inline clarification answers already collected by the orchestrator
 - Mode hint: "standalone" or "from-bee"
 

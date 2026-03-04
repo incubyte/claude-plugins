@@ -90,7 +90,7 @@ A spec "passes" if all its ACs passed and no console errors were found.
 
 - **Read-only.** This command does not modify any code. It observes, tests, and reports.
 - **Sequential.** Test specs one at a time, not in parallel. Each spec gets a fresh browser tab.
-- **Chrome MCP required.** Unlike dev mode in bee:build, there is no fallback. If Chrome MCP is not available, stop.
+- **Chrome MCP required.** Unlike dev mode in bee:sdd, there is no fallback. If Chrome MCP is not available, stop.
 - **Dev server is the developer's responsibility.** Detect and offer to start it, but always confirm with the developer first.
 - **Reports persist.** Always save reports to disk, even if only one spec was tested.
 

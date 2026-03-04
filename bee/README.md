@@ -102,7 +102,7 @@ Cursor doesn’t support Claude-style plugins. To use Bee in Cursor on this mach
    ```
 2. **Add the Bee rule** — copy `.cursor/bee-workflow.mdc` into your project’s `.cursor/rules/`, or add it as a User rule in **Settings → Rules, Skills, Subagents** (see **cursor-integration/README.md**).
 
-Then in any project you can say **bee-build**, **bee discover**, or **bee review** in chat to start the same workflows.
+Then in any project you can say **bee-sdd**, **bee discover**, or **bee review** in chat to start the same workflows.
 
 ## Usage
 
