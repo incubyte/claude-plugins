@@ -205,7 +205,16 @@ Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather
 3. Delegate to **slice-coder** agent via Task, passing the task description, context summary, and the approach.
 4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and the context summary.
 5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and context summary.
-6. If verifier passes → report and done. If needs fixes → share report with developer, fix, re-verify.
+6. If verifier passes → report and offer recap. If needs fixes → share report with developer, fix, re-verify.
+
+After the verifier passes, use AskUserQuestion:
+"Done — want a quick walkthrough of what changed?"
+Options: "No, I'm good (Recommended)" / "Yes, walk me through it"
+
+If yes → Delegate to the **recap** agent via Task, passing:
+- spec_path (if exists), feature description, size, risk
+- source_files and test_files from the slice-coder and slice-tester results
+- verifier_summary from the sdd-verifier result
 
 **→ Update state after verifier passes:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
@@ -316,6 +325,8 @@ Then proceed to **The Slice Loop**.
 ---
 
 ## THE SLICE LOOP
+
+**Recap context:** As you run the slice loop, accumulate a recap context to pass to the recap agent at the end. After each slice-coder returns, note the source files and what was done. After each slice-tester returns, note the test files. After the verifier returns, note its summary. This is passed to the recap agent — it does NOT depend on git commits.
 
 For each slice, in order:
 
@@ -429,6 +440,21 @@ If the reviewer recommends changes: share with developer, fix, re-review.
 If the reviewer says "ready to merge": done.
 
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+
+### RECAP OFFER
+
+After the reviewer says "ready to merge" (or if the feature shipped):
+
+Use AskUserQuestion:
+"Nice work — [feature name] is shipped. Want me to walk you through what we built?"
+Options: "Yes, walk me through it (Recommended)" / "No, I'm good"
+
+If yes → Delegate to the **recap** agent via Task, passing the accumulated context:
+- spec_path: the spec file path
+- feature_name, size, risk: from triage
+- architecture: from bee-state architecture field
+- Per-slice: source_files, test_files, verifier_summary (accumulated during slice loop)
+- reviewer_summary: from the reviewer agent's output
 
 ---
 

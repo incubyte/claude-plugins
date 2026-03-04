@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven engineering discipline to AI
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, and verification. No other Claude Code plugin delivers triage → spec → architecture → code → test → verify → review as one coherent workflow.
 
-**What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 10 commands, 27 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -97,7 +97,7 @@ Then in any project you can say **bee-sdd**, **bee discover**, or **bee review**
 
 **What it is:** Spec-driven development that codifies engineering discipline as a command. Works with or without a pre-built spec. Code first, test after — per slice. Architecture advisor establishes testable structure, slice-coder writes production code, slice-tester writes tests, sdd-verifier gates quality.
 
-**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. Verification after each slice means nothing ships untested. Bee makes that the path of least resistance.
+**Why it matters:** AI writes better code when it has clear targets. A 10-minute spec means the AI doesn't guess your requirements. Verification after each slice means nothing ships untested. After shipping, Bee offers a walkthrough of what was built — files, core logic, tests, and key decisions — so you understand the code you now own. Bee makes that the path of least resistance.
 
 **How it works:** Tell it what you want to build, or pass a spec path. Bee assesses size and risk, then navigates you through exactly the right amount of process — no more, no less.
 
@@ -222,7 +222,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-Bee ships with 26 specialist agents:
+Bee ships with 27 specialist agents:
 
 | Agent                       | Role                                                                         |
 | --------------------------- | ---------------------------------------------------------------------------- |
@@ -256,6 +256,7 @@ Bee ships with 26 specialist agents:
 | `review-team-practices`     | Commit messages, PR review substance                                         |
 | `review-org-standards`      | Project CLAUDE.md conventions                                                |
 | `review-ai-ergonomics`      | LLM-friendliness review                                                      |
+| `recap`                     | Walk through what was built — files, core logic, tests, decisions            |
 
 ## Skills
 

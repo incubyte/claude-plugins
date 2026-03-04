@@ -85,6 +85,7 @@ The full Bee workflow for features and epics:
 6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-impl-advisor
 7. **Slice Loop** — Code first, test after, per slice. Agents: slice-coder, slice-tester, sdd-verifier
 8. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
+9. **Recap (optional)** — Walk through what was built. Files, core logic, tests, decisions. Agent: recap
 
 **Collaboration Loop:** After steps 4, 5, and 6 (discovery, spec, architecture), the developer can review the document in their editor, add `@bee` inline comments, and mark `[x] Reviewed` to proceed. This loop runs after each document-producing agent completes — it's additive to the existing workflow.
 
