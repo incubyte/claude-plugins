@@ -1,10 +1,10 @@
 # Bee
 
-Bee is a Claude Code plugin that brings spec-driven, test-first engineering discipline to AI-assisted development — automatically scaling process to match the task.
+Bee is a Claude Code plugin that brings spec-driven engineering discipline to AI-assisted development — automatically scaling process to match the task.
 
 **Why this exists.** Incubyte is a 140+ engineer software consultancy built on eXtreme Programming and software craftsmanship. We noticed AI coding tools are fast but undisciplined — they skip specs, ignore architecture, and produce code without tests. Bee encodes the engineering discipline our team practices daily into a plugin any developer can use with Claude Code.
 
-**What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, TDD plan, and verification. No other Claude Code plugin delivers triage → spec → architecture → TDD → verify → review as one coherent workflow.
+**What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, and verification. No other Claude Code plugin delivers triage → spec → architecture → code → test → verify → review as one coherent workflow.
 
 **What you get.** 10 commands, 26 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
@@ -41,11 +41,8 @@ For features and epics, Bee navigates you through these phases:
    [ ARCHITECTURE ]  Evaluate options when warranted. Most tasks: follow existing patterns.
          |
          v
-   [ TDD PLAN ]      Generate a step-by-step test-first implementation plan.
-         |
-         v
    For each slice:
-   [ EXECUTE ]  -->  [ VERIFY ]  -->  [ next slice ]
+   [ CODE ]  -->  [ TEST ]  -->  [ VERIFY ]  -->  [ next slice ]
          |
          v
    [ REVIEW ]        Full picture. Risk-aware ship recommendation.
@@ -62,7 +59,7 @@ The design brief is a project-level artifact. It's created once and referenced b
 
 ### Collaboration Loop
 
-After discovery, spec, design brief, and TDD plan documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Type `check` when you're ready for Bee to re-read, or just keep chatting — Bee won't block the conversation while you review.
+After discovery, spec, design brief, and architecture documents are produced, you can review them in your editor. Add `@bee` inline comments to request changes. Mark `[x] Reviewed` at the bottom to proceed. Type `check` when you're ready for Bee to re-read, or just keep chatting — Bee won't block the conversation while you review.
 
 ### Session Resume
 
@@ -81,16 +78,6 @@ On Copilot CLI and Claude Code run this and you're good to go:
 ```
 
 > Make sure to restart your tool after installing the plugin
-
-### Optional: Autonomous Execution with Ralph
-
-Bee can hand off TDD plan execution to [Ralph Wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum), a persistent loop plugin by Anthropic. When installed, Bee detects it automatically and offers autonomous execution during the build phase.
-
-```bash
-/plugin install ralph-wiggum@incubyte-plugins
-```
-
-Without Ralph, you drive execution manually by following the TDD plan checklist. Both paths work — Ralph just lets you walk away while it builds.
 
 ### Cursor Support
 
@@ -210,16 +197,16 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 | ------- | ------------------------------------ | --------------------------------------------------- |
 | TRIVIAL | Typo, config change, one-liner       | Fix it immediately                                  |
 | SMALL   | Single-file bug, UI tweak            | Quick confirmation, then build                      |
-| FEATURE | New endpoint, new screen, multi-file | Spec, architecture, TDD plan, verify, review        |
+| FEATURE | New endpoint, new screen, multi-file | Spec, architecture, code, test, verify, review      |
 | EPIC    | New subsystem, cross-cutting concern | Discovery, phased delivery, full workflow per phase |
 
 ### Risk
 
 | Risk     | Examples                       | Effect on workflow                                            |
 | -------- | ------------------------------ | ------------------------------------------------------------- |
-| LOW      | Internal tool, easy to revert  | Lighter spec, simpler plan                                    |
-| MODERATE | User-facing, business logic    | Standard spec, proper TDD, team review recommended            |
-| HIGH     | Payments, auth, data migration | Thorough spec, defensive tests, feature flag + QA recommended |
+| LOW      | Internal tool, easy to revert  | Lighter spec, simpler verification                            |
+| MODERATE | User-facing, business logic    | Standard spec, thorough verification, team review recommended |
+| HIGH     | Payments, auth, data migration | Thorough spec, defensive verification, feature flag + QA      |
 
 ## Artifacts Produced
 
@@ -228,7 +215,6 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 | Design Brief   | `.claude/DESIGN.md`                        | Project-level visual constraints for UI work      |
 | Specs          | `docs/specs/[feature].md`                  | Requirements with acceptance criteria             |
 | Discovery Docs | `docs/specs/[feature]-discovery.md`        | Problem statement, hypotheses, milestone map      |
-| TDD Plans      | `docs/specs/[feature]-slice-N-tdd-plan.md` | Step-by-step implementation plans with checkboxes |
 | ADRs           | `docs/adrs/NNN-[decision].md`              | Architecture decisions with rationale             |
 | State          | `.claude/bee-state.local.md`               | Session resume tracking                           |
 
@@ -247,12 +233,16 @@ Bee ships with 26 specialist agents:
 | `discovery`                 | PM persona that interviews users and produces a client-shareable PRD         |
 | `spec-builder`              | Interview developer, write testable and design-aware specs                   |
 | `architecture-advisor`      | Evaluate architecture options, YAGNI check                                   |
-| `tdd-planner-onion`         | Outside-in TDD for onion/hexagonal architecture                              |
-| `tdd-planner-mvc`           | Layer-by-layer TDD for MVC codebases                                         |
-| `tdd-planner-cqrs`          | Split command/query TDD for CQRS systems                                     |
-| `tdd-planner-event-driven`  | Contract-first TDD for event-driven systems                                  |
-| `tdd-planner-simple`        | Straightforward test-implement-verify                                        |
-| `verifier`                  | Post-slice quality gate                                                      |
+| `architecture-impl-advisor` | SDD architecture advisor — establishes testable structure                     |
+| `slice-coder`               | Code a single slice per spec and architecture                                |
+| `slice-tester`              | Write tests for a completed slice                                            |
+| `sdd-verifier`              | SDD quality gate — test quality, AC validation, pattern checks               |
+| `tdd-planner-onion`         | Outside-in TDD for onion/hexagonal architecture (used by ping-pong)          |
+| `tdd-planner-mvc`           | Layer-by-layer TDD for MVC codebases (used by ping-pong)                     |
+| `tdd-planner-cqrs`          | Split command/query TDD for CQRS systems (used by ping-pong)                 |
+| `tdd-planner-event-driven`  | Contract-first TDD for event-driven systems (used by ping-pong)              |
+| `tdd-planner-simple`        | Straightforward test-implement-verify (used by ping-pong)                    |
+| `verifier`                  | Post-slice quality gate (used by ping-pong)                                  |
 | `reviewer`                  | Final review with ship recommendation                                        |
 | `browser-verifier`          | Browser-based AC verification via Chrome MCP                                 |
 | `domain-language-extractor` | Extract domain vocabulary; flag vocabulary drift                             |
@@ -341,7 +331,7 @@ bee/
 │   ├── lsp-analysis/
 │   └── browser-testing/
 ├── docs/
-│   ├── specs/                    # Generated specs, TDD plans, state
+│   ├── specs/                    # Generated specs, discovery docs, state
 │   └── adrs/                    # Architecture Decision Records
 ├── CLAUDE.md                     # Bee personality + conventions
 └── README.md
