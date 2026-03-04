@@ -100,7 +100,7 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - ADRs live in `docs/adrs/`
 - TDD plans live in `docs/specs/[feature]-slice-N-tdd-plan.md`
 - Agent definitions live in `.claude/agents/`
-- The `/bee` command is the entry point for all workflows. `/bee:build` delegates to `/bee:sdd` — same triage, context, spec, architecture, code, test, verify, review pipeline
+- The `/bee:sdd` command is the entry point for all workflows — triage, context, spec, architecture, code, test, verify, review
 - The `/bee:discover` command is a standalone entry point for discovery — PM persona, client-shareable PRD output
 - The `/bee:architect` command is a standalone architecture assessment — domain language analysis, boundary tests
 - The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
@@ -111,4 +111,4 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 
 ## State Persistence
 
-Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:build` and `/bee:sdd` read this file to resume where the developer left off.
+Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:sdd` reads this file to resume where the developer left off.
