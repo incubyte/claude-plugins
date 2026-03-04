@@ -106,7 +106,9 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
 - The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
 - The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
+- The `/bee:ping-pong` command runs ping-pong TDD on a spec — two agents alternate (test-writer writes one failing test, coder makes it pass) until all acceptance criteria are implemented. Use `/bee:ping-pong docs/specs/feature.md`.
+- The `/bee:sdd` command runs spec-driven development — code first, test after, per slice. Works with or without a pre-built spec. With a spec path (`/bee:sdd docs/specs/feature.md`), skips to context → architecture → slice loop. Without a spec or with a task description (`/bee:sdd "add user auth"`), runs the full workflow: triage → discovery → spec → architecture → code → test → verify → review. Uses sdd-verifier (test quality assessment) instead of TDD plan checking.
 
 ## State Persistence
 
-Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:build` reads this file to resume where the developer left off.
+Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:build` and `/bee:sdd` read this file to resume where the developer left off.

@@ -306,8 +306,6 @@ The component test drives out what data shape the backing code must provide.
 
 - [ ] **REFACTOR**: [Specific cleanup if needed, or "None needed"]
 
-- [ ] **COMMIT**: "feat: [behavior description]"
-
 ---
 
 ## Behavior 2: [Plaintext description from AC2]
@@ -330,8 +328,6 @@ The component test drives out what data shape the backing code must provide.
 - [ ] **RUN**: Confirm test PASSES
 
 - [ ] **REFACTOR**: [Specific cleanup if needed]
-
-- [ ] **COMMIT**: "feat: [behavior description]"
 
 ---
 
@@ -368,8 +364,6 @@ Based on risk level, add tests for scenarios the acceptance criteria don't expli
   - Expected: [safe failure — no data corruption, clear error]
 - [ ] **GREEN → REFACTOR**
 
-- [ ] **COMMIT**: "test: [feature] edge cases"
-
 ---
 
 ## Final Check
@@ -377,6 +371,7 @@ Based on risk level, add tests for scenarios the acceptance criteria don't expli
 - [ ] **Run full test suite**: All tests pass ✅
 - [ ] **Review test names**: Read them top to bottom — do they describe the feature clearly?
 - [ ] **Review implementation**: Is there dead code? Unused parameters? Overly complex logic?
+- [ ] **COMMIT**: "feat: [slice name] — [brief summary of behaviors implemented]"
 
 ## Test Summary
 | Category | # Tests | Status |

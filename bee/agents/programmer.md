@@ -20,7 +20,7 @@ Delegated by the build orchestrator after TDD plan review. The programmer return
 </commentary>
 </example>
 
-model: inherit
+model: sonnet
 color: green
 tools: ["Read", "Glob", "Grep", "AskUserQuestion", "Skill"]
 skills:
