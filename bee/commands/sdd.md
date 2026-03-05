@@ -120,6 +120,8 @@ The advisor evaluates the codebase and spec, presents architecture options to th
 
 Save the architecture output — you'll pass it to every slice-coder invocation.
 
+If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
+
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
 
 **→ Run the Collaboration Loop** on the architecture recommendation.
@@ -129,6 +131,8 @@ Save the architecture output — you'll pass it to every slice-coder invocation.
 Show the developer the slices in order with their ACs. Use AskUserQuestion:
 "Here's the SDD plan — **[N] slices**. I'll code each slice, then test it. Ready?"
 Options: "Yes, let's go (Recommended)" / "I want to reorder"
+
+If the developer chooses to reorder: get the new order, then update the spec file to match. Reorder the `### Slice` sections — keep content intact, only move sections. The spec is always the single source of truth.
 
 Then proceed to **The Slice Loop**.
 
@@ -291,8 +295,8 @@ Delegate to the **spec-builder** agent via Task, passing:
 - The triage assessment (size + risk — possibly revised by discovery)
 - The context summary from the context-gatherer
 - The discovery document path (if discovery was done)
-- For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N.md`.
-- For single-phase: no phase constraint. Spec saves to `docs/specs/[feature].md`.
+- For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N-spec.md`.
+- For single-phase: no phase constraint. Spec saves to `docs/specs/[feature]-spec.md`.
 
 The spec-builder interviews the developer, writes the spec to `docs/specs/`, and gets confirmation before returning.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --phase-spec "[spec-path] — confirmed" --current-phase "spec confirmed"`
@@ -307,6 +311,9 @@ Delegate to the **architecture-impl-advisor** agent via Task, passing:
 - The triage assessment (size + risk)
 
 The advisor evaluates options and returns the architecture recommendation.
+
+If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
+
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
 
 **→ Run the Collaboration Loop** on the architecture recommendation.
@@ -320,6 +327,8 @@ Read the spec. Show the developer the slices in order with their ACs. Use AskUse
 "Here's the SDD plan — **[N] slices**. I'll code each slice, then test it. Ready?"
 Options: "Yes, let's go (Recommended)" / "I want to reorder"
 
+If the developer chooses to reorder: get the new order, then update the spec file to match. Reorder the `### Slice` sections — keep content intact, only move sections. The spec is always the single source of truth.
+
 Then proceed to **The Slice Loop**.
 
 ---
@@ -328,7 +337,7 @@ Then proceed to **The Slice Loop**.
 
 **Recap context:** As you run the slice loop, accumulate a recap context to pass to the recap agent at the end. After each slice-coder returns, note the source files and what was done. After each slice-tester returns, note the test files. After the verifier returns, note its summary. This is passed to the recap agent — it does NOT depend on git commits.
 
-For each slice, in order:
+For each slice, in the order they appear in the spec file. Never reorder, skip, or rearrange — the spec is the single source of truth for slice order:
 
 ### Step A — Create a Task
 
