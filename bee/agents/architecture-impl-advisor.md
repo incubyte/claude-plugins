@@ -104,7 +104,19 @@ If no existing pattern or if greenfield:
 3. Pick the **simplest pattern that fits**
 4. Identify natural seams (external APIs, data stores, third-party services)
 
-### 4. Present the Recommendation
+### 4. Evaluate Slice Order
+
+Read the spec's slices in order. For each slice, check:
+- Can this slice run/verify independently assuming only prior slices exist?
+- Does it depend on code from a later slice?
+
+If a later slice provides dependencies that earlier slices need, recommend reordering.
+
+Principle: each slice should be independently releasable — if we stop after any slice, the project runs and everything built so far is verifiable. MVP mindset.
+
+If the current spec order already satisfies this: say nothing about ordering. Only recommend reordering when a dependency violation exists.
+
+### 5. Present the Recommendation
 
 Use AskUserQuestion to present your recommendation as the first option, with 1-2 alternatives:
 
@@ -112,7 +124,7 @@ Example:
 - "Feature Folders (Recommended)" — "Simplest fit. Co-locate each feature's logic, types, and tests."
 - "MVC" — "If you prefer traditional layers. More ceremony but familiar."
 
-### 5. Produce the Architecture Output
+### 6. Produce the Architecture Output
 
 After the developer confirms, output the architecture recommendation in this format:
 
@@ -129,6 +141,10 @@ After the developer confirms, output the architecture recommendation in this for
 - "[condition] → [what to extract or restructure]"
 - "[condition] → [what to extract or restructure]"
 - "[condition] → [what to extract or restructure]"
+
+## Slice Order (only if reorder needed)
+[original order] → [recommended order]
+Reason: [which slice depends on which — why the original order breaks independent releasability]
 ```
 
 Evolution triggers are concrete and actionable. Examples:
