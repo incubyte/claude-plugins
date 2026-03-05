@@ -213,7 +213,7 @@ Bee assesses every task on two axes — **size** and **risk** — then recommend
 | Artifact       | Location                                   | Purpose                                           |
 | -------------- | ------------------------------------------ | ------------------------------------------------- |
 | Design Brief   | `.claude/DESIGN.md`                        | Project-level visual constraints for UI work      |
-| Specs          | `docs/specs/[feature].md`                  | Requirements with acceptance criteria             |
+| Specs          | `docs/specs/[feature]-spec.md`             | Requirements with acceptance criteria             |
 | Discovery Docs | `docs/specs/[feature]-discovery.md`        | Problem statement, hypotheses, milestone map      |
 | ADRs           | `docs/adrs/NNN-[decision].md`              | Architecture decisions with rationale             |
 | State          | `.claude/bee-state.local.md`               | Session resume tracking                           |

@@ -295,8 +295,8 @@ Delegate to the **spec-builder** agent via Task, passing:
 - The triage assessment (size + risk — possibly revised by discovery)
 - The context summary from the context-gatherer
 - The discovery document path (if discovery was done)
-- For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N.md`.
-- For single-phase: no phase constraint. Spec saves to `docs/specs/[feature].md`.
+- For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N-spec.md`.
+- For single-phase: no phase constraint. Spec saves to `docs/specs/[feature]-spec.md`.
 
 The spec-builder interviews the developer, writes the spec to `docs/specs/`, and gets confirmation before returning.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --phase-spec "[spec-path] — confirmed" --current-phase "spec confirmed"`

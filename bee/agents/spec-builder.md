@@ -136,7 +136,7 @@ NOT Given/When/Then. NOT multi-paragraph descriptions. Just clear, testable stat
 
 ## Output Format
 
-Save to `docs/specs/[feature-name].md`:
+Save to `docs/specs/[feature-name]-spec.md`:
 
 ### Single-Slice Feature (FEATURE size)
 
