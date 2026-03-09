@@ -24,8 +24,61 @@ You are orchestrating the complete Playwright-BDD workflow across 5 phases:
 
 The developer provides: `$ARGUMENTS`
 
+**@ Mention Detection:**
+- Check if `$ARGUMENTS` starts with `@` character
+- If yes, proceed to @ mention path resolution
+- If no, continue with existing absolute path validation
+
+**@ Mention Path Resolution:**
+
+**Detection:**
+- If `$ARGUMENTS` starts with `@`, extract filename: `@search.feature` → `search.feature`
+- If `@` with no filename: error "@ mention requires a filename. Example: @search.feature"
+- If multiple arguments detected (contains space after first argument): error "Command accepts only one feature file path. Please specify one: @search.feature OR /absolute/path.feature"
+
+**Filename Validation:**
+- Check if filename ends with `.feature` extension
+- If no extension: error "@ mention must include .feature extension. Example: @search.feature"
+- If wrong extension (e.g., `@test.txt`): error "@ mention must reference a .feature file. Found: @[filename]"
+
+**File Search:**
+- Use Glob tool to search recursively in:
+  - `features/**/*.feature`
+  - `tests/features/**/*.feature`
+  - `e2e/features/**/*.feature`
+- Filter results to exact filename match (case-sensitive)
+- Limit search to first 50 feature files found (performance constraint)
+- If more than 50 files in search directories: show "Found N feature files. Scanning first 50 for @ mention resolution."
+
+**Result Handling:**
+
+**Zero matches:**
+```
+Error: File not found via @ mention: '@[filename]'
+
+Searched in:
+- features/
+- tests/features/
+- e2e/features/
+
+No matches found. Check spelling or provide absolute path starting with /
+```
+Do not proceed to path validation.
+
+**Single match:**
+- Resolve to absolute path automatically (no confirmation needed)
+- Continue to existing path validation below (file exists, .feature extension, Gherkin syntax)
+
+**Multiple matches (2+):**
+- Use AskUserQuestion to present all matching paths
+- Format: "Found multiple files named '[filename]'. Which one?"
+- Options: Show each absolute path as separate option + "Cancel" option
+- If developer selects a path: use that path, continue to validation
+- If developer cancels: exit workflow with "Feature file selection cancelled."
+
 **Path Validation:**
-- Extract file path from arguments
+- If @ mention was resolved: use resolved absolute path
+- Otherwise: extract file path from arguments
 - Check if path is absolute (starts with `/` on Unix or drive letter on Windows)
 - If relative path: error with helpful conversion suggestions:
   ```
@@ -113,6 +166,50 @@ The developer provides: `$ARGUMENTS`
   - Store answer: `hybrid_mode = "UI" | "API" | "Both"`
   - If "Both": implement UI path completely (Phase 2), then API path (Phase 3)
   - Note: Phase 1 only generates step definitions, no POMs or services yet
+
+### Step 2.5: Pattern Detection (Optional)
+
+**Check if pattern detection should run:**
+- Only run if 2 or more feature files exist in repo
+- Skip if repo is empty (no feature files found)
+- Skip if only 1 feature file exists (show message: "Only one feature file found. Skipping pattern detection.")
+
+**Delegate to pattern detector:**
+- Invoke `bee:playwright-pattern-detector` agent via Task tool
+- Pass repo root path
+- Agent scans feature files (max 50) and returns detected patterns JSON
+
+**Handle results:**
+
+**If agent fails:**
+- Log error: "Pattern detection failed: [error]. Continuing with step matching."
+- Continue to Step 3 without blocking workflow
+
+**If no patterns detected:**
+- Show message: "No repeating patterns detected across feature files."
+- Continue to Step 3
+
+**If patterns detected:**
+- For each pattern in results:
+  - Show pattern description
+  - Show number of feature files using this pattern
+  - Show 2-3 example scenarios
+  - Use AskUserQuestion: "Found repeating pattern '[description]' in N feature files. Extract as reusable step/utility?"
+  - Options: "Yes (Recommended)" / "No" / "Skip remaining patterns"
+  - If developer selects "Skip remaining patterns": stop showing patterns, continue to Step 3
+  - If developer selects "Yes": add pattern description to selections array
+  - If developer selects "No": skip this pattern, continue to next
+
+**Store pattern selections:**
+- After all patterns processed (or developer skips remaining):
+  - Store selections in Bee state via update-bee-state.sh
+  - Command: `scripts/update-bee-state.sh set --playwright-patterns-selected '[pattern1, pattern2, ...]'`
+  - Format: JSON array of pattern descriptions marked for extraction
+- Pattern selections are available for Phase 4 (Utility Generation) to read from state
+
+**Continue workflow:**
+- After pattern detection completes, continue to Step 3 (Step Definition Indexing)
+- No changes to Step 3 or later steps
 
 ### Step 3: Step Definition Indexing
 
@@ -281,18 +378,40 @@ The developer provides: `$ARGUMENTS`
 - Validate: exactly one box per UI step
 - Parse decisions
 
-**Collect outerHTML for new methods/classes:**
+**Collect UI repo or outerHTML for new methods/classes:**
+
+**Step 1: Ask for UI repo (optional):**
+- Use AskUserQuestion: "Do you have access to the UI repository code for better locator identification?"
+- Options:
+  - "Yes, GitHub URL" (developer provides https://github.com/owner/repo)
+  - "Yes, local path" (developer provides /absolute/path/to/ui/repo)
+  - "No, I'll provide HTML" (skip to outerHTML collection)
+- If developer provides repo:
+  - Validate format (GitHub URL starts with https://github.com/, local path is absolute)
+  - Store repo path for locator generator
+- If developer says "No, I'll provide HTML":
+  - Skip to outerHTML collection below
+
+**Step 2: Collect outerHTML (if no repo provided):**
 - For each step marked "Add new method" or "Create new":
-  - Use AskUserQuestion: "Provide outerHTML for '[step text]' element:"
+  - If repo was provided: outerHTML is optional (locator generator will analyze repo first)
+  - If no repo: Use AskUserQuestion: "Provide outerHTML for '[step text]' element:"
   - Accept HTML string input
-  - If empty: skip or re-prompt
-- Store outerHTML for each UI element
+  - If empty and no repo: skip or re-prompt
+- Store outerHTML for each UI element (if provided)
 
 **Delegate to locator generator:**
 - Invoke `bee:playwright-locator-generator` agent via Task tool
-- Pass: outerHTML for each UI element, action type (click/fill/select)
-- Agent generates Playwright locators with stability assessment
-- Returns: locator string, strategy, stability, warnings
+- Pass:
+  - Step description (e.g., "search button", "email input field")
+  - Action type (click/fill/select)
+  - UI repo path (if provided, otherwise null)
+  - outerHTML (if provided, otherwise null)
+- Agent workflow:
+  1. If repo provided: analyze component files for existing data-testid/ARIA attributes
+  2. If repo analysis succeeds: return locators from repo code
+  3. If repo analysis fails OR no repo: parse outerHTML to generate locators
+- Returns: locator string, strategy, stability, warnings, source (repo or HTML)
 
 **Delegate to POM generator:**
 - Invoke `bee:playwright-pom-generator` agent via Task tool
