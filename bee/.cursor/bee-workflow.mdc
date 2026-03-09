@@ -1,9 +1,9 @@
 ---
-description: Bee workflow — run bee-build, bee discover, bee review from chat
+description: Bee workflow — run bee-sdd, bee discover, bee review from chat
 alwaysApply: true
 ---
 
-# Bee workflow — when the user says "bee-build", "bee build", "/bee:build", "start bee workflow", "run bee", or similar
+# Bee workflow — when the user says "bee-sdd", "bee sdd", "/bee:sdd", "start bee workflow", "run bee", or similar
 
 You are integrating with **Bee**, a spec-driven TDD workflow navigator. Bee's files are installed at **BEE_ROOT** on this machine:
 
@@ -11,16 +11,16 @@ You are integrating with **Bee**, a spec-driven TDD workflow navigator. Bee's fi
 
 **Path resolution:**
 
-- Paths like `agents/`, `skills/`, `commands/` → resolve from **BEE_ROOT** (e.g. `BEE_ROOT/agents/context-gatherer.md`, `BEE_ROOT/commands/build.md`).
+- Paths like `agents/`, `skills/`, `commands/` → resolve from **BEE_ROOT** (e.g. `BEE_ROOT/agents/context-gatherer.md`, `BEE_ROOT/commands/sdd.md`).
 - Paths like `docs/specs/`, `.claude/`, `docs/adrs/` → resolve from the **current workspace root** (the project the user has open in Cursor).
 
 **What to do:**
 
-1. **bee-build (or "bee build", "/bee:build", "start bee workflow")**
-   - Read and follow the instructions in **BEE_ROOT/commands/build.md** from start to finish.
+1. **bee-sdd (or "bee sdd", "/bee:sdd", "start bee workflow")**
+   - Read and follow the instructions in **BEE_ROOT/commands/sdd.md** from start to finish.
    - When that file refers to "agents/", "skills/", or other Bee assets, read them from BEE_ROOT.
    - When it refers to "docs/specs/.bee-state.md" or "docs/specs/", use the current workspace.
-   - If the user added a task description (e.g. "bee-build add user auth"), treat it as the initial task description for the workflow.
+   - If the user added a task description (e.g. "bee-sdd add user auth"), treat it as the initial task description for the workflow.
 
 2. **bee-discover (or "bee discover", "/bee:discover")**
    - Read and follow **BEE_ROOT/commands/discover.md**.

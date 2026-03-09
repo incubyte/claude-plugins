@@ -68,7 +68,7 @@ Check Chrome MCP availability once at the start, not per-operation.
 2. If it succeeds: Chrome MCP is available. Proceed with browser verification.
 3. If it fails or errors: Chrome MCP is not connected. Degrade based on mode.
 
-### Dev mode (called from `bee:build`)
+### Dev mode (called from `bee:sdd`)
 
 - Report: "Browser verification skipped — Chrome MCP not available"
 - **Do not block the build.** The regular verifier result (PASS) stands.

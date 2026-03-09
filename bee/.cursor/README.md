@@ -4,7 +4,7 @@ Bee is a spec-driven TDD workflow navigator. In Claude Code it runs as a plugin;
 
 **Prerequisites:** You have the Bee repo cloned somewhere on your machine (e.g. this repo).
 
-**What this setup does:** Nothing is written to any database. You create a symlink so Cursor can find Bee at a fixed path, and you add a rule (either via Cursor’s UI or by adding a rule file to your project) so the agent knows to run Bee when you say "bee-build", "bee discover", or "bee review".
+**What this setup does:** Nothing is written to any database. You create a symlink so Cursor can find Bee at a fixed path, and you add a rule (either via Cursor’s UI or by adding a rule file to your project) so the agent knows to run Bee when you say "bee-sdd", "bee discover", or "bee review".
 
 ---
 
@@ -30,7 +30,7 @@ You should see `bee -> /absolute/path/to/bee/repo`.
 
 ### Step 2: Add the Bee rule in Cursor
 
-You need a rule that tells the agent to run Bee when you say "bee-build", "bee discover", or "bee review". Use **one** of the two options below.
+You need a rule that tells the agent to run Bee when you say "bee-sdd", "bee discover", or "bee review". Use **one** of the two options below.
 
 ---
 
@@ -67,7 +67,7 @@ Add a rule in Cursor that applies to every project on your machine (no copy per 
    - If there is an **Always apply** (or similar) option, turn it **on** so the rule is active in every chat.
 6. Save.
 
-After that, in any Cursor project you can say "bee-build", "bee discover", or "bee review" in chat and the agent will run Bee. You only need the symlink from Step 1.
+After that, in any Cursor project you can say "bee-sdd", "bee discover", or "bee review" in chat and the agent will run Bee. You only need the symlink from Step 1.
 
 ---
 
@@ -77,8 +77,8 @@ In a Cursor project where the Bee rule is active, open the chat and say:
 
 | You say | What runs |
 |--------|-----------|
-| **bee-build** or **bee build** or **start bee workflow** | Full Bee build workflow: triage → spec → plan → execute → review. |
-| **bee-build** *&lt;task&gt;* (e.g. **bee-build add user authentication**) | Same workflow, with your task as the starting description. |
+| **bee-sdd** or **bee sdd** or **start bee workflow** | Full Bee SDD workflow: triage → spec → architecture → code → test → verify → review. |
+| **bee-sdd** *&lt;task&gt;* (e.g. **bee-sdd add user authentication**) | Same workflow, with your task as the starting description. |
 | **bee-discover** or **bee discover** | Discovery session: PM-style interview, outputs a PRD. |
 | **bee-playwright** *&lt;path&gt;* (e.g. **bee-playwright /path/to/feature.feature**) | Generate Playwright-BDD tests from Gherkin: step definitions → POMs → services → utilities → scenario outlines. |
 | **bee-review** or **bee review** | Standalone code review: hotspots, tech debt, coaching. |

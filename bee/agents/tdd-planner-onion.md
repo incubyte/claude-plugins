@@ -681,7 +681,6 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 
 ### After Layer 0
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[API endpoint not found / fetch failed]`
-- [ ] **COMMIT**: "feat(ui): [feature] component + API contract definition"
 
 ---
 
@@ -723,7 +722,6 @@ Create the use case port interface that this adapter needs.
 
 ### After Layer 1
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[expected message]`
-- [ ] **COMMIT**: "feat(adapter): [feature] inbound adapter + use case port interface"
 
 ---
 
@@ -794,7 +792,6 @@ Create the outbound port interfaces that this use case needs.
 
 ### After Layer 2
 - [ ] **RUN OUTER TEST**: Confirm it fails with: `[expected message]`
-- [ ] **COMMIT**: "feat(core): [feature] use case + domain core + outbound port interfaces"
 
 ---
 
@@ -831,7 +828,6 @@ Create the outbound port interfaces that this use case needs.
 
 ### After Layer 3
 - [ ] **RUN OUTER TEST**: Should be very close to passing or passing
-- [ ] **COMMIT**: "feat(adapter): [feature] outbound adapter + migration"
 
 ---
 
@@ -847,8 +843,6 @@ Connect all layers with real implementations.
 
 - [ ] **RUN OUTER TEST**: Confirm it PASSES ✅
 
-- [ ] **COMMIT**: "feat: wire [feature] — integration test green"
-
 ---
 
 ## Final Architecture Verification
@@ -861,6 +855,7 @@ After all tests pass, verify the dependency direction:
 - [ ] **Domain** imports: NOTHING from outside its own directory
 - [ ] **Outbound adapters** import: port interfaces, infrastructure libraries
 - [ ] **No circular dependencies** between layers
+- [ ] **COMMIT**: "feat: [slice name] — [brief summary of behaviors implemented]"
 
 ## Test Summary
 | Layer | Type | # Tests | Mocks Used | Status |

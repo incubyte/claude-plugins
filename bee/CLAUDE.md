@@ -29,9 +29,9 @@ Developers adopt tools that help them, not tools that constrain them. When a dev
 
 Risk flows to every downstream phase:
 
-- Low risk: lighter spec (fewer questions), simpler plan, review defaults to "ready to merge"
-- Moderate risk: standard spec, proper TDD plan, review recommends team review
-- High risk: thorough spec (edge cases, failure modes), defensive TDD plan (more error handling tests), review recommends feature flag + team review + QA
+- Low risk: lighter spec (fewer questions), simpler verification, review defaults to "ready to merge"
+- Moderate risk: standard spec, thorough verification, review recommends team review
+- High risk: thorough spec (edge cases, failure modes), defensive verification, review recommends feature flag + team review + QA
 
 ## Navigation by Size
 
@@ -56,7 +56,7 @@ Present every decision as a structured choice via AskUserQuestion:
 Default: **subtle**
 
 - **on**: explain at every decision point — why specs help AI, why tests define "done", why slicing works
-- **subtle**: explain only at major decisions (architecture, first TDD plan, review)
+- **subtle**: explain only at major decisions (architecture, first slice, review)
 - **off**: just navigate, no explanations
 
 Teaching is brief, contextual, at the moment it matters. Not lectures.
@@ -77,18 +77,17 @@ Examples:
 
 The full Bee workflow for features and epics:
 
-1. **Triage** — Assess size + risk. Route to appropriate workflow. Entry point: `/bee`
+1. **Triage** — Assess size + risk. Route to appropriate workflow. Entry point: `/bee:sdd`
 2. **Context Gathering** — Read the codebase to understand patterns, conventions, and the change area. Agent: context-gatherer
 3. **Tidy (optional)** — Clean up the area before building. Separate commit. Skipped if area is clean. Agent: tidy
 4. **Discovery (when warranted)** — PM persona that interviews users and produces a client-shareable PRD. Available standalone via `/bee:discover` or internally when decision density is high. Agent: discovery
 5. **Spec Building** — Interview the developer, build a testable specification. Uses discovery document when available. Agent: spec-builder
-6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-advisor
-7. **TDD Planning** — Generate a checklisted TDD plan for each slice. Agents: tdd-planner-onion, tdd-planner-mvc, tdd-planner-simple
-8. **Execution** — Execute the TDD plan slice by slice. Agent: programmer
-9. **Verification** — Verify completed slice: tests pass, criteria met, patterns followed. Agent: verifier
-10. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
+6. **Architecture Advising** — Evaluate architecture options when warranted. Most tasks: follow existing patterns. Agent: architecture-impl-advisor
+7. **Slice Loop** — Code first, test after, per slice. Agents: slice-coder, slice-tester, sdd-verifier
+8. **Review** — Review the complete body of work. Risk-aware ship recommendation. Agent: reviewer
+9. **Recap (optional)** — Walk through what was built. Files, core logic, tests, decisions. Agent: recap
 
-**Collaboration Loop:** After steps 4, 5, and 7 (discovery, spec, TDD plan), the developer can review the document in their editor, add `@bee` inline comments, and mark `[x] Reviewed` to proceed. This loop runs after each document-producing agent completes — it's additive to the existing workflow.
+**Collaboration Loop:** After steps 4, 5, and 6 (discovery, spec, architecture), the developer can review the document in their editor, add `@bee` inline comments, and mark `[x] Reviewed` to proceed. This loop runs after each document-producing agent completes — it's additive to the existing workflow.
 
 ## Session Resume
 
@@ -98,15 +97,16 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 
 - Specs live in `docs/specs/`
 - ADRs live in `docs/adrs/`
-- TDD plans live in `docs/specs/[feature]-slice-N-tdd-plan.md`
+- Discovery docs live in `docs/specs/[feature]-discovery.md`
 - Agent definitions live in `.claude/agents/`
-- The `/bee` command is the entry point for all workflows
+- The `/bee:sdd` command is the entry point for all workflows — spec-driven development, code first, test after, per slice. Works with or without a pre-built spec. With a spec path, skips to context → architecture → slice loop. Without a spec, runs full workflow: triage → discovery → spec → architecture → code → test → verify → review.
 - The `/bee:discover` command is a standalone entry point for discovery — PM persona, client-shareable PRD output
 - The `/bee:architect` command is a standalone architecture assessment — domain language analysis, boundary tests
 - The `/bee:onboard` command is a standalone entry point for interactive developer onboarding — analyzes the codebase and delivers an adaptive walkthrough
 - The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
 - The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
+- The `/bee:ping-pong` command runs ping-pong TDD on a spec — two agents alternate (test-writer writes one failing test, coder makes it pass) until all acceptance criteria are implemented. Uses TDD planners and programmer agent. Use `/bee:ping-pong docs/specs/feature.md`.
 
 ## State Persistence
 
-Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:build` reads this file to resume where the developer left off.
+Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:sdd` reads this file to resume where the developer left off.

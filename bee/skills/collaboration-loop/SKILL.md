@@ -109,7 +109,7 @@ Only `[x] Reviewed` blocks progression. These do NOT block:
 
 This loop applies after these agents return:
 - Discovery agent → `docs/specs/[feature]-discovery.md`
-- Spec-builder → `docs/specs/[feature].md` or `docs/specs/[feature]-phase-N.md`
+- Spec-builder → `docs/specs/[feature]-spec.md` or `docs/specs/[feature]-phase-N-spec.md`
 - TDD planner (all 5 variants) → `docs/specs/[feature]-slice-N-tdd-plan.md`
 
 It does NOT apply to: quick-fix, context-gatherer, tidy, architecture-advisor, verifier, reviewer.

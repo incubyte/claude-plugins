@@ -36,7 +36,7 @@ You will receive:
 - **Spec path** — the spec file with acceptance criteria to verify
 - **Slice number** — which slice's ACs to check (dev mode) or all ACs (test mode)
 - **Context summary** — project patterns, conventions, key directories
-- **Mode** — `dev` (called from bee:build) or `test` (called from bee:browser-test)
+- **Mode** — `dev` (called from bee:sdd) or `test` (called from bee:browser-test)
 - **DESIGN.md path** (optional) — if present, check UI against design brief constraints
 
 ## Verification Process
