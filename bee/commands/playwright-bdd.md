@@ -378,40 +378,65 @@ Do not proceed to path validation.
 - Validate: exactly one box per UI step
 - Parse decisions
 
-**Collect UI repo or outerHTML for new methods/classes:**
+**Choose locator generation strategy:**
 
-**Step 1: Ask for UI repo (optional):**
-- Use AskUserQuestion: "Do you have access to the UI repository code for better locator identification?"
+**Step 1: Offer three-option choice:**
+- Use AskUserQuestion: "How should I generate locators for UI elements?"
 - Options:
-  - "Yes, GitHub URL" (developer provides https://github.com/owner/repo)
-  - "Yes, local path" (developer provides /absolute/path/to/ui/repo)
-  - "No, I'll provide HTML" (skip to outerHTML collection)
-- If developer provides repo:
-  - Validate format (GitHub URL starts with https://github.com/, local path is absolute)
-  - Store repo path for locator generator
-- If developer says "No, I'll provide HTML":
-  - Skip to outerHTML collection below
+  - "Chrome DevTools - inspect running app (Recommended)" - if app is running locally
+  - "Analyze UI repository" - if component source code is available
+  - "Provide outerHTML manually" - fallback for both above
+- Developer selects one strategy
 
-**Step 2: Collect outerHTML (if no repo provided):**
+**Step 2: Execute chosen strategy:**
+
+**If "Chrome DevTools" selected:**
+- Check Chrome MCP availability (call tabs_context_mcp)
+- If unavailable: Show message "Chrome MCP not available. Install Claude in Chrome extension." → Fall back to asking for repo or outerHTML choice
+- If available:
+  - Detect dev server command from package.json (priority: "dev" > "start" > "serve")
+  - Use AskUserQuestion: "Start dev server using `npm run dev`?"
+    - Options: "Yes (start server)" / "Already running at URL" / "Use different command"
+  - If "Yes": Execute command via Bash with run_in_background
+  - If "Already running": Accept developer-provided URL (validate http:// or https://)
+  - If "Use different command": Accept custom command and execute
+  - Verify server accessibility (HTTP request to base URL)
+  - If server fails: Show error + logs, prompt "Server failed to start. [Check configuration / Provide different command / Fall back to outerHTML]"
+  - Store dev server URL for locator generator
+  - Keep server running (do not shut down - Phase 1 limitation)
+
+**If "Analyze UI repository" selected:**
+- Use AskUserQuestion: "Provide UI repository location:"
+  - Options: "GitHub URL" / "Local path"
+- If GitHub URL: validate format (starts with https://github.com/), store for locator generator
+- If local path: validate format (absolute path), store for locator generator
+
+**If "Provide outerHTML manually" selected:**
 - For each step marked "Add new method" or "Create new":
-  - If repo was provided: outerHTML is optional (locator generator will analyze repo first)
-  - If no repo: Use AskUserQuestion: "Provide outerHTML for '[step text]' element:"
+  - Use AskUserQuestion: "Provide outerHTML for '[step text]' element:"
   - Accept HTML string input
-  - If empty and no repo: skip or re-prompt
-- Store outerHTML for each UI element (if provided)
+  - Store outerHTML for each UI element
 
 **Delegate to locator generator:**
 - Invoke `bee:playwright-locator-generator` agent via Task tool
 - Pass:
   - Step description (e.g., "search button", "email input field")
   - Action type (click/fill/select)
-  - UI repo path (if provided, otherwise null)
-  - outerHTML (if provided, otherwise null)
+  - Strategy preference: "chrome" | "repo" | "html"
+  - Dev server URL (if Chrome strategy, otherwise null)
+  - UI repo path (if repo strategy, otherwise null)
+  - outerHTML (if HTML strategy, otherwise null)
 - Agent workflow:
-  1. If repo provided: analyze component files for existing data-testid/ARIA attributes
-  2. If repo analysis succeeds: return locators from repo code
-  3. If repo analysis fails OR no repo: parse outerHTML to generate locators
-- Returns: locator string, strategy, stability, warnings, source (repo or HTML)
+  1. **Chrome strategy**: Create tab, navigate to dev server, find element (hybrid: find tool → javascript fallback), extract attributes, generate locator, test interaction, return with validation status
+  2. **Repo strategy**: Analyze component files for existing data-testid/ARIA attributes, return locators from repo code
+  3. **HTML strategy**: Parse outerHTML to extract attributes and generate locators
+  4. **Graceful degradation**: Chrome unavailable → fall back to repo or HTML
+- Returns: locator string, strategy, stability, warnings, source, validated (true for Chrome strategy with successful interaction test)
+
+**Phase 1 limitation for Chrome strategy:**
+- Generates locator for ONE element only (first UI step requiring new method/class)
+- Multi-element support comes in Phase 2 of Chrome DevTools integration
+- If multiple UI elements need locators in this scenario, Chrome strategy is invoked once, then falls back to repo/HTML for remaining elements
 
 **Delegate to POM generator:**
 - Invoke `bee:playwright-pom-generator` agent via Task tool
