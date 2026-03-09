@@ -35,6 +35,8 @@ You will receive:
 1. **Repo root path**: Absolute path to the repository
 2. **Step definitions directory**: Path where step definition files live (from context-gatherer)
 3. **Steps to match**: Array of steps from feature file (Given/When/Then text)
+4. **Flow analysis** (optional): Application flow context from playwright-flow-analyzer (null if not available)
+5. **Current scenario context**: The full ordered sequence of steps in the scenario being matched (for position analysis)
 
 ## Output
 
@@ -45,13 +47,16 @@ Return a structured match result for each step:
   stepText: string,
   matches: Array<{
     existingStepText: string,
-    confidence: number,  // 0-100
+    confidence: number,  // 0-100 (semantic similarity score)
+    contextualRelevance?: number,  // 0-100 (flow context score, only if flow analysis available)
+    finalScore?: number,  // 0-100 (composite score: 70% semantic + 30% contextual, only if flow analysis available)
     filePath: string,
     lineNumber: number,
     usedInFeatures: Array<{ path: string, line: number }>,
     usageCount: number
   }>,
-  decision: "candidates_found" | "no_matches" | "duplicate_error"
+  decision: "candidates_found" | "no_matches" | "duplicate_error",
+  flowContextApplied: boolean  // true if flow analysis was used for filtering
 }
 ```
 
@@ -140,9 +145,122 @@ Return a structured match result for each step:
   }
   ```
 
+**Apply flow context filtering (if flow analysis available):**
+
+**Skip if no flow context:**
+- If flow analysis input is null or undefined, skip this section entirely
+- Proceed directly to ordering candidates
+
+**For each candidate with confidence ≥ 50%:**
+
+Calculate contextual relevance score (0-100) based on:
+
+1. **Flow Position Check** (weight: 30%):
+   - Determine current step's position in scenario: beginning (first 3 steps), middle, or end (last 3 steps)
+   - Look up candidate's `typicalPosition` in flow analysis `stepPositions` map
+   - Score calculation:
+     - If positions match exactly (e.g., both "beginning"): +30 points
+     - If positions are adjacent (e.g., "beginning" vs "middle"): +15 points
+     - If positions are opposite (e.g., "beginning" vs "end"): +0 points
+   - If candidate not found in stepPositions (new step not in flow data): assume neutral, +15 points
+
+2. **Preceding Context Check** (weight: 40%):
+   - Identify the step that comes immediately before the current step in the scenario
+   - If current step is the first step: skip preceding check, score = 20 points (neutral)
+   - Look up candidate's `precedingSteps` array in flow analysis
+   - Normalize both preceding step text and candidate's precedingSteps (lowercase, trim)
+   - Score calculation:
+     - If preceding step is in candidate's top 3 precedingSteps: +40 points
+     - If preceding step is in candidate's precedingSteps (4th-5th): +20 points
+     - If preceding step not in candidate's precedingSteps: +0 points
+   - If candidate not in stepPositions: neutral, +20 points
+
+3. **Following Context Check** (weight: 15%, lower priority):
+   - Identify the step that comes immediately after the current step in the scenario
+   - If current step is the last step: skip following check, score = 7 points (neutral)
+   - Look up candidate's `followingSteps` array in flow analysis
+   - Score calculation:
+     - If following step is in candidate's top 3 followingSteps: +15 points
+     - If following step is in candidate's followingSteps (4th-5th): +7 points
+     - If following step not in candidate's followingSteps: +0 points
+   - If candidate not in stepPositions: neutral, +7 points
+
+4. **Flow Stage Check** (weight: 15%):
+   - Determine current scenario's flow stage by analyzing first few steps:
+     - If first 2 steps contain "log in", "sign in", "authenticate": stage = "authentication"
+     - If Background section exists: stage = "setup"
+     - If first step is "Given" and mentions "on [page]": stage = "setup"
+     - Otherwise: stage = "core_action"
+   - Look up candidate in flow analysis `commonSequences` to find its `flowStage`
+   - Score calculation:
+     - If stages match: +15 points
+     - If stages are compatible (e.g., "setup" + "core_action"): +7 points
+     - If stages conflict (e.g., "authentication" + "teardown"): +0 points
+   - If candidate not in commonSequences: neutral, +7 points
+
+**Calculate composite score:**
+- Total contextual relevance = sum of all 4 checks (max 100 points)
+- Final score = (semantic confidence × 0.7) + (contextual relevance × 0.3)
+  - Semantic matching is still primary (70% weight)
+  - Flow context provides additional filtering (30% weight)
+
+**Filter by composite score:**
+- Remove candidates with final score < 40 (strong filter for false positives)
+- If all candidates filtered out: return "no_matches"
+
+**Example of flow context filtering:**
+
+```
+New scenario at position 2:
+  Given user logs in          ← previous step
+  When user searches for "product"   ← MATCHING THIS STEP
+  Then results are displayed  ← following step
+
+Candidate A: "user performs search"
+  - Semantic confidence: 85%
+  - Typical position: middle ✓ (current is position 2, close to middle) → +15 points
+  - Preceding steps: ["user logs in", "user navigates to search"] ✓ Match! → +40 points
+  - Following steps: ["results are displayed", "user clicks result"] ✓ Match! → +15 points
+  - Flow stage: core_action ✓ (scenario is core_action) → +15 points
+  - Contextual relevance: 85 points
+  - Final score: (85 × 0.7) + (85 × 0.3) = 85 → KEEP
+
+Candidate B: "user logs out"
+  - Semantic confidence: 60%
+  - Typical position: end ✗ (current is position 2) → +0 points
+  - Preceding steps: ["results are displayed", "user closes window"] ✗ No match → +0 points
+  - Following steps: [] ✗ → +0 points
+  - Flow stage: teardown ✗ (scenario is core_action) → +0 points
+  - Contextual relevance: 0 points
+  - Final score: (60 × 0.7) + (0 × 0.3) = 42 → KEEP (above threshold)
+
+  [Note: Candidate B barely passes but will rank much lower than A]
+
+Candidate C: "admin deletes user account"
+  - Semantic confidence: 52%
+  - Typical position: middle → +15 points
+  - Preceding steps: ["admin logs in", "admin navigates to users"] ✗ No match → +0 points
+  - Following steps: ["confirmation displayed"] ✗ No match → +0 points
+  - Flow stage: core_action ✓ → +15 points
+  - Contextual relevance: 30 points
+  - Final score: (52 × 0.7) + (30 × 0.3) = 45.4 → KEEP
+
+Candidate D: "user accepts terms"
+  - Semantic confidence: 51%
+  - Typical position: beginning ✗ (current is position 2, but not "beginning" stage) → +0 points
+  - Preceding steps: ["user logs in"] ✓ Match! → +40 points
+  - Following steps: ["user navigates to dashboard"] ✗ No match → +0 points
+  - Flow stage: authentication ✗ (scenario is core_action) → +0 points
+  - Contextual relevance: 40 points
+  - Final score: (51 × 0.7) + (40 × 0.3) = 47.7 → KEEP but ranks low
+
+Result: Candidate A ranks highest due to strong flow context alignment
+```
+
 **Order candidates:**
-- Sort by confidence descending (highest first)
-- For ties (same confidence): sort by usage count descending (most-used first)
+- If flow context was applied: sort by final composite score descending (highest first)
+- If no flow context: sort by semantic confidence descending (highest first)
+- For ties (same score): sort by usage count descending (most-used first)
 - If still tied: sort alphabetically by step text
 
 **Return top candidates:**
@@ -244,6 +362,7 @@ Return structured results for all steps:
 
 ## Output Format Example
 
+**Without flow context:**
 ```json
 {
   "steps": [
@@ -272,20 +391,66 @@ Return structured results for all steps:
           "usageCount": 1
         }
       ],
-      "decision": "candidates_found"
+      "decision": "candidates_found",
+      "flowContextApplied": false
     },
     {
       "stepText": "Search results are displayed",
       "matches": [],
-      "decision": "no_matches"
+      "decision": "no_matches",
+      "flowContextApplied": false
     }
   ]
 }
 ```
 
+**With flow context (context-aware matching):**
+```json
+{
+  "steps": [
+    {
+      "stepText": "user searches for product",
+      "matches": [
+        {
+          "existingStepText": "user performs search",
+          "confidence": 85,
+          "contextualRelevance": 85,
+          "finalScore": 85,
+          "filePath": "/repo/src/steps/search.steps.ts",
+          "lineNumber": 15,
+          "usedInFeatures": [
+            { "path": "/repo/features/product-search.feature", "line": 12 },
+            { "path": "/repo/features/search.feature", "line": 8 }
+          ],
+          "usageCount": 2
+        },
+        {
+          "existingStepText": "user logs out",
+          "confidence": 60,
+          "contextualRelevance": 0,
+          "finalScore": 42,
+          "filePath": "/repo/src/steps/auth.steps.ts",
+          "lineNumber": 45,
+          "usedInFeatures": [
+            { "path": "/repo/features/logout.feature", "line": 20 }
+          ],
+          "usageCount": 1
+        }
+      ],
+      "decision": "candidates_found",
+      "flowContextApplied": true
+    }
+  ]
+}
+```
+
+Note: In the second example with flow context, "user performs search" ranks much higher than "user logs out" due to strong contextual alignment (preceding step "user logs in" typically precedes search actions, not logout actions).
+
 ## Notes
 
 - This agent is READ-ONLY — it does not modify any files
 - Semantic matching is the critical path — LLM comparison determines reuse opportunities
-- Confidence threshold (50%) is enforced here, not in the command
+- Flow context filtering (when available) significantly reduces false positives by understanding application flow
+- Confidence threshold (50% semantic, 40% composite) is enforced here, not in the command
 - Usage frequency ordering helps surface battle-tested steps
+- Flow-aware matching prevents matching steps from wrong flow stages (e.g., login steps vs logout steps)

@@ -167,6 +167,34 @@ Do not proceed to path validation.
   - If "Both": implement UI path completely (Phase 2), then API path (Phase 3)
   - Note: Phase 1 only generates step definitions, no POMs or services yet
 
+### Step 2.25: Application Flow Analysis
+
+**Check if flow analysis should run:**
+- Only run if 3 or more feature files exist in repo (minimum for meaningful flow patterns)
+- Skip if repo is empty or has fewer than 3 feature files (show message: "Fewer than 3 feature files found. Skipping flow analysis.")
+
+**Delegate to flow analyzer:**
+- Invoke `bee:playwright-flow-analyzer` agent via Task tool
+- Pass: repo root path, feature files directory (from context-gatherer)
+- Agent scans all feature files and returns flow analysis with common sequences, flow graph, and step positions
+- Store result in workflow state for step-matcher to access
+
+**Handle results:**
+
+**If agent fails:**
+- Log error: "Flow analysis failed: [error]. Continuing with step matching."
+- Continue to Step 2.5 without blocking workflow
+- Step-matcher will use semantic matching only (without flow context)
+
+**If insufficient data:**
+- If agent returns warning about insufficient feature files: show warning
+- Continue to Step 2.5 (no flow context available for step-matcher)
+
+**If flow analysis succeeds:**
+- Show summary: "Analyzed N feature files, identified M common sequences"
+- Store flow analysis result for step-matcher to use in Step 5
+- Continue to Step 2.5
+
 ### Step 2.5: Pattern Detection (Optional)
 
 **Check if pattern detection should run:**
@@ -247,10 +275,11 @@ Do not proceed to path validation.
 
 **For each step in the scenario:**
 - Delegate to `bee:playwright-step-matcher` agent via Task tool
-- Pass: step text, indexed step definitions
+- Pass: step text, indexed step definitions, flow analysis result (from Step 2.25, null if skipped), current scenario step sequence
 - Agent performs LLM-based semantic matching (prompt: "Rate semantic similarity 0-100")
+- Agent applies flow context filtering (if flow analysis available): checks position, preceding/following context, flow stage
 - Agent returns ranked candidates with confidence scores
-- Agent filters candidates below 50% confidence
+- Agent filters candidates below 50% confidence (semantic) AND low contextual relevance (if flow context available)
 - Agent orders by confidence, then by usage frequency if tied
 
 **Generate Approval File:**
