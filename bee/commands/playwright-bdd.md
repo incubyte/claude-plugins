@@ -360,6 +360,59 @@ Do not proceed to path validation.
 - Extract steps: step keyword (Given/When/Then), step text
 - Prepare for matching phase
 
+### Step 4.5: Scenario Implementation Filtering
+
+**Check scenario count:**
+- If only one scenario exists: skip filtering, proceed to Step 5 with that scenario
+- If multiple scenarios exist: continue with filtering workflow
+
+**Present implementation status question:**
+- Use AskUserQuestion: "This feature file has N scenarios. Which scenarios already have step definitions?"
+- multiSelect: true
+- Options: One checkbox per scenario with scenario name
+- Example option format: "Scenario 1: User searches for products"
+- Default: all unchecked (assume all scenarios are new)
+
+**Handle selection outcomes:**
+
+**If ALL scenarios marked as implemented:**
+- Show message: "All scenarios already implemented. Extracting patterns for future use."
+- For each marked scenario:
+  - Extract step texts (Given/When/Then)
+  - Add to pattern catalog with comment: "# Pattern from implemented scenario: [scenario name]"
+- Store enriched patterns in workflow state
+- Show confirmation: "Extracted N steps as patterns from M scenarios. Patterns available for gap detection in future workflows."
+- Exit workflow with message: "No new scenarios to process. Re-run with a feature file containing unimplemented scenarios."
+
+**If NONE marked as implemented:**
+- Show message: "Processing all N scenarios as new."
+- Store all scenarios in queue for processing
+- Continue to Step 5 with first scenario
+
+**If SOME marked as implemented:**
+- Calculate counts: `implemented_count = marked scenarios`, `unimplemented_count = total - marked`
+- Show message: "Processing M unimplemented scenarios. Extracting patterns from N implemented scenarios."
+- For each marked scenario:
+  - Extract step texts (Given/When/Then)
+  - Add to pattern catalog with comment: "# Pattern from implemented scenario: [scenario name]"
+- Store enriched patterns in workflow state
+- Filter scenario queue: keep only unimplemented scenarios
+- Show confirmation: "Pattern extraction complete. Proceeding with M unimplemented scenarios."
+- Continue to Step 5 with first unimplemented scenario
+
+**Pattern extraction format:**
+- Extract each step as: `[keyword] [step text]` (e.g., "Given I am on the homepage")
+- Group by scenario name for traceability
+- Pass to step-matcher in Step 5 as additional context for semantic matching
+- Patterns inform gap detection suggestions but do not create new step definitions
+
+**Update scenario numbering:**
+- When generating approval files in Step 5:
+  - If filtering was skipped (single scenario): use "Scenario 1"
+  - If all scenarios processed: use "Scenario 1", "Scenario 2", etc. (original numbering)
+  - If some filtered: renumber to reflect unimplemented queue (e.g., if Scenarios 1 and 3 are unimplemented, they become "Scenario 1" and "Scenario 2" in approval files)
+  - Store mapping: `original_scenario_number -> queue_position` for developer reference
+
 ### Step 5: Semantic Step Matching
 
 **For each step in the scenario:**
@@ -801,12 +854,14 @@ Do not proceed to path validation.
 
 ### Step 15: Continue to Next Scenario
 
-- Check if more scenarios exist in feature file
+- Check if more scenarios exist in the unimplemented scenario queue (filtered in Step 4.5)
 - If yes:
   - Use AskUserQuestion: "Continue to next scenario in this feature? [Yes / No]"
-  - If "Yes": repeat from Step 4 (parse next scenario)
+  - If "Yes": repeat from Step 5 (semantic step matching) with next scenario from queue
   - If "No": exit with "Feature processing complete. Re-invoke command for remaining scenarios."
 - If no more scenarios: "All scenarios complete. All phases done."
+
+**Note:** Step 4.5 filtering is not re-run for subsequent scenarios - the queue established in Step 4.5 persists throughout the workflow.
 
 ## Error Handling
 
