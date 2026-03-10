@@ -17,7 +17,7 @@ Bee doesn't enforce process — it suggests. The developer always has final say.
 For features and epics, Bee navigates you through these phases:
 
 ```
-"Tell me what we're working on"
+"Let's start working on EC-1943 ticket"
          |
          v
    [ TRIAGE ]        Assess size + risk. Route to the right workflow.
