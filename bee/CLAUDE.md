@@ -110,3 +110,126 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 ## State Persistence
 
 Bee tracks workflow progress in `.claude/bee-state.local.md` via the `scripts/update-bee-state.sh` script. This file is written silently (no permission prompts) using the Bash tool, not Write/Edit. On startup, `/bee:sdd` reads this file to resume where the developer left off.
+
+## Playwright-BDD Cache
+
+The `/bee:playwright-bdd` workflow maintains a persistent cache to avoid repeating expensive analysis operations, preserve project knowledge between sessions, and reduce token usage.
+
+### Cache Location
+
+Cache file: `docs/playwright-init.md`
+
+This is a human-readable markdown file that can be committed to git, diffed, and merged like any other documentation.
+
+### Cache Contents
+
+The cache stores analysis results from four agents:
+
+1. **Context Summary** - Repository structure, test framework conventions, key directories
+2. **Flow Catalog** - User flows and domain language patterns from existing features
+3. **Pattern Catalog** - Repeating Given/When/Then structures across scenarios
+4. **Steps Catalog** - Index of all existing step definitions with their locations and patterns
+
+### Cache Structure
+
+```markdown
+---
+last_updated: "2026-03-10T14:30:00Z"
+feature_file_count: 12
+step_file_count: 8
+---
+
+# Playwright-BDD Initialization Cache
+
+## Summary
+- Flows: 15
+- Patterns: 8
+- Step Definitions: 42
+- Last Updated: March 10, 2026 at 2:30 PM
+
+## Context Summary
+[Repository context and conventions]
+
+## Flow Catalog
+[User flows and domain language]
+
+## Pattern Catalog
+[Repeating Given/When/Then patterns]
+
+## Steps Catalog
+[Step definition index with locations]
+```
+
+### Cache Invalidation
+
+The cache automatically detects when the codebase has changed significantly:
+
+**Invalidation Triggers:**
+- Feature file count changes by 2 or more (`.feature` files)
+- Step file count changes by 2 or more (`.steps.ts` or `.steps.js` files)
+
+**Fresh Cache:**
+- Both file counts are within ±1 of cached values
+- Workflow offers to use cached analysis (recommended option)
+
+**Stale Cache:**
+- File count threshold exceeded
+- Workflow prompts to re-analyze (recommended option)
+
+### Interactive Prompts
+
+When you run `/bee:playwright-bdd`, the workflow checks cache status:
+
+**No cache found:**
+```
+No cache found. Running initial analysis...
+```
+Proceeds with full analysis automatically.
+
+**Cache is fresh:**
+```
+Cache is fresh (last updated: March 10, 2026 at 2:30 PM).
+Options:
+- Use cache (Recommended)
+- Re-analyze anyway
+- Cancel
+```
+
+**Cache is stale:**
+```
+Cache is stale (file count changed: 14 features, 10 steps).
+Re-analyze?
+Options:
+- Yes (Recommended)
+- Use stale cache
+- Cancel
+```
+
+**Cache is corrupt:**
+```
+Cache file is corrupt.
+Re-analyze?
+Options:
+- Yes
+- Cancel
+```
+
+The recommended option is auto-selected - press Enter to accept.
+
+### Forcing Re-Analysis
+
+To force fresh analysis when cache is available:
+
+1. Run `/bee:playwright-bdd` as normal
+2. When prompted "Cache is fresh", select "Re-analyze anyway"
+3. Or manually delete `docs/playwright-init.md` before running the command
+
+### Cache Updates
+
+- **After successful analysis:** "Cache updated with latest analysis"
+- **When using cache:** "Using cached analysis from [date]" with summary counts
+- **Cache write is all-or-nothing:** If any of the 4 agents fail, cache is not written
+
+### Empty Repository Handling
+
+If the repository has zero feature files and zero step files, the workflow creates an empty cache with structure and a warning note. This preserves the cache format while signaling that no analysis was performed.

@@ -147,6 +147,95 @@ Do not proceed to path validation.
   ```
 - Do not proceed to matching if validation fails
 
+### Step 1.5: Cache Check and Invalidation
+
+**Count current files:**
+- Use Glob to count `.feature` files recursively in common directories (features/, tests/features/, e2e/features/)
+- Use Glob to count step definition files: `**/*.steps.ts` and `**/*.steps.js`
+- Store counts: `current_feature_count`, `current_step_count`
+
+**Check cache status:**
+- Use Bash to invoke cache-reader.sh: `bash bee/scripts/cache-reader.sh validate $current_feature_count $current_step_count`
+- Script returns one of: `missing`, `fresh`, `stale`, `corrupt`
+- Note: Partial cache (missing expected sections) is detected by cache-reader.sh and returned as `missing` status
+- Store result: `cache_status`
+
+**Handle cache status:**
+
+**If `cache_status == "missing"`:**
+- **Check for zero files scenario:**
+  - If `current_feature_count == 0` AND `current_step_count == 0`:
+    - Show message: "Repository has zero feature files and zero step files. Creating empty cache."
+    - Invoke: `bash bee/scripts/cache-writer.sh write --empty`
+    - Show confirmation: "Empty cache created with warning note. Cache will be invalidated when files are added."
+    - Exit workflow with message: "No feature files to process. Add feature files and re-run /bee:playwright-bdd"
+  - Otherwise:
+    - Show message: "No cache found. Running initial analysis..."
+    - Continue to Step 2 (all 4 agents will run)
+    - After all agents complete successfully (Step 3 completes): write cache using cache-writer.sh
+      - Invoke: `bash bee/scripts/cache-writer.sh write --flows "N" --patterns "M" --steps "P" --feature-files "$current_feature_count" --step-files "$current_step_count" --context "context text" --flow-catalog "flow text" --pattern-catalog "pattern text" --steps-catalog "steps text"`
+      - Show confirmation: "Cache updated with latest analysis"
+
+**If `cache_status == "corrupt"`:**
+- Use AskUserQuestion: "Cache file is corrupt. Re-analyze? [Yes / Cancel]"
+- If "Yes": continue to Step 2 (run all agents), write cache after completion
+- If "Cancel": exit workflow with message "Workflow cancelled. Fix or delete docs/playwright-init.md to proceed."
+
+**If `cache_status == "stale"`:**
+- Read cached counts using cache-reader.sh:
+  - `cached_features=$(bash bee/scripts/cache-reader.sh get --field feature_file_count)`
+  - `cached_steps=$(bash bee/scripts/cache-reader.sh get --field step_file_count)`
+- Calculate deltas:
+  - `feature_delta = current_feature_count - cached_features`
+  - `step_delta = current_step_count - cached_steps`
+- Use AskUserQuestion: "Cache is stale (file count changed: ${feature_delta} features, ${step_delta} steps). Re-analyze? [Yes (Recommended) / Use stale cache / Cancel]"
+- Recommended option: "Yes (Recommended)" is auto-selected
+- If "Yes (Recommended)": continue to Step 2 (run all agents), write cache after completion
+- If "Use stale cache": load cached data, skip agents, continue to Step 4 with cached results
+  - Read cache: `cached_data=$(bash bee/scripts/cache-reader.sh get)`
+  - Parse Summary section for counts
+  - Show message: "Using cached analysis from [last_updated]. Cache contains: N flows, M patterns, P step definitions"
+  - Store cached context, flow analysis, pattern selections, step index in workflow state
+  - Skip Steps 2, 2.25, 2.5, 3 (agents will not run)
+- If "Cancel": exit workflow with message "Workflow cancelled."
+
+**If `cache_status == "fresh"`:**
+- Read last updated timestamp: `last_updated=$(bash bee/scripts/cache-reader.sh get --field last_updated)`
+- Format timestamp for display (extract from cache using cache-reader.sh)
+- Use AskUserQuestion: "Cache is fresh (last updated: ${formatted_timestamp}). [Use cache (Recommended) / Re-analyze anyway / Cancel]"
+- Recommended option: "Use cache (Recommended)" is auto-selected
+- If "Use cache (Recommended)": load cached data, skip agents, continue to Step 4 with cached results
+  - Read cache: `cached_data=$(bash bee/scripts/cache-reader.sh get)`
+  - Parse Summary section for counts
+  - Show message: "Using cached analysis from [formatted_timestamp]. Cache contains: N flows, M patterns, P step definitions"
+  - Store cached context, flow analysis, pattern selections, step index in workflow state
+  - Skip Steps 2, 2.25, 2.5, 3 (agents will not run)
+- If "Re-analyze anyway": continue to Step 2 (run all agents), write cache after completion
+- If "Cancel": exit workflow with message "Workflow cancelled."
+
+**Cache write after agent completion:**
+- Only write cache if ALL agents complete successfully (context-gatherer, flow-analyzer, pattern-detector, step-matcher)
+- If any agent fails: do NOT write cache (preserve existing cache or remain cache-missing)
+- Write cache only after Step 3 (Step Definition Indexing) completes successfully
+- Gather data from all agent results:
+  - Flow count from flow-analyzer result
+  - Pattern count from pattern-detector result
+  - Step count from step-matcher result
+  - Context text from context-gatherer result
+  - Flow catalog text from flow-analyzer result
+  - Pattern catalog text from pattern-detector result
+  - Steps catalog text from step-matcher result
+- Invoke cache-writer.sh with all required fields
+- Show confirmation: "Cache updated with latest analysis"
+
+**Skip agent invocations when using cache:**
+- When cache is loaded (fresh or stale): set workflow flag `using_cache = true`
+- In Step 2: if `using_cache == true`, skip context-gatherer invocation, load cached context instead
+- In Step 2.25: if `using_cache == true`, skip flow-analyzer invocation, load cached flow catalog instead
+- In Step 2.5: if `using_cache == true`, skip pattern-detector invocation, load cached pattern selections instead
+- In Step 3: if `using_cache == true`, skip step-matcher invocation, load cached steps catalog instead
+- Continue to Step 4 with cached data
+
 ### Step 2: Repository Structure Detection
 
 **Delegate to context-gatherer:**
@@ -284,7 +373,9 @@ Do not proceed to path validation.
 
 **Generate Approval File:**
 - Create file: `docs/specs/playwright-bdd-approval-[feature-name]-scenario-[N].md`
-- For each step, show:
+- For each step from step-matcher results, handle based on decision type:
+
+**When decision is "candidates_found":**
   ```markdown
   ## Step: "[step text]"
 
@@ -296,7 +387,66 @@ Do not proceed to path validation.
   - [ ] Reuse candidate #1
   - [ ] Create new step definition
   ```
-- If no matches found for a step: skip approval, mark as "create new"
+
+**When decision is "gap_detected":**
+  ```markdown
+  ## Step: "[step text]"
+
+  **Status:** Gap detected (no existing matches found)
+
+  **Suggested Step Definitions:**
+
+  Based on your codebase patterns, here are recommended implementations:
+
+  ### Suggestion 1 (Score: [score])
+  **Step Definition:**
+  ```typescript
+  [stepDefinition text]
+  ```
+  **Source:** [pattern catalog / flow catalog / existing steps]
+  **Target File:** `[recommendedLocation.filePath]` ([createNew ? "new file" : "add to existing"])
+  [If pattern_catalog: **Pattern Type:** [metadata.patternType]]
+  [If flow_catalog: **Flow Stage:** [metadata.flowStage]]
+  [If existing_steps: **Related Step:** `[metadata.relatedStep]` ([metadata.relationshipType])]
+
+  ### Suggestion 2 (Score: [score])
+  [... repeat structure for each suggestion, up to 5 ...]
+
+  **Decision:**
+  - [ ] Use suggestion #1
+  - [ ] Use suggestion #2
+  [... one option per suggestion ...]
+  - [ ] Create custom step definition
+
+  **Note:** Only one choice allowed per step.
+  ```
+
+**When decision is "no_matches":**
+  ```markdown
+  ## Step: "[step text]"
+
+  **Status:** No matches found
+
+  **Decision:**
+  - [ ] Create new step definition
+
+  **Note:** This step will be created from scratch.
+  ```
+
+- Add file header with instructions:
+  ```markdown
+  # Playwright-BDD Approval - [Feature Name] - Scenario [N]
+
+  Review each step and select ONE decision per step. Type 'check' when ready.
+
+  **Instructions:**
+  - For steps with candidates: choose to reuse or create new
+  - For gaps with suggestions: choose a suggestion OR create custom implementation
+  - For steps with no matches: creation is automatic
+
+  ---
+  ```
+
 - Add note at bottom: "Check exactly one box per step"
 
 ### Step 6: Wait for Approval
@@ -307,7 +457,11 @@ Do not proceed to path validation.
 - Validate: exactly one box checked per step
 - If multiple boxes checked: error with "Please select only one decision per step"
 - If no boxes checked: error with "Please make a decision for all steps before proceeding"
-- Parse decisions: which steps to reuse (and from which file), which to create new
+- Parse decisions for each step:
+  - **Reuse candidate**: store file path and line number of existing step
+  - **Create new**: flag as new step creation (no suggestion used)
+  - **Use suggestion #N**: store suggestion index, step definition text, and target file location from gapMetadata
+  - **Create custom**: flag as new step creation (gap detected but custom implementation chosen)
 
 ### Step 7: Generate Step Definitions
 
