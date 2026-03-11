@@ -172,7 +172,7 @@ Do not proceed to path validation.
   - Otherwise:
     - Show message: "No cache found. Running initial analysis..."
     - Continue to Step 2 (all 4 agents will run)
-    - After all agents complete successfully (Step 3 completes): write cache using cache-writer.sh
+    - After all agents complete successfully (Step 3.5 writes cache using cache-writer.sh)
       - Invoke: `bash bee/scripts/cache-writer.sh write --flows "N" --patterns "M" --steps "P" --feature-files "$current_feature_count" --step-files "$current_step_count" --context "context text" --flow-catalog "flow text" --pattern-catalog "pattern text" --steps-catalog "steps text"`
       - Show confirmation: "Cache updated with latest analysis"
 
@@ -216,7 +216,7 @@ Do not proceed to path validation.
 **Cache write after agent completion:**
 - Only write cache if ALL agents complete successfully (context-gatherer, flow-analyzer, pattern-detector, step-matcher)
 - If any agent fails: do NOT write cache (preserve existing cache or remain cache-missing)
-- Write cache only after Step 3 (Step Definition Indexing) completes successfully
+- Write cache in Step 3.5 (after Step 3: Step Definition Indexing completes successfully)
 - Gather data from all agent results:
   - Flow count from flow-analyzer result
   - Pattern count from pattern-detector result
@@ -234,6 +234,7 @@ Do not proceed to path validation.
 - In Step 2.25: if `using_cache == true`, skip flow-analyzer invocation, load cached flow catalog instead
 - In Step 2.5: if `using_cache == true`, skip pattern-detector invocation, load cached pattern selections instead
 - In Step 3: if `using_cache == true`, skip step-matcher invocation, load cached steps catalog instead
+- In Step 3.5: if `using_cache == true`, skip cache write (no agents ran, cache was loaded)
 - Continue to Step 4 with cached data
 
 ### Step 2: Repository Structure Detection
@@ -347,6 +348,44 @@ Do not proceed to path validation.
 - If agent finds zero step definitions:
   - Show message: "No existing step definitions detected. All steps will be created as new."
   - Skip matching phase, proceed to code generation with minimal template
+
+### Step 3.5: Write Cache (If Agents Ran)
+
+**Check if cache write should occur:**
+- Only write cache if `using_cache == false` (agents ran, not loaded from cache)
+- Only write if ALL 4 agents completed successfully (context-gatherer, flow-analyzer, pattern-detector, step-matcher)
+- If any agent failed: do NOT write cache (preserve existing cache or remain cache-missing)
+- If cache was loaded: skip this step entirely
+
+**Gather data from agent results:**
+- Extract from workflow state (stored during Steps 2, 2.25, 2.5, 3):
+  - Context text from context-gatherer result
+  - Flow catalog text from flow-analyzer result (or empty string if flow analysis was skipped)
+  - Pattern catalog text from pattern-detector result (or empty string if pattern detection was skipped)
+  - Steps catalog text from step-matcher result
+- Extract counts from agent results:
+  - Flow count from flow-analyzer result (or 0 if skipped)
+  - Pattern count from pattern-detector result (or 0 if skipped)
+  - Step count from step-matcher result
+- Use file counts from Step 1.5: `current_feature_count`, `current_step_count`
+
+**Invoke cache writer:**
+- Command: `bash bee/scripts/cache-writer.sh write --flows "N" --patterns "M" --steps "P" --feature-files "$current_feature_count" --step-files "$current_step_count" --context "context text" --flow-catalog "flow text" --pattern-catalog "pattern text" --steps-catalog "steps text"`
+- Replace placeholders:
+  - `N` = flow count from flow-analyzer
+  - `M` = pattern count from pattern-detector
+  - `P` = step count from step-matcher
+  - `"context text"` = full context summary from context-gatherer
+  - `"flow text"` = flow catalog from flow-analyzer (or empty string)
+  - `"pattern text"` = pattern catalog from pattern-detector (or empty string)
+  - `"steps text"` = steps catalog from step-matcher
+
+**Confirm completion:**
+- Show message: "Cache updated with latest analysis"
+- Cache is now ready for next workflow run
+
+**Continue to next step:**
+- Proceed to Step 4 (Parse Feature File and Extract Scenarios)
 
 ### Step 4: Parse Feature File and Extract Scenarios
 
