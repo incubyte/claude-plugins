@@ -18,6 +18,85 @@ You are orchestrating the complete Playwright-BDD workflow across 5 phases:
 /bee:playwright /absolute/path/to/feature.feature
 ```
 
+## State Tracking
+
+Track workflow progress using Bee state to ensure no steps are skipped.
+
+**State Validation Pattern:**
+
+**CRITICAL**: Every major step MUST validate the previous step completed before proceeding. This prevents steps from being skipped and catches workflow breaks early.
+
+At the START of each step, validate the previous step completed:
+```bash
+# Read current state
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+
+# Validate expected state
+if [[ "$current_state" != "expected previous state" ]]; then
+  echo "Error: Cannot proceed to Step N. Previous step not completed."
+  echo "Current state: $current_state"
+  echo "Expected: expected previous state"
+  exit 1
+fi
+```
+
+**Validation checkpoints implemented:**
+- Step 1.5 → validates Step 1 completed
+- Step 2 → validates cache decision made
+- Step 3 → validates context gathering completed
+- Step 3.5 → validates step indexing completed
+- Step 4 → validates cache written or loaded
+- Step 4.5 → validates scenarios extracted
+- Step 5 → validates scenario filtering completed
+- Step 6 → validates approval file generated
+- Step 7 → validates approval received
+- Step 8 → validates step definitions generated
+- Step 9 → validates review approved
+- Step 10 → validates files written
+- Step 10 (POM approval) → validates Phase 2 started
+- Step 10 (Locator strategy) → validates POM approval received
+- Step 10 (Pattern analysis) → validates locator strategy selected
+- Step 10 (POM generation) → validates patterns analyzed
+- Step 11 → validates Phase 2 completed or skipped
+
+**Initialize state at start:**
+```bash
+bash bee/scripts/update-bee-state.sh init --feature "[feature-name]" --size FEATURE --risk MODERATE --current-phase "playwright-bdd: starting"
+```
+
+**Update state at each major step:**
+- After Step 1: `--current-phase "validated feature file"`
+- After Step 1.5: `--current-phase "cache [status]"` (loaded/written/missing)
+- After Step 2: `--current-phase "context gathered"`
+- After Step 2.25: `--current-phase "flow analysis complete"`
+- After Step 2.5: `--current-phase "pattern detection complete"`
+- After Step 3: `--current-phase "step indexing complete"`
+- After Step 3.5: `--current-phase "cache written"`
+- After Step 4: `--current-phase "scenarios extracted: N total"`
+- After Step 4.5: `--current-phase "scenario filtering: M unimplemented"`
+- After Step 5: `--current-phase "approval file generated: scenario N"`
+- After Step 6: `--current-phase "approval received: scenario N"`
+- After Step 7: `--current-phase "step definitions generated: scenario N"`
+- After Step 8: `--current-phase "review approved: scenario N"`
+- After Step 9: `--current-phase "files written: scenario N"`
+- After Step 10: `--current-phase "POM generation complete: scenario N"`
+- After Step 11: `--current-phase "service generation complete: scenario N"`
+- After Step 12: `--current-phase "utility generation complete"`
+- After Step 13: `--current-phase "outline conversion complete"`
+- After Step 14: `--current-phase "test execution complete"`
+- After Step 15: `--current-phase "all scenarios complete"`
+
+**Read state on startup:**
+```bash
+bash bee/scripts/update-bee-state.sh get
+```
+If state exists for playwright-bdd, offer to resume from last checkpoint.
+
+**Clear state on completion:**
+```bash
+bash bee/scripts/update-bee-state.sh clear
+```
+
 ## Workflow
 
 ### Step 1: Validate Input Path
@@ -147,7 +226,22 @@ Do not proceed to path validation.
   ```
 - Do not proceed to matching if validation fails
 
+**Initialize state tracking:**
+```bash
+bash bee/scripts/update-bee-state.sh init --feature "[feature-file-name]" --size FEATURE --risk MODERATE --current-phase "validated feature file"
+```
+
 ### Step 1.5: Cache Check and Invalidation
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ "$current_state" != "validated feature file" ]]; then
+  echo "Error: Cannot proceed to Step 1.5. Step 1 (validation) not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Count current files:**
 - Use Glob to count `.feature` files recursively in common directories (features/, tests/features/, e2e/features/)
@@ -171,6 +265,7 @@ Do not proceed to path validation.
     - Exit workflow with message: "No feature files to process. Add feature files and re-run /bee:playwright-bdd"
   - Otherwise:
     - Show message: "No cache found. Running initial analysis..."
+    - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache missing: running analysis"`
     - Continue to Step 2 (all 4 agents will run)
     - After all agents complete successfully (Step 3.5 writes cache using cache-writer.sh)
       - Invoke: `bash bee/scripts/cache-writer.sh write --flows "N" --patterns "M" --steps "P" --feature-files "$current_feature_count" --step-files "$current_step_count" --context "context text" --flow-catalog "flow text" --pattern-catalog "pattern text" --steps-catalog "steps text"`
@@ -178,7 +273,9 @@ Do not proceed to path validation.
 
 **If `cache_status == "corrupt"`:**
 - Use AskUserQuestion: "Cache file is corrupt. Re-analyze? [Yes / Cancel]"
-- If "Yes": continue to Step 2 (run all agents), write cache after completion
+- If "Yes":
+  - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache corrupt: re-analyzing"`
+  - Continue to Step 2 (run all agents), write cache after completion
 - If "Cancel": exit workflow with message "Workflow cancelled. Fix or delete docs/playwright-init.md to proceed."
 
 **If `cache_status == "stale"`:**
@@ -190,8 +287,12 @@ Do not proceed to path validation.
   - `step_delta = current_step_count - cached_steps`
 - Use AskUserQuestion: "Cache is stale (file count changed: ${feature_delta} features, ${step_delta} steps). Re-analyze? [Yes (Recommended) / Use stale cache / Cancel]"
 - Recommended option: "Yes (Recommended)" is auto-selected
-- If "Yes (Recommended)": continue to Step 2 (run all agents), write cache after completion
-- If "Use stale cache": load cached data, skip agents, continue to Step 4 with cached results
+- If "Yes (Recommended)":
+  - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache stale: re-analyzing"`
+  - Continue to Step 2 (run all agents), write cache after completion
+- If "Use stale cache":
+  - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache loaded (stale)"`
+  - Load cached data, skip agents, continue to Step 4 with cached results
   - Read cache: `cached_data=$(bash bee/scripts/cache-reader.sh get)`
   - Parse Summary section for counts
   - Show message: "Using cached analysis from [last_updated]. Cache contains: N flows, M patterns, P step definitions"
@@ -204,13 +305,17 @@ Do not proceed to path validation.
 - Format timestamp for display (extract from cache using cache-reader.sh)
 - Use AskUserQuestion: "Cache is fresh (last updated: ${formatted_timestamp}). [Use cache (Recommended) / Re-analyze anyway / Cancel]"
 - Recommended option: "Use cache (Recommended)" is auto-selected
-- If "Use cache (Recommended)": load cached data, skip agents, continue to Step 4 with cached results
+- If "Use cache (Recommended)":
+  - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache loaded (fresh)"`
+  - Load cached data, skip agents, continue to Step 4 with cached results
   - Read cache: `cached_data=$(bash bee/scripts/cache-reader.sh get)`
   - Parse Summary section for counts
   - Show message: "Using cached analysis from [formatted_timestamp]. Cache contains: N flows, M patterns, P step definitions"
   - Store cached context, flow analysis, pattern selections, step index in workflow state
   - Skip Steps 2, 2.25, 2.5, 3 (agents will not run)
-- If "Re-analyze anyway": continue to Step 2 (run all agents), write cache after completion
+- If "Re-analyze anyway":
+  - Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache fresh: re-analyzing anyway"`
+  - Continue to Step 2 (run all agents), write cache after completion
 - If "Cancel": exit workflow with message "Workflow cancelled."
 
 **Cache write after agent completion:**
@@ -239,6 +344,19 @@ Do not proceed to path validation.
 
 ### Step 2: Repository Structure Detection
 
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+# Valid states: cache missing/loaded/corrupt/stale/fresh states that lead to agent execution
+valid_states=("cache missing: running analysis" "cache corrupt: re-analyzing" "cache stale: re-analyzing" "cache fresh: re-analyzing anyway")
+if [[ ! " ${valid_states[@]} " =~ " ${current_state} " ]]; then
+  echo "Error: Cannot proceed to Step 2. Cache decision not completed."
+  echo "Current state: $current_state"
+  echo "Expected one of: ${valid_states[@]}"
+  exit 1
+fi
+```
+
 **Delegate to context-gatherer:**
 - Invoke `bee:context-gatherer` agent via Task tool
 - Pass task description: "Analyze Playwright-BDD repo structure. Detect if this is UI-only (features/ + src/steps/ + src/pages/), API-only (features/ + src/steps/ + src/services/), or hybrid (both UI and API layers). Identify step definition file patterns, import styles, and parameter conventions."
@@ -256,6 +374,11 @@ Do not proceed to path validation.
   - Store answer: `hybrid_mode = "UI" | "API" | "Both"`
   - If "Both": implement UI path completely (Phase 2), then API path (Phase 3)
   - Note: Phase 1 only generates step definitions, no POMs or services yet
+
+**Update state after context gathering:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "context gathered: [structure-type]"
+```
 
 ### Step 2.25: Application Flow Analysis
 
@@ -283,6 +406,7 @@ Do not proceed to path validation.
 **If flow analysis succeeds:**
 - Show summary: "Analyzed N feature files, identified M common sequences"
 - Store flow analysis result for step-matcher to use in Step 5
+- Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "flow analysis complete: N flows"`
 - Continue to Step 2.5
 
 ### Step 2.5: Pattern Detection (Optional)
@@ -330,8 +454,20 @@ Do not proceed to path validation.
 **Continue workflow:**
 - After pattern detection completes, continue to Step 3 (Step Definition Indexing)
 - Pattern selections will be passed to step-matcher in Step 5
+- Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "pattern detection complete: M patterns"`
 
 ### Step 3: Step Definition Indexing
+
+**Validate previous steps completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+# Must have completed context gathering and optional flow/pattern steps
+if [[ ! "$current_state" =~ "context gathered:" ]] && [[ ! "$current_state" =~ "pattern detection complete:" ]]; then
+  echo "Error: Cannot proceed to Step 3. Context gathering not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Delegate to step-matcher agent:**
 - Create agent invocation (will create agent file in Slice 3 of TDD plan)
@@ -351,7 +487,22 @@ Do not proceed to path validation.
   - Show message: "No existing step definitions detected. All steps will be created as new."
   - Skip matching phase, proceed to code generation with minimal template
 
+**Update state after indexing:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "step indexing complete: P steps"
+```
+
 ### Step 3.5: Write Cache (If Agents Ran)
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "step indexing complete:" ]]; then
+  echo "Error: Cannot proceed to Step 3.5. Step indexing not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Check if cache write should occur:**
 - Only write cache if `using_cache == false` (agents ran, not loaded from cache)
@@ -385,16 +536,31 @@ Do not proceed to path validation.
 **Confirm completion:**
 - Show message: "Cache updated with latest analysis"
 - Cache is now ready for next workflow run
+- Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "cache written"`
 
 **Continue to next step:**
 - Proceed to Step 4 (Parse Feature File and Extract Scenarios)
 
 ### Step 4: Parse Feature File and Extract Scenarios
 
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+# Valid states: cache written OR cache loaded (fresh/stale)
+valid_states=("cache written" "cache loaded (fresh)" "cache loaded (stale)")
+if [[ ! " ${valid_states[@]} " =~ " ${current_state} " ]]; then
+  echo "Error: Cannot proceed to Step 4. Cache handling not completed."
+  echo "Current state: $current_state"
+  echo "Expected one of: ${valid_states[@]}"
+  exit 1
+fi
+```
+
 **Parse Gherkin:**
 - Read feature file content (already validated in Step 1)
 - Extract scenarios: scenario name, Given/When/Then steps
 - Store all scenarios for processing
+- Update state: `bash bee/scripts/update-bee-state.sh set --current-phase "scenarios extracted: N total"`
 
 **Process First Scenario:**
 - Select first scenario from list
@@ -402,6 +568,16 @@ Do not proceed to path validation.
 - Prepare for matching phase
 
 ### Step 4.5: Scenario Implementation Filtering
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "scenarios extracted:" ]]; then
+  echo "Error: Cannot proceed to Step 4.5. Scenario extraction not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Check scenario count:**
 - If only one scenario exists: skip filtering, proceed to Step 5 with that scenario
@@ -454,7 +630,22 @@ Do not proceed to path validation.
   - If some filtered: renumber to reflect unimplemented queue (e.g., if Scenarios 1 and 3 are unimplemented, they become "Scenario 1" and "Scenario 2" in approval files)
   - Store mapping: `original_scenario_number -> queue_position` for developer reference
 
+**Update state after filtering:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "scenario filtering complete: M unimplemented"
+```
+
 ### Step 5: Semantic Step Matching
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "scenario filtering complete:" ]]; then
+  echo "Error: Cannot proceed to Step 5. Scenario filtering not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Load pattern selections from state:**
 - Read pattern selections from Bee state: `bash bee/scripts/update-bee-state.sh get --playwright-patterns-selected`
@@ -581,7 +772,22 @@ Do not proceed to path validation.
 
 - Add note at bottom: "Check exactly one box per step"
 
+**Update state after approval file generation:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "approval file generated: scenario N"
+```
+
 ### Step 6: Wait for Approval
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "approval file generated:" ]]; then
+  echo "Error: Cannot proceed to Step 6. Approval file not generated."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 - Tell developer: "Review approval file at [path]. Check one decision per step. Type 'check' when ready."
 - Wait for developer to mark checkboxes
@@ -597,7 +803,22 @@ Do not proceed to path validation.
   - **Use pattern**: store pattern description and implementation code (from Step 2.5 selections)
   - **Create custom**: flag as new step creation (gap detected or no matches but custom implementation chosen)
 
+**Update state after approval:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "approval received: scenario N"
+```
+
 ### Step 7: Generate Step Definitions
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "approval received:" ]]; then
+  echo "Error: Cannot proceed to Step 7. Approval not received."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Delegate to code-generator agent:**
 - Create agent invocation (will create agent file in Slice 6 of TDD plan)
@@ -612,7 +833,22 @@ Do not proceed to path validation.
 - If file already exists: append new steps
 - Use file extension matching existing files (.ts or .js)
 
+**Update state after generation:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "step definitions generated: scenario N"
+```
+
 ### Step 8: Review Generated Code
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "step definitions generated:" ]]; then
+  echo "Error: Cannot proceed to Step 8. Step definitions not generated."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Create Review File:**
 - Create file: `docs/specs/playwright-bdd-review-[feature-name].md`
@@ -641,12 +877,47 @@ Do not proceed to path validation.
 - If not checked: wait for developer
 - If checked: proceed to write files
 
+**Update state after review:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "review approved: scenario N"
+```
+
 ### Step 9: Write Step Definition Files to Disk
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "review approved:" ]]; then
+  echo "Error: Cannot proceed to Step 9. Review not approved."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 - Write generated step definition files to their target paths
 - Confirm completion: "Step definitions written to [file paths]."
 
+**Update state after files written:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "files written: scenario N"
+```
+
 ### Step 10: Phase 2 — Page Object Generation (UI Tests Only)
+
+**Validate previous step completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "files written:" ]]; then
+  echo "Error: Cannot proceed to Step 10 (Phase 2). Step definition files not written."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
+
+**Update state at start of Phase 2:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "Phase 2 starting: POM generation"
+```
 
 **Check if Phase 2 should run:**
 - If repo structure is "API-only": skip Phase 2, go to Step 11
@@ -695,15 +966,36 @@ Do not proceed to path validation.
 - Validate: exactly one box per UI step
 - Parse decisions
 
-**Choose locator generation strategy:**
+**Update state after POM approval:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "POM approval received: scenario N"
+```
 
-**Step 1: Offer three-option choice:**
+**Choose locator generation strategy (MANDATORY):**
+
+**Validate POM approval completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "POM approval received:" ]]; then
+  echo "Error: Cannot proceed to locator strategy selection. POM approval not received."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
+
+**Step 1: Offer three-option choice (REQUIRED - cannot skip):**
+- **IMPORTANT**: This step is MANDATORY and must be executed before POM generation
 - Use AskUserQuestion: "How should I generate locators for UI elements?"
 - Options:
   - "Chrome DevTools - inspect running app (Recommended)" - if app is running locally
   - "Analyze UI repository" - if component source code is available
   - "Provide outerHTML manually" - fallback for both above
 - Developer selects one strategy
+
+**Update state after strategy selection:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "locator strategy selected: [strategy]"
+```
 
 **Step 2: Execute chosen strategy:**
 
@@ -755,9 +1047,46 @@ Do not proceed to path validation.
 - Multi-element support comes in Phase 2 of Chrome DevTools integration
 - If multiple UI elements need locators in this scenario, Chrome strategy is invoked once, then falls back to repo/HTML for remaining elements
 
+**Analyze existing POM patterns (REQUIRED before generation):**
+
+**Validate locator strategy selected:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "locator strategy selected:" ]]; then
+  echo "Error: Cannot proceed to POM pattern analysis. Locator strategy not selected."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
+
+- Scan existing page object files in page objects directory
+- Extract patterns:
+  - Class structure (constructor, properties, methods)
+  - Method naming conventions (camelCase, descriptive names)
+  - Locator conventions (data-testid, ARIA roles, CSS selectors)
+  - Import style (CommonJS vs ES6, fixture imports)
+  - TypeScript usage (types, interfaces)
+- Store patterns for POM generator to ensure consistency
+
+**Update state after pattern analysis:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "POM patterns analyzed: scenario N"
+```
+
 **Delegate to POM generator:**
+
+**Validate POM patterns analyzed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+if [[ ! "$current_state" =~ "POM patterns analyzed:" ]]; then
+  echo "Error: Cannot proceed to POM generation. POM patterns not analyzed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
+
 - Invoke `bee:playwright-pom-generator` agent via Task tool
-- Pass: approved decisions, generated locators, existing POM patterns, step definitions to update
+- Pass: approved decisions, generated locators, existing POM patterns (from analysis above), step definitions to update
 - Agent generates new POM methods or classes
 - Agent updates step definitions (replaces TODO with POM method calls)
 - Returns: generated POMs, updated step definitions
@@ -796,7 +1125,31 @@ Do not proceed to path validation.
 - Write updated step definition files (with POM calls instead of TODOs)
 - Confirm: "Page objects and step definitions updated."
 
+**Update state after POM generation complete:**
+```bash
+bash bee/scripts/update-bee-state.sh set --current-phase "POM generation complete: scenario N"
+```
+
 ### Step 11: Phase 3 — Service Layer Generation (API Tests Only)
+
+**Validate previous phase completed:**
+```bash
+current_state=$(bash bee/scripts/update-bee-state.sh get --field current-phase)
+# Valid states: POM generation complete OR files written (if Phase 2 was skipped)
+valid_states=("POM generation complete: scenario" "files written: scenario")
+state_match=false
+for valid in "${valid_states[@]}"; do
+  if [[ "$current_state" =~ "$valid" ]]; then
+    state_match=true
+    break
+  fi
+done
+if [[ "$state_match" == false ]]; then
+  echo "Error: Cannot proceed to Step 11 (Phase 3). Phase 2 not completed."
+  echo "Current state: $current_state"
+  exit 1
+fi
+```
 
 **Check if Phase 3 should run:**
 - If repo structure is "UI-only": skip Phase 3, go to Step 12
