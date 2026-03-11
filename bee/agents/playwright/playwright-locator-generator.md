@@ -22,7 +22,7 @@ Agent fetches component files from GitHub API or reads local files, searches for
 
 model: inherit
 color: yellow
-tools: ["WebFetch", "Read", "Glob", "Grep", "Bash", "AskUserQuestion", "mcp__claude-in-chrome__tabs_context_mcp", "mcp__claude-in-chrome__tabs_create_mcp", "mcp__claude-in-chrome__navigate", "mcp__claude-in-chrome__find", "mcp__claude-in-chrome__computer", "mcp__claude-in-chrome__javascript_tool", "mcp__claude-in-chrome__read_page"]
+tools: ["WebFetch", "Read", "Glob", "Grep", "Bash", "Skill", "AskUserQuestion", "mcp__claude-in-chrome__tabs_context_mcp", "mcp__claude-in-chrome__tabs_create_mcp", "mcp__claude-in-chrome__navigate", "mcp__claude-in-chrome__find", "mcp__claude-in-chrome__computer", "mcp__claude-in-chrome__javascript_tool", "mcp__claude-in-chrome__read_page"]
 skills:
   - clean-code
 ---
@@ -253,47 +253,43 @@ Generate locators in this priority order:
 - Patterns to search: `**/*.jsx`, `**/*.tsx`, `**/*.vue`, `**/*.svelte`
 - Focus on directories: `src/`, `components/`, `app/`, `pages/`
 
-**Component File Analysis:**
+**Locator Identification via Skill:**
 
-For each component file found:
-1. **Read file content** (Use Read for local files, WebFetch for GitHub)
-2. **Search for data-testid patterns** using Grep or text search:
-   - `data-testid="..."` or `data-testid='...'`
-   - `data-test-id="..."` or `data-test-id='...'`
-   - `data-test="..."` or `data-test='...'`
-3. **Search for ARIA attributes**:
-   - `role="button"`, `role="textbox"`, etc.
-   - `aria-label="..."` or `aria-labelledby="..."`
-4. **Search for form labels** (if action type is "fill"):
-   - `<label>` elements with `for="..."` attributes
-   - Input `name="..."` attributes
+Call the global 'locator-analysis' skill to find matching locators in the UI repository:
 
-**Matching Strategy:**
+1. **Invoke Skill tool** with:
+   - skill: `"locator-analysis"`
+   - args: `"--step <stepDescription> --action <actionType> --repo <repoPath>"`
+   - Example: `"--step 'user clicks the search button' --action click --repo https://github.com/owner/repo"`
 
-Match found locators against the step description using keyword matching:
-- Step: "user clicks the search button"
-  - Keywords: ["search", "button"]
-  - Match: `data-testid="search-btn"` or `aria-label="Search"`
-- Step: "user enters email address"
-  - Keywords: ["email", "address", "enter"]
-  - Match: `data-testid="email-input"` or `name="email"`
+2. **Parse skill result:**
+   - Skill returns: `{ locator, strategy, stability, warning, source }`
+   - Locator format matches existing structure (e.g., `[data-testid="search-btn"]`)
+   - Strategy indicates method used (e.g., "data-testid (from UI repo code)")
 
-**Return Best Match:**
+3. **Handle skill response:**
 
-If high-confidence match found (keywords present in attribute value):
-```typescript
-{
-  locator: '[data-testid="search-btn"]',
-  strategy: "data-testid (from UI repo code)",
-  stability: "stable",
-  warning: null,
-  source: "UI repo: {repo-path}"
-}
-```
+   **Success - Match found:**
+   ```typescript
+   {
+     locator: '[data-testid="search-btn"]',
+     strategy: "data-testid (from UI repo code)",
+     stability: "stable",
+     warning: null,
+     source: "UI repo: {repo-path}",
+     validated: false
+   }
+   ```
+   Return this result immediately.
 
-If no confident match found:
-- Log: "Repo analysis completed. No matching locators found in component files."
-- Proceed to Step 2 (outerHTML Parsing)
+   **Success - No match found:**
+   - Skill returns empty/null locator
+   - Log: "Repo analysis completed. No matching locators found in component files."
+   - Proceed to Step 2 (outerHTML Parsing)
+
+   **Skill error or unavailable:**
+   - Log warning: "locator-analysis skill failed or unavailable: {error}"
+   - Proceed to Step 2 (outerHTML Parsing)
 
 **Error Handling:**
 
