@@ -322,12 +322,14 @@ Do not proceed to path validation.
 - After all patterns processed (or developer skips remaining):
   - Store selections in Bee state via update-bee-state.sh
   - Command: `scripts/update-bee-state.sh set --playwright-patterns-selected '[pattern1, pattern2, ...]'`
-  - Format: JSON array of pattern descriptions marked for extraction
-- Pattern selections are available for Phase 4 (Utility Generation) to read from state
+  - Format: JSON array of pattern descriptions and implementation code marked for extraction
+- Pattern selections are used in two places:
+  - **Step 5 (Semantic Step Matching)**: Offered as options in approval file when relevant to a step
+  - **Phase 4 (Utility Generation)**: Available for utility extraction
 
 **Continue workflow:**
 - After pattern detection completes, continue to Step 3 (Step Definition Indexing)
-- No changes to Step 3 or later steps
+- Pattern selections will be passed to step-matcher in Step 5
 
 ### Step 3: Step Definition Indexing
 
@@ -454,14 +456,20 @@ Do not proceed to path validation.
 
 ### Step 5: Semantic Step Matching
 
+**Load pattern selections from state:**
+- Read pattern selections from Bee state: `bash bee/scripts/update-bee-state.sh get --playwright-patterns-selected`
+- If patterns were selected in Step 2.5, they will be included as options in approval files
+
 **For each step in the scenario:**
 - Delegate to `bee:playwright-step-matcher` agent via Task tool
-- Pass: step text, indexed step definitions, flow analysis result (from Step 2.25, null if skipped), current scenario step sequence
+- Pass: step text, indexed step definitions, flow analysis result (from Step 2.25, null if skipped), current scenario step sequence, repo patterns (from context-gatherer), pattern selections (from Bee state)
 - Agent performs LLM-based semantic matching (prompt: "Rate semantic similarity 0-100")
 - Agent applies flow context filtering (if flow analysis available): checks position, preceding/following context, flow stage
 - Agent returns ranked candidates with confidence scores
 - Agent filters candidates below 50% confidence (semantic) AND low contextual relevance (if flow context available)
 - Agent orders by confidence, then by usage frequency if tied
+- **For no_matches cases**: Agent also generates a proposed step definition code based on step text and repo patterns, includes target file location
+- **Pattern matching**: Agent checks if any selected patterns (from Step 2.5) apply to this step, includes relevant patterns as additional options in response
 
 **Generate Approval File:**
 - Create file: `docs/specs/playwright-bdd-approval-[feature-name]-scenario-[N].md`
@@ -475,8 +483,14 @@ Do not proceed to path validation.
   1. "[existing step]" - [confidence]% confidence
      Used in: [feature-file-1] (line X), [feature-file-2] (line Y)
 
+  [If relevant patterns detected from Step 2.5:]
+  **Relevant Patterns:**
+  - Pattern: "[pattern description]" (used in N feature files)
+    Would you like to use this pattern for this step?
+
   Decision:
   - [ ] Reuse candidate #1
+  - [ ] Use pattern: [pattern description]
   - [ ] Create new step definition
   ```
 
@@ -504,10 +518,19 @@ Do not proceed to path validation.
   ### Suggestion 2 (Score: [score])
   [... repeat structure for each suggestion, up to 5 ...]
 
+  [If relevant patterns detected from Step 2.5:]
+  **Relevant Patterns from Previous Detection:**
+  - Pattern: "[pattern description]" (used in N feature files)
+    ```typescript
+    [Pattern implementation code]
+    ```
+
   **Decision:**
   - [ ] Use suggestion #1
   - [ ] Use suggestion #2
   [... one option per suggestion ...]
+  [If patterns available:]
+  - [ ] Use pattern: [pattern description]
   - [ ] Create custom step definition
 
   **Note:** Only one choice allowed per step.
@@ -519,10 +542,26 @@ Do not proceed to path validation.
 
   **Status:** No matches found
 
-  **Decision:**
-  - [ ] Create new step definition
+  **Proposed Step Definition:**
+  ```typescript
+  [Generated step definition code based on step text and repo patterns]
+  ```
+  **Target File:** `[recommendedLocation.filePath]` ([createNew ? "new file" : "add to existing"])
 
-  **Note:** This step will be created from scratch.
+  [If relevant patterns detected from Step 2.5:]
+  **Relevant Patterns from Previous Detection:**
+  - Pattern: "[pattern description]" (used in N feature files)
+    ```typescript
+    [Pattern implementation code]
+    ```
+
+  **Decision:**
+  - [ ] Use proposed step definition
+  [If patterns available:]
+  - [ ] Use pattern: [pattern description]
+  - [ ] Create custom step definition
+
+  **Note:** Choose "Use proposed" to accept the generated code, or "Create custom" to provide your own implementation.
   ```
 
 - Add file header with instructions:
@@ -532,9 +571,10 @@ Do not proceed to path validation.
   Review each step and select ONE decision per step. Type 'check' when ready.
 
   **Instructions:**
-  - For steps with candidates: choose to reuse or create new
-  - For gaps with suggestions: choose a suggestion OR create custom implementation
-  - For steps with no matches: creation is automatic
+  - For steps with candidates: choose to reuse existing step, use a detected pattern, or create new
+  - For gaps with suggestions: choose a suggestion, use a detected pattern, OR create custom implementation
+  - For steps with no matches: review proposed step definition, use a detected pattern, or customize
+  - Patterns shown are from repeating code structures detected in Step 2.5
 
   ---
   ```
@@ -553,7 +593,9 @@ Do not proceed to path validation.
   - **Reuse candidate**: store file path and line number of existing step
   - **Create new**: flag as new step creation (no suggestion used)
   - **Use suggestion #N**: store suggestion index, step definition text, and target file location from gapMetadata
-  - **Create custom**: flag as new step creation (gap detected but custom implementation chosen)
+  - **Use proposed step definition**: store proposed step definition code and target file location (for no_matches case)
+  - **Use pattern**: store pattern description and implementation code (from Step 2.5 selections)
+  - **Create custom**: flag as new step creation (gap detected or no matches but custom implementation chosen)
 
 ### Step 7: Generate Step Definitions
 
