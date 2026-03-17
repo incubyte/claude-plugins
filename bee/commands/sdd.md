@@ -91,7 +91,14 @@ If the spec has no slices (flat list of ACs), treat the entire spec as one slice
 
 Delegate to the **context-gatherer** agent via Task, passing the task description extracted from the spec title/overview.
 
-When it returns, build a context summary string with: test framework, test runner command, source conventions, test conventions, existing patterns, key directories.
+When it returns, **save the full context output to `.claude/bee-context.local.md`** using Bash (write silently, no permission prompts):
+```bash
+cat > .claude/bee-context.local.md << 'CONTEXT_EOF'
+[full context-gatherer markdown output here]
+CONTEXT_EOF
+```
+
+This file becomes the shared context for all downstream agents. Pass the path `.claude/bee-context.local.md` as `context_file` to every agent instead of building a condensed string. Agents read the full context directly — no information is lost.
 
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" init --feature "[spec title]" --size FEATURE --risk MODERATE --current-phase "context gathered"`
 
@@ -105,7 +112,7 @@ If the developer says yes: delegate to the tidy agent via Task.
 ### A4. UI Check
 
 If context-gatherer flagged "UI-involved: yes":
-Delegate to the **design-agent** via Task, passing the spec overview, the full context-gatherer output, and a triage assessment inferred from the spec.
+Delegate to the **design-agent** via Task, passing the spec overview, context_file (`.claude/bee-context.local.md`), and a triage assessment inferred from the spec.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
 **→ Run the Collaboration Loop** on the design brief.
 
@@ -113,12 +120,19 @@ Delegate to the **design-agent** via Task, passing the spec overview, the full c
 
 Delegate to the **architecture-impl-advisor** agent via Task, passing:
 - The spec path
-- The context summary
+- The context file path (`.claude/bee-context.local.md`)
 - Size/risk assessment (infer from the spec — default to FEATURE/MODERATE if unclear)
 
 The advisor evaluates the codebase and spec, presents architecture options to the developer via AskUserQuestion, and returns the chosen architecture.
 
-Save the architecture output — you'll pass it to every slice-coder invocation.
+**Save the architecture output to `.claude/bee-architecture.local.md`** using Bash:
+```bash
+cat > .claude/bee-architecture.local.md << 'ARCH_EOF'
+[full architecture recommendation output here]
+ARCH_EOF
+```
+
+Pass the path `.claude/bee-architecture.local.md` as `architecture_file` to slice-coder, slice-tester, and sdd-verifier. All three need the architecture context.
 
 If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
 
@@ -203,12 +217,12 @@ If yes → delegate to the **slice-coder** agent via Task, passing the task desc
 **SMALL:**
 Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather → confirm approach → slice-coder → slice-tester → sdd-verifier → done.
 
-1. Delegate to **context-gatherer** agent via Task, passing the task description.
+1. Delegate to **context-gatherer** agent via Task, passing the task description. Save output to `.claude/bee-context.local.md`.
 2. Summarize findings. Use AskUserQuestion: "Here's what I'll change: [brief plan]. Sound right?"
    Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
-3. Delegate to **slice-coder** agent via Task, passing the task description, context summary, and the approach.
-4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and the context summary.
-5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and context summary.
+3. Delegate to **slice-coder** agent via Task, passing the task description, `context_file: .claude/bee-context.local.md`, and the approach.
+4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and `context_file: .claude/bee-context.local.md`.
+5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and `context_file: .claude/bee-context.local.md`.
 6. If verifier passes → report and offer recap. If needs fixes → share report with developer, fix, re-verify.
 
 After the verifier passes, use AskUserQuestion:
@@ -230,7 +244,13 @@ Continue to B3 (Context Gathering) and the full workflow below.
 **If there's existing code:**
 "Let me read the codebase first to understand what we're working with."
 Delegate to the **context-gatherer** agent via Task, passing the task description.
-When it returns, share the summary with the developer.
+When it returns, **save the full context output to `.claude/bee-context.local.md`** using Bash:
+```bash
+cat > .claude/bee-context.local.md << 'CONTEXT_EOF'
+[full context-gatherer markdown output here]
+CONTEXT_EOF
+```
+Share the summary with the developer. Pass `.claude/bee-context.local.md` as `context_file` to all downstream agents.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --current-phase "context gathered"`
 
 **If greenfield (empty/new repo):**
@@ -247,7 +267,7 @@ If yes: delegate to the **tidy** agent via Task.
 ### B5. UI Check
 
 If context-gatherer flagged "UI-involved: yes" (or greenfield with UI signals detected):
-Delegate to the **design-agent** via Task, passing the developer's task description, the full context-gatherer output, and the triage assessment.
+Delegate to the **design-agent** via Task, passing the developer's task description, context_file (`.claude/bee-context.local.md`), and the triage assessment.
 The design agent produces a design brief at `.claude/DESIGN.md`.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
 **→ Run the Collaboration Loop** on the design brief.
@@ -277,7 +297,7 @@ When discovery is recommended, use AskUserQuestion:
 Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
 If the developer chooses discovery:
-Delegate to the **discovery** agent via Task, passing the task description, triage assessment, context summary, and any inline clarification answers.
+Delegate to the **discovery** agent via Task, passing the task description, triage assessment, context_file (`.claude/bee-context.local.md`), and any inline clarification answers.
 **→ Update state:** `"${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh" set --discovery "[discovery-doc-path]" --current-phase "discovery complete"`
 
 **→ Run the Collaboration Loop** on the discovery document.
@@ -293,7 +313,7 @@ After discovery completes on a greenfield project, check if the discovery docume
 Delegate to the **spec-builder** agent via Task, passing:
 - The developer's task description
 - The triage assessment (size + risk — possibly revised by discovery)
-- The context summary from the context-gatherer
+- context_file: `.claude/bee-context.local.md`
 - The discovery document path (if discovery was done)
 - For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N-spec.md`.
 - For single-phase: no phase constraint. Spec saves to `docs/specs/[feature]-spec.md`.
@@ -307,10 +327,17 @@ The spec-builder interviews the developer, writes the spec to `docs/specs/`, and
 
 Delegate to the **architecture-impl-advisor** agent via Task, passing:
 - The confirmed spec (path and content)
-- The context summary
+- The context file path (`.claude/bee-context.local.md`)
 - The triage assessment (size + risk)
 
 The advisor evaluates options and returns the architecture recommendation.
+
+**Save the architecture output to `.claude/bee-architecture.local.md`** using Bash:
+```bash
+cat > .claude/bee-architecture.local.md << 'ARCH_EOF'
+[full architecture recommendation output here]
+ARCH_EOF
+```
 
 If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
 
@@ -353,8 +380,8 @@ Create a task for tracking:
 Delegate to the **slice-coder** agent via Task, passing:
 - spec_path: the spec file path
 - slice_number: the current slice number
-- architecture: the full architecture output
-- context_summary: the context string
+- context_file: `.claude/bee-context.local.md`
+- architecture_file: `.claude/bee-architecture.local.md`
 - file_paths: suggested source file paths based on architecture
 
 The slice-coder returns: files created/modified, what was built per AC.
@@ -368,7 +395,8 @@ Delegate to the **slice-tester** agent via Task, passing:
 - slice_number: the current slice number
 - source_files: the files the slice-coder reported creating/modifying
 - test_file_path: the test file path (follow project conventions)
-- context_summary: test framework, test runner command, naming conventions
+- context_file: `.claude/bee-context.local.md`
+- architecture_file: `.claude/bee-architecture.local.md`
 
 The slice-tester returns: test results, any testability refactors made, any issues.
 
@@ -380,7 +408,8 @@ Delegate to the **sdd-verifier** agent via Task, passing:
 - spec_path: the spec file path
 - slice_number: the current slice number
 - risk_level: the risk level
-- context_summary: project patterns, conventions
+- context_file: `.claude/bee-context.local.md`
+- architecture_file: `.claude/bee-architecture.local.md`
 - source_files: files the slice-coder created/modified
 - test_files: files the slice-tester created
 
@@ -399,7 +428,7 @@ The sdd-verifier runs tests, assesses test quality, validates ACs, and checks pa
 - If re-running an agent: pass the verifier's feedback as additional context
 
 **After the verifier passes**, if UI-involved: run browser verification.
-Delegate to the **browser-verifier** agent via Task in dev mode, passing the spec path, slice number, context summary (including dev server info), mode "dev", and the DESIGN.md path if it exists.
+Delegate to the **browser-verifier** agent via Task in dev mode, passing the spec path, slice number, context_file (`.claude/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
 - "Browser verification skipped" (Chrome MCP unavailable): slice still passes
 - Failures: share report with developer, re-run after fixes
 - "Browser verification passed": proceed normally
@@ -441,7 +470,8 @@ Move to the next slice. Repeat Steps A-D.
 Delegate to the **reviewer** agent via Task, passing:
 - The spec path
 - The risk level
-- The context summary
+- context_file: `.claude/bee-context.local.md`
+- architecture_file: `.claude/bee-architecture.local.md`
 
 The reviewer does a holistic review: spec coverage, code quality, test quality, commit story, observability, and a risk-aware ship recommendation.
 
@@ -506,11 +536,11 @@ This loop applies after: discovery agent returns, spec-builder returns, and arch
 When the context-gatherer (or greenfield UI-signal scan) flags "UI-involved: yes", two things happen:
 
 **1. Design agent** (after context-gathering, before spec):
-Delegate to the design agent via Task, passing the developer's task description, the full context-gatherer output (including the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
+Delegate to the design agent via Task, passing the developer's task description, context_file (`.claude/bee-context.local.md` — includes the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
 **→ Run the Collaboration Loop** on the design brief.
 
 **2. Browser verification** (after each slice passes the sdd-verifier):
-Delegate to the browser-verifier agent via Task in dev mode, passing the spec path, slice number, context summary (including dev server info), mode "dev", and the DESIGN.md path if it exists.
+Delegate to the browser-verifier agent via Task in dev mode, passing the spec path, slice number, context_file (`.claude/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
 - "Browser verification skipped" (Chrome MCP unavailable): slice still passes. Browser verification is additive, not required.
 - Failures: share the report with the developer. After fixes, re-run the browser-verifier.
 - "Browser verification passed": proceed normally.

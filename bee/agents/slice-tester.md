@@ -43,13 +43,14 @@ You will receive:
 - **slice_number**: which slice to test
 - **source_files**: list of files the slice-coder created or modified
 - **test_file_path**: where to write the test file (follows project conventions)
-- **context_summary**: test framework, test runner command, naming conventions, existing test patterns
+- **context_file**: path to `.claude/bee-context.local.md` — full codebase context including test framework, test runner command, naming conventions, existing test patterns
+- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation including boundaries and dependency direction (helps you understand what to mock and what to call directly)
 
 ## Process
 
-### 1. Read the Spec Slice
+### 1. Read Context and Spec
 
-Read the spec at the given path. Find the slice by number. Extract all acceptance criteria — these are what your tests must verify.
+Read the context file first — it has test framework, runner command, naming conventions, and existing patterns. Read the architecture file — it tells you where the boundaries are (what to mock vs call directly). Then read the spec at the given path. Find the slice by number. Extract all acceptance criteria — these are what your tests must verify.
 
 ### 2. Read the Production Code
 
