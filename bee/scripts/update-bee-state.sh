@@ -218,6 +218,9 @@ cmd_init() {
     exit 1
   fi
 
+  # Clean up cached context files from previous sessions
+  rm -f .claude/bee-context.local.md .claude/bee-architecture.local.md
+
   write_state
   echo "State initialized: ${feature} (${size}, ${risk})"
 }
@@ -244,6 +247,7 @@ cmd_get() {
 
 cmd_clear() {
   rm -f "$STATE_FILE"
+  rm -f .claude/bee-context.local.md .claude/bee-architecture.local.md
   echo "State cleared."
 }
 

@@ -39,9 +39,12 @@ You will receive:
 - The spec path (with acceptance criteria for this slice)
 - The slice number being verified
 - The risk level (LOW / MODERATE / HIGH)
-- The context summary (project patterns, conventions, key directories)
+- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project patterns, conventions, architecture, key directories)
+- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation (pattern, boundaries, dependency direction)
 - source_files: files the slice-coder created/modified
 - test_files: files the slice-tester created
+
+Read the context file and architecture file at the start — they contain project patterns, conventions, and architecture decisions. Use them for pattern compliance checks in Step 4 and boundary checks in Step 0.
 
 ## Your Mission
 
@@ -58,7 +61,7 @@ You will receive:
 
 ### Step 0: Check Module Boundaries
 
-Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and use it during verification — flag any new code that violates declared module boundaries (wrong imports, concepts in wrong modules, circular dependencies).
+Read the architecture file — it contains the chosen pattern, boundaries, and dependency direction. Also check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it too. Use both sources during verification — flag any new code that violates declared module boundaries or architecture dependency direction (wrong imports, concepts in wrong modules, circular dependencies).
 
 ### Step 1: Run the Full Test Suite
 

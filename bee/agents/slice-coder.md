@@ -41,19 +41,19 @@ DO NOT EXECUTE WITHOUT LOADING RELEVANT SKILLS FROM THE FOLLOWING LIST
 You will receive:
 - **spec_path**: path to the spec file
 - **slice_number**: which slice to implement
-- **architecture**: the architecture recommendation (pattern, file structure, boundaries, dependency direction)
-- **context_summary**: project patterns, conventions, test framework, key directories
+- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project structure, architecture, test infrastructure, conventions, change area)
+- **architecture_file**: path to `.claude/bee-architecture.local.md` — full architecture recommendation (pattern, file structure, boundaries, dependency direction, evolution triggers)
 - **file_paths**: source files to create or modify
 
 ## Process
 
-### 1. Read the Spec Slice
+### 1. Read Context and Spec
 
-Read the spec at the given path. Find the slice by number. Extract all acceptance criteria for this slice.
+Read the context file and architecture file first — they contain everything you need about the codebase and architecture. Then read the spec at the given path. Find the slice by number. Extract all acceptance criteria for this slice.
 
 ### 2. Understand the Architecture
 
-Read the architecture recommendation. Understand:
+Read the architecture file. Understand:
 - Where files go (file structure)
 - What the boundaries are (what gets an interface, what doesn't)
 - Dependency direction (what depends on what)
