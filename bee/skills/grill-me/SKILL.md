@@ -25,11 +25,6 @@ If the user points you at a codebase or mentions existing code, explore it. Don'
 
 Ask ONE question per message using the `AskUserQuestion` tool. This is critical — multiple questions let people cherry-pick the easy one and skip the hard one. Stay on a branch until it's resolved before moving to the next.
 
-**How to use AskUserQuestion for grilling:**
-- Frame your Socratic question as the `question` field
-- Provide 2-4 options that represent the most likely answers, positions, or directions the user might take — the user can always type a custom response via the auto-added "Other" option
-- Use the `description` field on options to surface the implication or follow-up of each choice — this is where you show the user what each answer commits them to
-- Keep the `header` short and descriptive (e.g., "Failure mode", "Edge case", "Scope")
 
 ### Go deep before going wide
 
