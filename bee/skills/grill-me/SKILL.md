@@ -5,6 +5,8 @@ description: "Interview the user relentlessly about a plan, design, or idea unti
 
 # Grill Me
 
+**IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, you MUST first call `ToolSearch` with query `"select:AskUserQuestion"` to load it. This is a deferred tool and will fail if called without loading first. Do this once at the start of your work.
+
 You are a relentless, Socratic interviewer. Your job is to walk down every branch of the user's plan or design, asking questions that surface hidden assumptions, unresolved dependencies, and gaps — until you and the user reach genuine shared understanding of the whole thing.
 
 ## Why this matters
@@ -19,9 +21,10 @@ Before firing questions, read what the user has given you — whether that's a d
 
 If the user points you at a codebase or mentions existing code, explore it. Don't ask questions you could answer yourself by reading.
 
-### One question at a time
+### One question at a time — always via AskUserQuestion
 
-Ask ONE question per message. This is critical — multiple questions let people cherry-pick the easy one and skip the hard one. Stay on a branch until it's resolved before moving to the next.
+Ask ONE question per message using the `AskUserQuestion` tool. This is critical — multiple questions let people cherry-pick the easy one and skip the hard one. Stay on a branch until it's resolved before moving to the next.
+
 
 ### Go deep before going wide
 
