@@ -91,9 +91,10 @@ If the spec has no slices (flat list of ACs), treat the entire spec as one slice
 
 Delegate to the **context-gatherer** agent via Task, passing the task description extracted from the spec title/overview.
 
-When it returns, **save the full context output to `.claude/bee-context.local.md`** using Bash (write silently, no permission prompts):
+When it returns, save the context output to `.claude/bee-context.local.md`. If the file already exists (grill-me decisions were written earlier), **append** with `>>`. If not, **create** with `>`:
 ```bash
-cat > .claude/bee-context.local.md << 'CONTEXT_EOF'
+mkdir -p .claude && cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+
 [full context-gatherer markdown output here]
 CONTEXT_EOF
 ```
@@ -204,6 +205,38 @@ After triage, before delegating to any agent, ask clarifying questions to fill i
 
 Pass the developer's answers as enriched context to every downstream agent.
 
+### B2.3. Grill-Me Decisions (When Used)
+
+If the developer invoked grill-me (e.g., `/bee:sdd /grill-me "description"` or the grill-me skill was loaded during this session), you will have had a deep Q&A with the developer before reaching this point. Those decisions are in your conversation context but will be **lost** when you delegate to subagents via Task.
+
+**Capture them now.** After the grill-me session concludes, write a structured summary of all decisions and resolved questions to `.claude/bee-context.local.md` using Bash:
+
+```bash
+mkdir -p .claude && cat > .claude/bee-context.local.md << 'GRILLME_EOF'
+## Grill-Me Decisions
+
+[For each resolved question/decision from the grill-me session:]
+- **[Topic]**: [Decision made and rationale]
+- **[Topic]**: [Decision made and rationale]
+
+### Open Items
+[Anything the developer chose to defer — list here so spec-builder can address them]
+GRILLME_EOF
+```
+
+This seeds the context file. When context-gatherer runs later (B3), **append** its output to this file instead of overwriting:
+
+```bash
+cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+
+[full context-gatherer markdown output here]
+CONTEXT_EOF
+```
+
+This way, grill-me decisions + codebase context live in one file and flow to every downstream agent — spec-builder, architecture-advisor, slice-coder, and beyond.
+
+If grill-me was NOT used, skip this step — context-gatherer will create the file from scratch as usual.
+
 ### B2.5. Navigation by Size
 
 After triage and clarification, route by size:
@@ -217,7 +250,7 @@ If yes → delegate to the **slice-coder** agent via Task, passing the task desc
 **SMALL:**
 Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather → confirm approach → slice-coder → slice-tester → sdd-verifier → done.
 
-1. Delegate to **context-gatherer** agent via Task, passing the task description. Save output to `.claude/bee-context.local.md`.
+1. Delegate to **context-gatherer** agent via Task, passing the task description. Append output to `.claude/bee-context.local.md` (use `>>` if grill-me seeded it, `>` otherwise).
 2. Summarize findings. Use AskUserQuestion: "Here's what I'll change: [brief plan]. Sound right?"
    Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
 3. Delegate to **slice-coder** agent via Task, passing the task description, `context_file: .claude/bee-context.local.md`, and the approach.
@@ -244,9 +277,11 @@ Continue to B3 (Context Gathering) and the full workflow below.
 **If there's existing code:**
 "Let me read the codebase first to understand what we're working with."
 Delegate to the **context-gatherer** agent via Task, passing the task description.
-When it returns, **save the full context output to `.claude/bee-context.local.md`** using Bash:
+When it returns, save the context output to `.claude/bee-context.local.md`. If the file already exists (grill-me decisions were written in B2.3), **append** with `>>`. If not, **create** with `>`:
 ```bash
-cat > .claude/bee-context.local.md << 'CONTEXT_EOF'
+# Use >> if grill-me seeded the file, > otherwise
+cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+
 [full context-gatherer markdown output here]
 CONTEXT_EOF
 ```
