@@ -45,9 +45,30 @@ If the user gives a vague answer, rephrase and push once. If they hand-wave the 
 
 This isn't adversarial — it's caring enough about the plan to not let weak spots slide. Frame it that way.
 
+### Build context incrementally
+
+After each Q&A pair that resolves a decision or surfaces an important constraint, append it to `.claude/bee-context.local.md`. This keeps a running record that grows richer with every answer — so if context gets compressed in a long session, the file has everything.
+
+**On the first resolved decision**, create the file with a header:
+```bash
+mkdir -p .claude && cat > .claude/bee-context.local.md << 'GRILLME_EOF'
+## Grill-Me Decisions
+
+GRILLME_EOF
+```
+
+**After each subsequent resolved decision**, append:
+```bash
+cat >> .claude/bee-context.local.md << 'GRILLME_EOF'
+- **[Topic]**: [Decision made and rationale]
+GRILLME_EOF
+```
+
+This also means you can re-read the file to remind yourself what's been resolved, which helps you ask sharper follow-ups that connect to earlier answers.
+
 ### Track what's resolved
 
-Mentally keep track of which branches you've explored and which are still open. When you finish a branch, briefly acknowledge it: "OK, I'm clear on how auth works. Moving on to data flow."
+Keep track of which branches you've explored and which are still open. The context file is your running record — use it. When you finish a branch, briefly acknowledge it: "OK, I'm clear on how auth works. Moving on to data flow."
 
 When you've covered everything, say so. Summarize what you now understand, flag anything that still feels shaky, and ask the user if they want to go deeper on any of it.
 
@@ -73,4 +94,12 @@ Stop when:
 - The user says they're satisfied
 - You're going in circles on the same point (acknowledge the disagreement and move on)
 
-End with a brief summary of the plan as you now understand it, including any open items the user chose to defer.
+End with a brief summary of the plan as you now understand it, including any open items the user chose to defer. Append the open items to the context file:
+
+```bash
+cat >> .claude/bee-context.local.md << 'GRILLME_EOF'
+
+### Open Items
+- [Anything the developer chose to defer]
+GRILLME_EOF
+```
