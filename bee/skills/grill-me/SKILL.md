@@ -25,7 +25,6 @@ If the user points you at a codebase or mentions existing code, explore it. Don'
 
 Ask ONE question per message using the `AskUserQuestion` tool. This is critical — multiple questions let people cherry-pick the easy one and skip the hard one. Stay on a branch until it's resolved before moving to the next.
 
-
 ### Go deep before going wide
 
 When you find an interesting thread, pull on it. Don't hop between topics. If the user says "we'll use a queue for that," your next question is about the queue — not about something else entirely. Drill into:
@@ -44,6 +43,24 @@ If a question could be answered by exploring existing code, explore it yourself.
 If the user gives a vague answer, rephrase and push once. If they hand-wave the same area twice, call it out directly: "You've been vague about this twice now — that usually means it's the part that needs the most thought. Let's slow down here."
 
 This isn't adversarial — it's caring enough about the plan to not let weak spots slide. Frame it that way.
+
+### When you find a gap — offer to brainstorm
+
+When the user hits a genuine gap — they say "I'm not sure", "I haven't thought about that", give a vague non-answer twice, or explicitly ask "what do you think?" — shift into brainstorming mode to help them resolve it on the spot.
+
+**How to transition:**
+
+Print exactly: `Switching to brainstorm mode to work through this together.`
+
+Then load the `brainstorming` skill using the Skill tool. Run a **focused mini-brainstorm** on the specific gap:
+
+1. Research the topic briefly (WebSearch if useful — load it via ToolSearch first)
+2. Present 2-3 concrete options via AskUserQuestion with a recommendation
+3. Once the user picks a direction, acknowledge the decision and resume grilling
+
+Keep it tight — this is a focused detour, not a full brainstorming session. The goal is to resolve the gap and get back to grilling. If the user wants to go deeper, they can always run `/bee:brainstorm` separately.
+
+**After the mini-brainstorm resolves**, print: `Back to grilling.` and continue from where you left off.
 
 ### Track what's resolved
 
@@ -73,4 +90,4 @@ Stop when:
 - The user says they're satisfied
 - You're going in circles on the same point (acknowledge the disagreement and move on)
 
-End with a brief summary of the plan as you now understand it, including any open items the user chose to defer.
+End with a brief summary of the plan as you now understand it, including any open items the user chose to defer. Include decisions that came out of mini-brainstorms — these are now part of the plan.
