@@ -1,7 +1,7 @@
 ---
 description: Start a brainstorming session. Open-ended, collaborative idea generation for product, architecture, UX, or any problem space. Researches online, builds on your ideas, and helps narrow to the best path forward.
 argument-hint: <problem or topic to brainstorm>
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(git:*)", "AskUserQuestion", "Skill", "ToolSearch", "WebSearch", "WebFetch"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(git *)", "AskUserQuestion", "Skill", "ToolSearch", "WebSearch", "WebFetch"]
 ---
 
 **IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, `WebSearch`, or `WebFetch`, call `ToolSearch` with query `"select:AskUserQuestion,WebSearch,WebFetch"` to load them. Do this once at the start.

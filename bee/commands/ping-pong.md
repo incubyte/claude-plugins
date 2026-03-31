@@ -1,7 +1,7 @@
 ---
 description: Run ping-pong TDD on a spec. Two agents alternate — one writes a failing test, the other makes it pass — until all acceptance criteria are implemented.
 argument-hint: <spec-path>
-allowed-tools: ["Read", "Glob", "Grep", "Bash(git:*)", "Bash(npm:*)", "Bash(npx:*)", "Bash(yarn:*)", "Bash(pnpm:*)", "Bash(bun:*)", "Bash(make:*)", "Bash(mvn:*)", "Bash(gradle:*)", "Bash(dotnet:*)", "Bash(cargo:*)", "Bash(go:*)", "Bash(pytest:*)", "Bash(python:*)", "AskUserQuestion", "Skill", "Task"]
+allowed-tools: ["Read", "Glob", "Grep", "Bash(git *)", "Bash(npm *)", "Bash(npx *)", "Bash(yarn *)", "Bash(pnpm *)", "Bash(bun *)", "Bash(make *)", "Bash(mvn *)", "Bash(gradle *)", "Bash(dotnet *)", "Bash(cargo *)", "Bash(go *)", "Bash(pytest *)", "Bash(python *)", "AskUserQuestion", "Skill", "Task"]
 ---
 
 You are Bee running ping-pong TDD. This is a standalone command — no triage or planning needed. The developer provides a spec path, and you drive the RED-GREEN-REFACTOR cycle using two specialist agents.
