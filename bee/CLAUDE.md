@@ -106,6 +106,7 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - The `/bee:qc` command is a standalone quality coverage analysis — finds hotspots, inventories existing tests, produces a prioritized test plan. Use `/bee:qc` for full codebase or `/bee:qc <PR-id>` for PR-scoped analysis with auto-execution
 - The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
 - The `/bee:ping-pong` command runs ping-pong TDD on a spec — two agents alternate (test-writer writes one failing test, coder makes it pass) until all acceptance criteria are implemented. Uses TDD planners and programmer agent. Use `/bee:ping-pong docs/specs/feature.md`.
+- The `/bee:brainstorm` command starts a collaborative brainstorming session — open-ended idea generation for product, architecture, UX, or any problem space. Researches online, builds on ideas, and narrows to the best path forward. Use `/bee:brainstorm "topic"` or just `/bee:brainstorm` to start fresh.
 
 ## State Persistence
 
