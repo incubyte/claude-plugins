@@ -1,7 +1,7 @@
 ---
 description: Use spec to drive development. Works with or without a pre-built spec. With a spec path, skips to context → architecture → slice loop. Without a spec (or with a task description), runs the full workflow including triage → discovery → spec → architecture → code → test → verify → review.
 argument-hint: <spec-path or task description>
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh:*)", "Bash(git:*)", "Bash(npm:*)", "Bash(npx:*)", "Bash(yarn:*)", "Bash(pnpm:*)", "Bash(bun:*)", "Bash(make:*)", "Bash(mvn:*)", "Bash(gradle:*)", "Bash(dotnet:*)", "Bash(cargo:*)", "Bash(go:*)", "Bash(pytest:*)", "Bash(python:*)", "AskUserQuestion", "Skill", "Task", "TaskCreate", "TaskUpdate", "TaskList"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/update-bee-state.sh *)", "Bash(git:*)", "Bash(npm:*)", "Bash(npx:*)", "Bash(yarn:*)", "Bash(pnpm:*)", "Bash(bun:*)", "Bash(make:*)", "Bash(mvn:*)", "Bash(gradle:*)", "Bash(dotnet:*)", "Bash(cargo:*)", "Bash(go:*)", "Bash(pytest:*)", "Bash(python:*)", "AskUserQuestion", "Skill", "Task", "TaskCreate", "TaskUpdate", "TaskList"]
 ---
 
 ## Mandatory Rules
