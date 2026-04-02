@@ -207,9 +207,9 @@ Pass the developer's answers as enriched context to every downstream agent.
 
 ### B2.3. Grill-Me Decisions (When Used)
 
-If the developer invoked grill-me (e.g., `/bee:sdd /grill-me "description"` or the grill-me skill was loaded during this session), you will have had a deep Q&A with the developer before reaching this point. Those decisions are in your conversation context but will be **lost** when you delegate to subagents via Task.
+If the developer invoked grill-me (e.g., `/bee:sdd /grill-me "description"` or the grill-me skill was loaded during this session), the grill-me skill **builds `.claude/bee-context.local.md` incrementally** — appending each resolved decision as it happens during the interview. By the time grill-me concludes, the file already contains all decisions and open items. No post-session capture needed.
 
-**Capture them now.** After the grill-me session concludes, write a structured summary of all decisions and resolved questions to `.claude/bee-context.local.md` using Bash:
+**Verify the file exists.** After grill-me completes, confirm `.claude/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., grill-me was run standalone outside SDD), capture the decisions now:
 
 ```bash
 mkdir -p .claude && cat > .claude/bee-context.local.md << 'GRILLME_EOF'
@@ -217,14 +217,13 @@ mkdir -p .claude && cat > .claude/bee-context.local.md << 'GRILLME_EOF'
 
 [For each resolved question/decision from the grill-me session:]
 - **[Topic]**: [Decision made and rationale]
-- **[Topic]**: [Decision made and rationale]
 
 ### Open Items
 [Anything the developer chose to defer — list here so spec-builder can address them]
 GRILLME_EOF
 ```
 
-This seeds the context file. When context-gatherer runs later (B3), **append** its output to this file instead of overwriting:
+When context-gatherer runs later (B3), **append** its output to this file instead of overwriting:
 
 ```bash
 cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
