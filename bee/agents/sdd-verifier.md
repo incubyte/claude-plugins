@@ -105,6 +105,15 @@ Read each test. Flag weak assertions:
 - Tests that assert on implementation details (mock call counts, exact query strings, internal method calls)
 - Tests that use overly broad matchers (toBeTruthy on complex objects, toEqual on large snapshots without specific checks)
 
+**Superficial test detection (BLOCKING — always fails verification):**
+- Import/existence checks: `expect(X).toBeDefined()`, "should be importable", "module should exist" — if the import is wrong the test file won't compile, so this asserts nothing
+- Constructor-only checks: `expect(new Service()).toBeDefined()` — test what the instance *does*, not that it exists
+- Type-only checks: `expect(typeof result).toBe('object')` — assert on content, not container type
+- No-op assertions: calling a function without asserting on the result
+- Tautological assertions: `expect(true).toBe(true)`
+
+If ANY superficial tests are found, fail the verification with severity BLOCKING and require the slice-tester to rewrite them as behavioral tests.
+
 **2c. Boundary conditions:**
 For functions that validate inputs or have numeric thresholds:
 - Are edge values tested? (0, -1, empty string, null, max int)
@@ -134,11 +143,12 @@ If all ACs are covered: mark the slice checkbox `[x]` in the spec file using Edi
 
 Quick scan of new/modified files:
 - **File naming** — follows project conventions? (kebab-case, PascalCase, whatever the project uses)
+- **Test file naming (BLOCKING)** — test file names must describe behavior, NOT workflow metadata. Flag any test file containing slice numbers, step numbers, or AC references (e.g., `slice-3.2-summarization.test.ts`, `step-1-setup.test.ts`, `ac-2-validation.test.ts`). Test files should be named like `user-authentication.test.ts`, `pricing-discount.test.ts`.
 - **File location** — in the right directory? (tests near source, or in a separate test directory — match existing pattern)
 - **Code style** — consistent with surrounding code? No wildly different formatting or naming
 - **Imports/dependencies** — no unexpected new dependencies? Layer boundaries respected?
 
-This is a quick check, not a style review. Flag only clear violations.
+This is a quick check, not a style review. Flag only clear violations — except test file naming and superficial tests, which are always blocking.
 
 ### Step 5: Risk-Aware Deeper Checks
 
