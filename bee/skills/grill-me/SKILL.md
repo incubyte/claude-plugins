@@ -66,6 +66,24 @@ GRILLME_EOF
 
 This also means you can re-read the file to remind yourself what's been resolved, which helps you ask sharper follow-ups that connect to earlier answers.
 
+### When you find a gap — offer to brainstorm
+
+When the user hits a genuine gap — they say "I'm not sure", "I haven't thought about that", give a vague non-answer twice, or explicitly ask "what do you think?" — shift into brainstorming mode to help them resolve it on the spot.
+
+**How to transition:**
+
+Print exactly: `Switching to brainstorm mode to work through this together.`
+
+Then load the `brainstorming` skill using the Skill tool. Run a **focused mini-brainstorm** on the specific gap:
+
+1. Research the topic briefly (WebSearch if useful — load it via ToolSearch first)
+2. Present 2-3 concrete options via AskUserQuestion with a recommendation
+3. Once the user picks a direction, acknowledge the decision and resume grilling
+
+Keep it tight — this is a focused detour, not a full brainstorming session. The goal is to resolve the gap and get back to grilling. If the user wants to go deeper, they can always run `/bee:brainstorm` separately.
+
+**After the mini-brainstorm resolves**, print: `Back to grilling.` and continue from where you left off.
+
 ### Track what's resolved
 
 Keep track of which branches you've explored and which are still open. The context file is your running record — use it. When you finish a branch, briefly acknowledge it: "OK, I'm clear on how auth works. Moving on to data flow."
@@ -94,7 +112,7 @@ Stop when:
 - The user says they're satisfied
 - You're going in circles on the same point (acknowledge the disagreement and move on)
 
-End with a brief summary of the plan as you now understand it, including any open items the user chose to defer. Append the open items to the context file:
+End with a brief summary of the plan as you now understand it, including any open items the user chose to defer. Include decisions that came out of mini-brainstorms — these are now part of the plan. Append the open items to the context file:
 
 ```bash
 cat >> .claude/bee-context.local.md << 'GRILLME_EOF'
