@@ -428,7 +428,7 @@ Delegate to the **slice-tester** agent via Task, passing:
 - spec_path: the spec file path
 - slice_number: the current slice number
 - source_files: the files the slice-coder reported creating/modifying
-- test_file_path: the test file path (follow project conventions)
+- test_file_path: the test file path — MUST describe the behavior being tested (e.g., `user-authentication.test.ts`, `pricing-discount.test.ts`, `order-validation.test.ts`). NEVER use slice numbers, step numbers, or any workflow metadata in test file names. Slice numbers are internal planning artifacts — they must not leak into the codebase. Follow existing project naming conventions for style (kebab-case, camelCase, etc.).
 - context_file: `.claude/bee-context.local.md`
 - architecture_file: `.claude/bee-architecture.local.md`
 
