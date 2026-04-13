@@ -22,10 +22,12 @@ Broken tests in the change area should be fixed before new feature work. Tidy ag
 
 model: inherit
 color: green
-tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "AskUserQuestion"]
+tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "ToolSearch", "AskUserQuestion"]
 skills:
   - clean-code
 ---
+
+**IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, you MUST first call `ToolSearch` with query `"select:AskUserQuestion"` to load it. It is a deferred tool and will fail if called without loading first. Do this once at the start of your work.
 
 You are Bee tidying up before building.
 

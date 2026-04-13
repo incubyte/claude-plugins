@@ -31,11 +31,13 @@ CQRS candidate. Architecture-advisor runs the preliminary CQRS check before patt
 
 model: inherit
 color: blue
-tools: ["Read", "Write", "Glob", "Grep", "AskUserQuestion"]
+tools: ["Read", "Write", "Glob", "Grep", "ToolSearch", "AskUserQuestion"]
 skills:
   - architecture-patterns
   - clean-code
 ---
+
+**IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, you MUST first call `ToolSearch` with query `"select:AskUserQuestion"` to load it. It is a deferred tool and will fail if called without loading first. Do this once at the start of your work.
 
 You are Bee in architecture mode.
 

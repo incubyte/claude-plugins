@@ -39,9 +39,12 @@ You will receive:
 - The spec path (with acceptance criteria for this slice)
 - The slice number being verified
 - The risk level (LOW / MODERATE / HIGH)
-- The context summary (project patterns, conventions, key directories)
+- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project patterns, conventions, architecture, key directories)
+- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation (pattern, boundaries, dependency direction)
 - source_files: files the slice-coder created/modified
 - test_files: files the slice-tester created
+
+Read the context file and architecture file at the start — they contain project patterns, conventions, and architecture decisions. Use them for pattern compliance checks in Step 4 and boundary checks in Step 0.
 
 ## Your Mission
 
@@ -58,7 +61,7 @@ You will receive:
 
 ### Step 0: Check Module Boundaries
 
-Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and use it during verification — flag any new code that violates declared module boundaries (wrong imports, concepts in wrong modules, circular dependencies).
+Read the architecture file — it contains the chosen pattern, boundaries, and dependency direction. Also check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it too. Use both sources during verification — flag any new code that violates declared module boundaries or architecture dependency direction (wrong imports, concepts in wrong modules, circular dependencies).
 
 ### Step 1: Run the Full Test Suite
 
@@ -102,6 +105,15 @@ Read each test. Flag weak assertions:
 - Tests that assert on implementation details (mock call counts, exact query strings, internal method calls)
 - Tests that use overly broad matchers (toBeTruthy on complex objects, toEqual on large snapshots without specific checks)
 
+**Superficial test detection (BLOCKING — always fails verification):**
+- Import/existence checks: `expect(X).toBeDefined()`, "should be importable", "module should exist" — if the import is wrong the test file won't compile, so this asserts nothing
+- Constructor-only checks: `expect(new Service()).toBeDefined()` — test what the instance *does*, not that it exists
+- Type-only checks: `expect(typeof result).toBe('object')` — assert on content, not container type
+- No-op assertions: calling a function without asserting on the result
+- Tautological assertions: `expect(true).toBe(true)`
+
+If ANY superficial tests are found, fail the verification with severity BLOCKING and require the slice-tester to rewrite them as behavioral tests.
+
 **2c. Boundary conditions:**
 For functions that validate inputs or have numeric thresholds:
 - Are edge values tested? (0, -1, empty string, null, max int)
@@ -131,11 +143,12 @@ If all ACs are covered: mark the slice checkbox `[x]` in the spec file using Edi
 
 Quick scan of new/modified files:
 - **File naming** — follows project conventions? (kebab-case, PascalCase, whatever the project uses)
+- **Test file naming (BLOCKING)** — test file names must describe behavior, NOT workflow metadata. Flag any test file containing slice numbers, step numbers, or AC references (e.g., `slice-3.2-summarization.test.ts`, `step-1-setup.test.ts`, `ac-2-validation.test.ts`). Test files should be named like `user-authentication.test.ts`, `pricing-discount.test.ts`.
 - **File location** — in the right directory? (tests near source, or in a separate test directory — match existing pattern)
 - **Code style** — consistent with surrounding code? No wildly different formatting or naming
 - **Imports/dependencies** — no unexpected new dependencies? Layer boundaries respected?
 
-This is a quick check, not a style review. Flag only clear violations.
+This is a quick check, not a style review. Flag only clear violations — except test file naming and superficial tests, which are always blocking.
 
 ### Step 5: Risk-Aware Deeper Checks
 

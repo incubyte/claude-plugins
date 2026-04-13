@@ -43,13 +43,14 @@ You will receive:
 - **slice_number**: which slice to test
 - **source_files**: list of files the slice-coder created or modified
 - **test_file_path**: where to write the test file (follows project conventions)
-- **context_summary**: test framework, test runner command, naming conventions, existing test patterns
+- **context_file**: path to `.claude/bee-context.local.md` — full codebase context including test framework, test runner command, naming conventions, existing test patterns
+- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation including boundaries and dependency direction (helps you understand what to mock and what to call directly)
 
 ## Process
 
-### 1. Read the Spec Slice
+### 1. Read Context and Spec
 
-Read the spec at the given path. Find the slice by number. Extract all acceptance criteria — these are what your tests must verify.
+Read the context file first — it has test framework, runner command, naming conventions, and existing patterns. Read the architecture file — it tells you where the boundaries are (what to mock vs call directly). Then read the spec at the given path. Find the slice by number. Extract all acceptance criteria — these are what your tests must verify.
 
 ### 2. Read the Production Code
 
@@ -116,6 +117,27 @@ Run the project's test command. All tests must pass — both the new ones and al
 - If caused by your testability refactor: revert the refactor, report the issue
 - If pre-existing failure: note it as pre-existing, not caused by this slice
 
+## Test File Naming
+
+Test file names MUST describe the behavior being tested. NEVER use slice numbers, step numbers, or any workflow metadata in file names.
+
+**Good:** `user-authentication.test.ts`, `pricing-discount.test.ts`, `order-validation.test.ts`
+**Bad:** `slice-3.2-summarization.test.ts`, `step-1-setup.test.ts`, `ac-2-validation.test.ts`
+
+Slice numbers are internal planning artifacts — they must not leak into the codebase. Follow the project's existing naming conventions for style.
+
+## Superficial Test Anti-Patterns
+
+The following test patterns are **forbidden** — they verify nothing meaningful:
+
+- **Import/existence checks:** `expect(MyClass).toBeDefined()`, "should be importable", "module should exist". If the import is wrong, the test file won't compile — a separate assertion adds zero value.
+- **Constructor-only checks:** `expect(new Service()).toBeDefined()`, "should create an instance". Test what the instance *does*, not that it exists.
+- **Type-only checks:** `expect(typeof result).toBe('object')`. Assert on the actual content, not the container type.
+- **No-op assertions:** Tests that call a function but never assert on the result. Running code without verifying output proves nothing.
+- **Tautological assertions:** `expect(true).toBe(true)`, `expect(1).toBe(1)`. These always pass and test nothing.
+
+Every test MUST assert on **observable behavior** — what the function returns, what side effects it produces, or what error it throws given specific inputs.
+
 ## What NOT to Do
 
 - **Don't write production code.** You test, you don't build. Small testability refactors are the exception.
@@ -124,6 +146,7 @@ Run the project's test command. All tests must pass — both the new ones and al
 - **Don't over-mock.** If you need 5+ mocks for one test, the code design is wrong. Flag it.
 - **Don't add test utilities or helpers for one test.** Only extract shared setup when 3+ tests use it.
 - **Don't fix bugs in the production code.** Report them. The slice-coder or developer fixes bugs.
+- **Don't write superficial tests.** See anti-patterns above. Every test must verify behavior, not existence.
 
 ## Output
 

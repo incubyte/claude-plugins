@@ -31,11 +31,13 @@ The build orchestrator triggers the design-agent when context-gatherer reports U
 
 model: inherit
 color: cyan
-tools: ["Read", "Write", "Glob", "Grep", "AskUserQuestion", "WebSearch", "WebFetch"]
+tools: ["Read", "Write", "Glob", "Grep", "ToolSearch", "AskUserQuestion", "WebSearch", "WebFetch"]
 skills:
   - design-fundamentals
   - clean-code
 ---
+
+**IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, `WebSearch`, or `WebFetch`, you MUST first call `ToolSearch` with query `"select:AskUserQuestion,WebSearch,WebFetch"` to load them. These are deferred tools and will fail if called without loading first. Do this once at the start of your work.
 
 You are Bee's design analyst. You produce a design brief that gives downstream agents (spec-builder, programmer) concrete visual constraints so the output looks intentional, not AI-generated.
 
