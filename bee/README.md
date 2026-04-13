@@ -6,7 +6,7 @@ Bee is a Claude Code plugin that brings spec-driven engineering discipline to AI
 
 **What makes it different.** Bee is process-aware, not just code-aware. It triages every task by size and risk, then navigates you through exactly the right amount of rigor — a typo gets fixed immediately, a payment flow gets a full spec, architecture review, and verification. No other Claude Code plugin delivers triage → spec → architecture → code → test → verify → review as one coherent workflow.
 
-**What you get.** 11 commands, 37 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
+**What you get.** 13 commands, 41 specialist agents, design system awareness, session resume, and artifacts that capture _why_ things were built — not just _what_. From onboarding new devs to migrating legacy systems to coaching your AI workflow habits.
 
 > The developer is the driver. Claude Code is the car. Bee is the GPS.
 
@@ -193,6 +193,12 @@ Generate Playwright-BDD test automation from Gherkin feature files. Full 5-phase
 
 Interactive guided tour of all Bee commands. Adapts to your project context — if Bee has already produced specs or state files, it shows what's been done. If it's a fresh project, it suggests where to start.
 
+```
+/bee:brainstorm <problem or topic>
+```
+
+Open-ended, collaborative idea generation for product, architecture, UX, or any problem space. Researches online, builds on your ideas, explores cross-domain connections, and helps narrow to the best path forward. Feeds into the `grill-me` skill for structured gap resolution.
+
 ## How It Works
 
 Bee assesses every task on two axes — **size** and **risk** — then recommends the right workflow.
@@ -228,11 +234,7 @@ These artifacts are knowledge capture — when a new developer joins, they can r
 
 ## Agents
 
-<<<<<<< HEAD
-Bee ships with 36 specialist agents:
-=======
-Bee ships with 27 specialist agents:
->>>>>>> origin/main
+Bee ships with 41 specialist agents:
 
 | Agent                       | Role                                                                         |
 | --------------------------- | ---------------------------------------------------------------------------- |
@@ -266,7 +268,7 @@ Bee ships with 27 specialist agents:
 | `review-team-practices`     | Commit messages, PR review substance                                         |
 | `review-org-standards`      | Project CLAUDE.md conventions                                                |
 | `review-ai-ergonomics`      | LLM-friendliness review                                                      |
-<<<<<<< HEAD
+| `recap`                     | Walk through what was built — files, core logic, tests, decisions            |
 | **Playwright-BDD Agents**   | **Automated test generation from Gherkin feature files**                     |
 | `playwright-step-matcher`   | Semantic step matching with confidence scoring                               |
 | `playwright-code-generator` | Generate step definitions following repo patterns                            |
@@ -278,9 +280,6 @@ Bee ships with 27 specialist agents:
 | `playwright-utility-generator` | Detect and extract reusable utility functions                             |
 | `playwright-outline-converter` | Convert scenarios to parameterized scenario outlines                      |
 | `playwright-test-executor`  | Detect and execute test scripts with result reporting                        |
-=======
-| `recap`                     | Walk through what was built — files, core logic, tests, decisions            |
->>>>>>> origin/main
 
 ## Skills
 
@@ -298,6 +297,10 @@ Shared reference knowledge that agents draw on. Skills are imported via frontmat
 - **ai-ergonomics** — Making code LLM-friendly
 - **lsp-analysis** — LSP-enhanced dependency analysis, graceful degradation
 - **browser-testing** — Chrome MCP tool reference, screenshot conventions
+- **brainstorming** — Two-phase diverge/converge idea generation with online research
+- **grill-me** — Socratic interviewer that stress-tests plans and surfaces hidden assumptions
+- **resolve-m-conflicts** — Interactive merge conflict resolution with contextual guidance
+- **requirement-architect** — Structured requirement writing for PMs to enable parallel AI workflows
 
 ## Project Structure
 
@@ -307,15 +310,18 @@ bee/
 │   └── plugin.json               # Plugin manifest
 ├── commands/
 │   ├── sdd.md                     # /bee:sdd orchestrator
+│   ├── brainstorm.md              # /bee:brainstorm idea generation
 │   ├── coach.md                   # /bee:coach session coaching insights
 │   ├── architect.md              # /bee:architect architecture assessment
 │   ├── discover.md               # /bee:discover standalone discovery
 │   ├── help.md                    # /bee:help interactive guided tour
 │   ├── migrate.md                 # /bee:migrate migration planning
 │   ├── onboard.md                # /bee:onboard interactive developer onboarding
+│   ├── ping-pong.md              # /bee:ping-pong TDD ping-pong mode
 │   ├── playwright-bdd.md         # /bee:playwright Playwright-BDD test generation
 │   ├── qc.md                     # /bee:qc quality coverage analysis
-│   └── review.md                 # /bee:review standalone code review
+│   ├── review.md                 # /bee:review standalone code review
+│   └── browser-test.md           # /bee:browser-test browser-based regression tests
 ├── agents/
 │   ├── quick-fix.md
 │   ├── context-gatherer.md
@@ -366,7 +372,11 @@ bee/
 │   ├── code-review/
 │   ├── ai-ergonomics/
 │   ├── lsp-analysis/
-│   └── browser-testing/
+│   ├── browser-testing/
+│   ├── brainstorming/
+│   ├── grill-me/
+│   ├── resolve-m-conflicts/
+│   └── requirement-architect/
 ├── docs/
 │   ├── specs/                    # Generated specs, discovery docs, state
 │   └── adrs/                    # Architecture Decision Records
