@@ -107,6 +107,7 @@ On startup, check for `.claude/bee-state.local.md` for in-progress work. If foun
 - The `/bee:browser-test` command runs browser-based regression tests against specs — verifies acceptance criteria in a running app via Chrome MCP, produces pass/fail reports with screenshots. Use `/bee:browser-test spec1 spec2` to test one or more specs. Read-only — does not modify code.
 - The `/bee:ping-pong` command runs ping-pong TDD on a spec — two agents alternate (test-writer writes one failing test, coder makes it pass) until all acceptance criteria are implemented. Uses TDD planners and programmer agent. Use `/bee:ping-pong docs/specs/feature.md`.
 - The `/bee:brainstorm` command starts a collaborative brainstorming session — open-ended idea generation for product, architecture, UX, or any problem space. Researches online, builds on ideas, and narrows to the best path forward. Use `/bee:brainstorm "topic"` or just `/bee:brainstorm` to start fresh.
+- The `/bee:create-book` command analyzes source code and produces a comprehensive technical book with an Astro website. Generates markdown chapters in `book/docs/` and a polished web reader in `book/web/`. Use `/bee:create-book <source-dir>` or `/bee:create-book` to analyze the current directory.
 
 ## State Persistence
 
