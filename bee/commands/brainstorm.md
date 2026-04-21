@@ -1,7 +1,7 @@
 ---
 description: Start a brainstorming session. Open-ended, collaborative idea generation for product, architecture, UX, or any problem space. Researches online, builds on your ideas, and helps narrow to the best path forward.
 argument-hint: <problem or topic to brainstorm>
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(git:*)", "AskUserQuestion", "Skill", "ToolSearch", "WebSearch", "WebFetch"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(git:*)", "Bash(mkdir:*)", "Bash(cat:*)", "AskUserQuestion", "Skill", "ToolSearch", "WebSearch", "WebFetch"]
 ---
 
 **IMPORTANT — Deferred Tool Loading:** Before calling `AskUserQuestion`, `WebSearch`, or `WebFetch`, call `ToolSearch` with query `"select:AskUserQuestion,WebSearch,WebFetch"` to load them. Do this once at the start.
@@ -36,18 +36,10 @@ Follow the brainstorming skill's two-phase process:
 
 ## After the Session
 
-6. Produce the structured brainstorm summary from the skill.
+6. Produce the final brainstorm summary and append it to `.claude/bee-context.local.md` (the skill's incremental writes have been building this file throughout the session — the summary closes it out).
 
-7. If `.claude/bee-context.local.md` exists (running within bee:sdd), append the summary to it:
-   ```bash
-   cat >> .claude/bee-context.local.md << 'BRAIN_EOF'
+7. If standalone (no bee-state), also save the full structured summary to `docs/brainstorms/[topic]-brainstorm.md` (create the directory if needed).
 
-   [brainstorm summary here]
-   BRAIN_EOF
-   ```
-
-8. If standalone (no bee-state), save the summary to `docs/brainstorms/[topic]-brainstorm.md` (create the directory if needed).
-
-9. Offer next steps via AskUserQuestion:
+8. Offer next steps via AskUserQuestion:
    "Nice session! Where to next?"
    Options: "Run /bee:sdd to build this (Recommended)" / "Run /bee:discover to write a PRD" / "Run /bee:brainstorm to explore another angle" / "I'm done for now"
