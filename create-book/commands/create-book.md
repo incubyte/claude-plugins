@@ -133,7 +133,7 @@ mkdir -p book/docs book/docs/_research
 
 2. Copy the Astro web template:
 ```bash
-cp -r "${CLAUDE_PLUGIN_ROOT}/templates/book-web/" book/web/
+cp -r "${CLAUDE_PLUGIN_ROOT}/templates/" book/web/
 ```
 
 3. Install web dependencies:
