@@ -13,6 +13,27 @@ Act as a collaborative brainstorming partner. Generate options, build on ideas, 
 
 Run both phases in every brainstorming session.
 
+### Build context incrementally
+
+After each significant moment — a research finding that changes the direction, a cross-domain insight, or a decision the user makes — append it to `.claude/bee-context.local.md`. This keeps a running record so downstream agents (spec-builder, architecture-advisor, slice-coder) have full context even if the brainstorm ran in an earlier session.
+
+**On the first finding or decision**, create the file with a header:
+```bash
+mkdir -p .claude && cat > .claude/bee-context.local.md << 'BRAINSTORM_EOF'
+## Brainstorm Decisions
+
+BRAINSTORM_EOF
+```
+
+**After each subsequent finding, insight, or decision**, append:
+```bash
+cat >> .claude/bee-context.local.md << 'BRAINSTORM_EOF'
+- **[Topic]**: [What was decided or discovered, and why it matters]
+BRAINSTORM_EOF
+```
+
+If `.claude/bee-context.local.md` already exists (e.g., grill-me ran first, or this is a second brainstorm), always **append** with `>>` — never overwrite.
+
 ### Phase 1: Diverge — Generate Options
 
 Aim for volume and variety. Do not dismiss any idea.
@@ -61,7 +82,22 @@ Present options and give a recommendation, but let the user make the final decis
 
 ## Capturing Decisions
 
-When the session concludes, produce a structured summary:
+Context has been building incrementally throughout the session. At the end, append the final summary to `.claude/bee-context.local.md`:
+
+```bash
+cat >> .claude/bee-context.local.md << 'BRAINSTORM_EOF'
+
+### Brainstorm Summary
+- **Problem**: [One sentence]
+- **Chosen direction**: [Which option and why]
+- **Key insight**: [Most important cross-domain or non-obvious insight]
+
+### Open Questions
+- [Anything deferred or unresolved]
+BRAINSTORM_EOF
+```
+
+When used standalone (via `/bee:brainstorm` with no bee-state), also save the full structured summary to `docs/brainstorms/[topic]-brainstorm.md`:
 
 ```markdown
 ## Brainstorm Summary
@@ -84,8 +120,6 @@ When the session concludes, produce a structured summary:
 ### Open Questions
 - [Anything deferred or unresolved]
 ```
-
-When used within the bee:sdd workflow, append this summary to `.claude/bee-context.local.md` so downstream agents have the full brainstorming context. When used standalone (via `/bee:brainstorm`), save to `docs/brainstorms/[topic]-brainstorm.md`.
 
 ## Tone
 

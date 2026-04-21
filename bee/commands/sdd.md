@@ -236,6 +236,28 @@ This way, grill-me decisions + codebase context live in one file and flow to eve
 
 If grill-me was NOT used, skip this step — context-gatherer will create the file from scratch as usual.
 
+### B2.4. Brainstorming Decisions (When Used)
+
+If the developer invoked brainstorming (e.g., `/bee:sdd let's brainstorm "description"` or the brainstorming skill was loaded during this session), the brainstorming skill **builds `.claude/bee-context.local.md` incrementally** — appending each research finding, cross-domain insight, and decision as the session progresses. By the time brainstorming concludes, the file already contains all findings, the chosen direction, and open questions. No post-session capture needed.
+
+**Verify the file exists.** After brainstorming completes, confirm `.claude/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., brainstorming was run standalone outside SDD), capture the decisions now:
+
+```bash
+mkdir -p .claude && cat > .claude/bee-context.local.md << 'BRAINSTORM_EOF'
+## Brainstorm Decisions
+
+[For each key finding/decision from the brainstorming session:]
+- **[Topic]**: [Decision made and rationale]
+
+### Open Questions
+[Anything deferred or unresolved]
+BRAINSTORM_EOF
+```
+
+When context-gatherer runs later (B3), **append** its output to this file instead of overwriting — same as with grill-me.
+
+If brainstorming was NOT used, skip this step.
+
 ### B2.5. Navigation by Size
 
 After triage and clarification, route by size:
