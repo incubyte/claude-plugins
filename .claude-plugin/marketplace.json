@@ -15,6 +15,11 @@
       "description": "Learn any technology by building real projects — Claude guides step-by-step, you write every line of code"
     },
     {
+      "name": "daily-insights",
+      "source": "./daily-insights",
+      "description": "Daily AI usage insights — tokens, cost, sessions, and projects from your local Claude Code session data"
+    },
+    {
       "name": "ralph-wiggum",
       "source": {
         "source": "github",
