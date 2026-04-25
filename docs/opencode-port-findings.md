@@ -19,7 +19,7 @@ Three platforms in the air made approach selection slow:
 
 We initially planned a borrowed-omo refactor (skills + thin platform wrappers + category routing). After ~2 hours of design work we dropped that scope when the user clarified the real goal: **"i want bee to work exactly how it works in claude code, like how it is able to spawn sub-agents parallely. also more like how it calls tools correct and more"** — i.e., faithful Claude-parity port, not a power-tool rewrite.
 
-That reframing made the actual job small. The architecture doc at `docs/ARCHITECTURE.md` still has the broader vision; v1 implementation is much narrower.
+That reframing made the actual job small.
 
 ## Opencode discovery surfaces — what we learned reading the source
 
@@ -187,15 +187,10 @@ incubyte-ai-plugins/
 │       ├── agents/*.md                         ← 35 generated
 │       ├── commands/*.md                       ← 12 generated
 │       ├── bin/install.sh                      ← idempotent symlink installer
-│       ├── bin/uninstall.sh                    ← bee-only-aware uninstaller
-│       └── INSTALL.md                          ← user-facing instructions
-├── docs/
-│   ├── ARCHITECTURE.md                         ← updated (§3.5 install mechanism)
-│   ├── brainstorms/
-│   │   ├── opencode-advanced-integration-brainstorm.md
-│   │   └── pilot-phase-0-findings.md           ← documents the failed include-mechanism
-│   └── demos/opencode-port/
-│       └── screenshots/                         ← PR artifacts (in progress)
+│       └── bin/uninstall.sh                    ← bee-only-aware uninstaller
+└── docs/
+    ├── opencode-install.md                     ← user-facing install guide
+    └── opencode-port-findings.md               ← this file
 ```
 
 ## Things explicitly out of scope for v1
@@ -216,6 +211,6 @@ incubyte-ai-plugins/
 ## Cross-references
 
 - Plugin repo: `~/codes/ai/tools/incubyte-ai-plugins/`
-- Architecture doc: `incubyte-ai-plugins/docs/ARCHITECTURE.md` §3.5 has the install mechanism in canonical form
+- Install guide: `incubyte-ai-plugins/docs/opencode-install.md`
 - Demo project: `~/codes/ai/testing/tinyurl/` (built using bee on opencode for the PR)
 - Opencode source: <https://github.com/anomalyco/opencode> (default branch `dev`)
