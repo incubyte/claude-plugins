@@ -113,7 +113,7 @@ Opencode does **not** rescan disk on session creation, file change, or any HTTP 
 - After running `install.sh`, you must restart opencode for the new content to appear.
 - Editing a command body? Restart needed (the body is part of the cached `template`).
 - Renaming an agent? Restart.
-- Tracked in `bee/.opencode/INSTALL.md` troubleshooting section.
+- Tracked in `docs/opencode-install.md` troubleshooting section.
 
 This is significantly more aggressive caching than Claude Code, which reads plugin files on demand.
 

@@ -52,7 +52,7 @@ bash bee/.opencode/bin/install.sh
 
 Then **restart opencode** — it builds its agent/command registry once at server startup, so any running `opencode web` or `opencode tui` needs to be restarted before bee shows up. Use `/bee-sdd`, `/bee-brainstorm`, `/bee-review`, etc. from the slash menu in any session.
 
-Full install guide, troubleshooting, and uninstall: [`bee/.opencode/INSTALL.md`](bee/.opencode/INSTALL.md). Mechanism and rationale: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) §3.5.
+Full install guide, troubleshooting, and uninstall: [`docs/opencode-install.md`](docs/opencode-install.md). Mechanism and rationale: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) §3.5.
 
 ## License
 

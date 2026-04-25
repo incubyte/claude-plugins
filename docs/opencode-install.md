@@ -49,7 +49,7 @@ Opencode does not auto-discover files inside plugin packages — it only scans a
 
 Per-file symlinks for agents and commands (rather than a directory symlink) produce clean flat names (`bee-slice-coder` vs. `bee/slice-coder`) because opencode derives names by stripping the first `agents/` or `commands/` path segment. Skills keep their `name:` from frontmatter, so a single directory symlink is enough there.
 
-For the full architecture, see [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) §3.5.
+For the full architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md) §3.5.
 
 ## Troubleshooting
 

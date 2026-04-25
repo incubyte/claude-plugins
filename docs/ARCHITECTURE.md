@@ -111,10 +111,9 @@ incubyte-ai-plugins/
 │   │   │   └── ... (35 generated files)
 │   │   ├── commands/                      ← generated from bee/commands/
 │   │   │   └── ... (12 generated files)
-│   │   ├── bin/
-│   │   │   ├── install.sh                 ← creates ~/.config/opencode symlinks
-│   │   │   └── uninstall.sh               ← reverses install (safe, bee-only)
-│   │   └── INSTALL.md                     ← user-facing install instructions
+│   │   └── bin/
+│   │       ├── install.sh                 ← creates ~/.config/opencode symlinks
+│   │       └── uninstall.sh               ← reverses install (safe, bee-only)
 │   │
 │   ├── routing.json                      ← Claude routing (Phase 2)
 │   └── README.md, AGENTS.md, LICENSE
