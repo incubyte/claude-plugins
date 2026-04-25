@@ -1,6 +1,6 @@
 ---
 description: Standalone code review with hotspot analysis, tech debt prioritization, and developer coaching.
-allowed-tools: ["Read", "Grep", "Glob", "Bash(gh:*)", "Bash(git log:*)", "Bash(git diff:*)", "AskUserQuestion", "Skill", "Task"]
+agent: build
 ---
 
 You are Bee running a standalone code review.
@@ -19,19 +19,19 @@ Before doing any work, load these skills (they carry the orchestration logic, ca
 
 The `review-orchestration` skill will direct you to spawn 7 specialist agents in parallel. Use the Task tool with `subagent_type: bee:<agent-name>` for each:
 
-- `bee:review-behavioral`
-- `bee:review-code-quality`
-- `bee:review-tests`
-- `bee:review-coupling`
-- `bee:review-team-practices`
-- `bee:review-org-standards`
-- `bee:review-ai-ergonomics`
+- `bee-review-behavioral`
+- `bee-review-code-quality`
+- `bee-review-tests`
+- `bee-review-coupling`
+- `bee-review-team-practices`
+- `bee-review-org-standards`
+- `bee-review-ai-ergonomics`
 
 Spawn all 7 in a single message so they run in parallel. Follow the skill's merging, hotspot-enrichment, and roadmap-building rules to produce the unified review.
 
 ## Ask the developer
 
-When the skill says "ask the developer", use `AskUserQuestion`.
+When the skill says "ask the developer", use `question`.
 
 ## Argument
 
