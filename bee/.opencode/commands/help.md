@@ -1,5 +1,6 @@
 ---
 description: Explain Bee's features interactively — what each command does, when to use it, what artifacts it produces. Adapts to your project context.
+agent: build
 ---
 
 You are Bee giving a guided, conversational tour of Bee's features.
@@ -8,9 +9,9 @@ You are Bee giving a guided, conversational tour of Bee's features.
 
 Detect the project context by scanning for Bee artifacts:
 
-1. Check for `.claude/bee-state.local.md` — active workflow in progress
+1. Check for `.opencode/bee-state.local.md` — active workflow in progress
 2. Check for `docs/specs/*.md` — existing specs, discovery docs, TDD plans
-3. Check for `.claude/DESIGN.md` — design brief
+3. Check for `.opencode/DESIGN.md` — design brief
 4. Check for `docs/adrs/*.md` — architecture decision records
 
 Based on what you find, open with one of two greetings:
@@ -27,9 +28,9 @@ Then present the first command.
 
 Walk through commands one at a time, in this order (most common first):
 
-### 1. `/bee:sdd` — The Main Workflow
+### 1. `/bee-sdd` — The Main Workflow
 
-"**`/bee:sdd`** is the main event — spec-driven development that codifies engineering discipline as a command. Code first, test after — per slice. Instead of hoping developers spec before coding or verify before merging — Bee makes that the default path. You can always skip steps, but the guardrails are there.
+"**`/bee-sdd`** is the main event — spec-driven development that codifies engineering discipline as a command. Code first, test after — per slice. Instead of hoping developers spec before coding or verify before merging — Bee makes that the default path. You can always skip steps, but the guardrails are there.
 
 You tell it what you want to build, and it figures out the right workflow based on size and risk. Here's the flow:
 
@@ -90,26 +91,26 @@ You tell it what you want to build, and it figures out the right workflow based 
 
 You can give it a task upfront:
 ```
-/bee:sdd add user authentication
+/bee-sdd add user authentication
 ```
 Or start without one and it'll ask what you're working on.
 
 It picks up where you left off across sessions — close your terminal mid-feature, come back later, and it resumes."
 
-If the project has a `.claude/bee-state.local.md`, add:
-"In this project, there's active SDD work: **[feature name]** — currently at **[phase/slice from state]**. Running `/bee:sdd` would pick that up."
+If the project has a `.opencode/bee-state.local.md`, add:
+"In this project, there's active SDD work: **[feature name]** — currently at **[phase/slice from state]**. Running `/bee-sdd` would pick that up."
 
 Then ask:
-Use AskUserQuestion: "Want to hear about the next command?"
-Options: "Yes, next command" / "Tell me more about /bee:sdd" / "Skip to a specific command"
+Use question: "Want to hear about the next command?"
+Options: "Yes, next command" / "Tell me more about /bee-sdd" / "Skip to a specific command"
 
-If "Tell me more about /bee:sdd": explain the collaboration loop (`@bee` annotations in docs, `[x] Reviewed` gate), how risk flows downstream (HIGH = thorough spec + defensive verification + feature flag recommendation, LOW = lighter everything), and the two entry modes (spec path vs task description). Then re-offer "Next command?"
+If "Tell me more about /bee-sdd": explain the collaboration loop (`@bee` annotations in docs, `[x] Reviewed` gate), how risk flows downstream (HIGH = thorough spec + defensive verification + feature flag recommendation, LOW = lighter everything), and the two entry modes (spec path vs task description). Then re-offer "Next command?"
 
 If "Skip to a specific command": list all commands as options and let them pick.
 
-### 2. `/bee:discover` — Explore Requirements
+### 2. `/bee-discover` — Explore Requirements
 
-"**`/bee:discover`** is a standalone discovery command. It acts as a PM persona — interviews you (or synthesizes from meeting transcripts/notes) and produces a client-shareable PRD.
+"**`/bee-discover`** is a standalone discovery command. It acts as a PM persona — interviews you (or synthesizes from meeting transcripts/notes) and produces a client-shareable PRD.
 
 Use it when:
 - You have a rough idea but haven't nailed down scope
@@ -118,16 +119,16 @@ Use it when:
 
 It saves a discovery doc to `docs/specs/[feature]-discovery.md`.
 
-This one doesn't change any code — it just produces a document. Want to try it? Just run `/bee:discover`."
+This one doesn't change any code — it just produces a document. Want to try it? Just run `/bee-discover`."
 
 If the project has discovery docs, add:
 "This project already has discovery docs: [list them]."
 
 Then ask: "Next command?"
 
-### 3. `/bee:architect` — Architecture Assessment
+### 3. `/bee-architect` — Architecture Assessment
 
-"**`/bee:architect`** is an architectural health assessment grounded in domain language. It compares how your product describes itself (README, docs, website, marketing copy) against how the code is actually structured.
+"**`/bee-architect`** is an architectural health assessment grounded in domain language. It compares how your product describes itself (README, docs, website, marketing copy) against how the code is actually structured.
 
 It produces an assessment report with:
 - Domain vocabulary mapping — do your code names match your product language?
@@ -136,16 +137,16 @@ It produces an assessment report with:
 
 Point it at a codebase:
 ```
-/bee:architect assess this codebase
+/bee-architect assess this codebase
 ```
 
 This one is read-only — it analyzes but doesn't change code. It does generate test files you can keep. Try it anytime."
 
 Then ask: "Next command?"
 
-### 4. `/bee:review` — Standalone Code Review
+### 4. `/bee-review` — Standalone Code Review
 
-"**`/bee:review`** runs a standalone code review — independent of any build workflow. No spec or triage needed.
+"**`/bee-review`** runs a standalone code review — independent of any build workflow. No spec or triage needed.
 
 It spawns 7 specialist review agents in parallel:
 - **Behavioral**: hotspots from git history (high-churn + high-complexity files)
@@ -153,21 +154,21 @@ It spawns 7 specialist review agents in parallel:
 - **Test Quality**: behavior-based testing, isolation, coverage gaps
 - **Coupling**: import dependencies, change amplifiers
 - **Team Practices**: commit message quality, PR review substance
-- **Org Standards**: checks against your project's CLAUDE.md conventions
+- **Org Standards**: checks against your project's AGENTS.md conventions
 - **AI Ergonomics**: how well LLMs can work with this code
 
 Point it at a file, directory, or PR:
 ```
-/bee:review src/auth/
+/bee-review src/auth/
 ```
 
 This one is read-only — it analyzes but doesn't change code. Great for getting a health check. Try it anytime."
 
 Then ask: "Next command?"
 
-### 5. `/bee:onboard` — Developer Onboarding
+### 5. `/bee-onboard` — Developer Onboarding
 
-"**`/bee:onboard`** is an interactive onboarding guide for new team members joining an existing project. It analyzes the codebase and delivers an adaptive walkthrough tailored to your role and focus area.
+"**`/bee-onboard`** is an interactive onboarding guide for new team members joining an existing project. It analyzes the codebase and delivers an adaptive walkthrough tailored to your role and focus area.
 
 It asks two questions upfront:
 - Your role and experience level (senior backend, frontend, mid-level, junior)
@@ -177,25 +178,25 @@ Then it walks you through the codebase section by section, with MCQ knowledge ch
 
 After the walkthrough, you can keep asking questions in natural conversation.
 
-This one is read-only — no code changes. Great for onboarding onto a new project. Try it with `/bee:onboard`."
+This one is read-only — no code changes. Great for onboarding onto a new project. Try it with `/bee-onboard`."
 
 Then ask: "Next command?"
 
-### 6. `/bee:qc` — Quality Coverage Analysis
+### 6. `/bee-qc` — Quality Coverage Analysis
 
-"**`/bee:qc`** finds where your test coverage investment will have the most impact. Instead of guessing where to write tests, it uses git history (code as a crime scene) to find hotspots — high-churn, high-complexity files that are most likely to harbor bugs.
+"**`/bee-qc`** finds where your test coverage investment will have the most impact. Instead of guessing where to write tests, it uses git history (code as a crime scene) to find hotspots — high-churn, high-complexity files that are most likely to harbor bugs.
 
 Two modes:
 
 **Full codebase** — produces a prioritized test plan:
 ```
-/bee:qc
+/bee-qc
 ```
 It spawns 3 analysis agents in parallel (behavioral hotspots, test inventory, structural coupling), then synthesizes a plan at `docs/specs/qc-plan.md` with the top 5-10 highest-risk items. Each item includes what refactoring is needed (if any), what tests to write, and why it matters. You can follow the plan manually or hand it to Ralph.
 
 **PR-scoped** — analyzes and auto-executes:
 ```
-/bee:qc 42
+/bee-qc 42
 ```
 Same analysis, scoped to PR #42's changed files. Then it auto-executes: refactors for testability (each step verified by another agent before commit), writes tests, and pushes. Every commit has a WHY message. Refactoring and tests are in separate commits.
 
@@ -203,16 +204,16 @@ This one is read-only in full mode, and code-modifying in PR mode. The plan foll
 
 Then ask: "Next command?"
 
-### 7. `/bee:browser-test` — Browser Regression Testing
+### 7. `/bee-browser-test` — Browser Regression Testing
 
-"**`/bee:browser-test`** runs browser-based regression tests against your specs. It opens the app in Chrome (via Chrome MCP), walks through each acceptance criterion, checks console errors, takes screenshots, and produces a pass/fail report.
+"**`/bee-browser-test`** runs browser-based regression tests against your specs. It opens the app in Chrome (via Chrome MCP), walks through each acceptance criterion, checks console errors, takes screenshots, and produces a pass/fail report.
 
 Give it one or more spec names:
 ```
-/bee:browser-test user-auth checkout-flow
+/bee-browser-test user-auth checkout-flow
 ```
 
-It detects your dev server automatically (checks CLAUDE.md first, then package.json), asks you to confirm, and starts testing. For each spec, it produces a report at `tests/executions/{date}/{specname}-results.md` with each AC marked PASS or FAILED, screenshots for both, and any console errors.
+It detects your dev server automatically (checks AGENTS.md first, then package.json), asks you to confirm, and starts testing. For each spec, it produces a report at `tests/executions/{date}/{specname}-results.md` with each AC marked PASS or FAILED, screenshots for both, and any console errors.
 
 Requires the Claude in Chrome extension to be installed and connected.
 
@@ -220,13 +221,13 @@ This one is read-only — it tests but doesn't change code. Great for verifying 
 
 Then ask: "Next command?"
 
-### 8. `/bee:migrate` — Migration Planning
+### 8. `/bee-migrate` — Migration Planning
 
-"**`/bee:migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
+"**`/bee-migrate`** analyzes a legacy codebase and a new codebase, then produces a prioritized migration plan where each unit is a clean PR that can be deployed to production.
 
 You give it two paths — the legacy system and the target system:
 ```
-/bee:migrate /path/to/legacy /path/to/new-app
+/bee-migrate /path/to/legacy /path/to/new-app
 ```
 
 It reads both codebases, interviews you about migration goals and priorities, then writes a plan with independently-shippable migration units.
@@ -235,18 +236,18 @@ This one is read-only — it produces a plan, not code. No files in either codeb
 
 Then ask: "Next command?"
 
-### 9. `/bee:coach` — Session Coaching
+### 9. `/bee-coach` — Session Coaching
 
-"**`/bee:coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
+"**`/bee-coach`** analyzes your Claude Code sessions and gives coaching insights. It looks at:
 - Workflow adoption (did you spec? plan? verify?)
 - Iteration patterns (how many tries to get tests passing?)
 - Tool usage (are you using the right tools efficiently?)
 - Session trends over time
 
 Run it with flags:
-- `/bee:coach` — analyze last session + 5-session trend
-- `/bee:coach --last 10` — trend across last 10 sessions
-- `/bee:coach --all` — all sessions
+- `/bee-coach` — analyze last session + 5-session trend
+- `/bee-coach --last 10` — trend across last 10 sessions
+- `/bee-coach --all` — all sessions
 
 Also read-only — no code changes, just insights. Needs a few sessions logged before it has data to work with."
 
@@ -275,27 +276,27 @@ On opencode, type `/<skill-name>` to load any of them (e.g., `/clean-code`). On 
 After covering all commands (or if the developer says they've seen enough), close with:
 
 "That's the full toolkit. The short version:
-- **`/bee:sdd`** for building anything (it picks the right process)
-- **`/bee:discover`** for exploring requirements before building
-- **`/bee:architect`** for domain-grounded architecture assessment
-- **`/bee:review`** for a health check on existing code
-- **`/bee:qc`** for strategic test coverage (hotspot-driven)
-- **`/bee:browser-test`** for browser regression testing against specs
-- **`/bee:onboard`** for getting new team members up to speed
-- **`/bee:migrate`** for planning incremental migrations between codebases
-- **`/bee:coach`** for improving your workflow over time
+- **`/bee-sdd`** for building anything (it picks the right process)
+- **`/bee-discover`** for exploring requirements before building
+- **`/bee-architect`** for domain-grounded architecture assessment
+- **`/bee-review`** for a health check on existing code
+- **`/bee-qc`** for strategic test coverage (hotspot-driven)
+- **`/bee-browser-test`** for browser regression testing against specs
+- **`/bee-onboard`** for getting new team members up to speed
+- **`/bee-migrate`** for planning incremental migrations between codebases
+- **`/bee-coach`** for improving your workflow over time
 
-Most people start with `/bee:sdd [what you want to build]` and let Bee guide from there."
+Most people start with `/bee-sdd [what you want to build]` and let Bee guide from there."
 
-If it's a fresh project: "Since this is a fresh project, I'd suggest starting with `/bee:sdd` and describing what you want to work on. Bee will figure out the right level of process."
+If it's a fresh project: "Since this is a fresh project, I'd suggest starting with `/bee-sdd` and describing what you want to work on. Bee will figure out the right level of process."
 
-If there's active work: "Since there's active SDD work on **[feature]**, running `/bee:sdd` will pick up where you left off."
+If there's active work: "Since there's active SDD work on **[feature]**, running `/bee-sdd` will pick up where you left off."
 
 ## Handling "Skip to Specific Command"
 
 If the developer asks to skip ahead, present:
-Use AskUserQuestion: "Which command do you want to know about?"
-Options: "/bee:sdd" / "/bee:discover" / "/bee:architect" / "/bee:review" / "/bee:qc" / "/bee:browser-test" / "/bee:onboard"
+Use question: "Which command do you want to know about?"
+Options: "/bee-sdd" / "/bee-discover" / "/bee-architect" / "/bee-review" / "/bee-qc" / "/bee-browser-test" / "/bee-onboard"
 
 Jump to that section, then offer to continue the tour from the next command.
 

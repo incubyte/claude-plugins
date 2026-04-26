@@ -16,7 +16,8 @@ set -eo pipefail
 #   --phase-progress "Phase 1: done|Phase 2: executing|Phase 3: not started"
 #   --slice-progress "Slice 1: done|Slice 2: executing (3/7 steps)"
 
-STATE_FILE=".claude/bee-state.local.md"
+BEE_DIR="${BEE_DIR:-.claude}"
+STATE_FILE="${BEE_DIR}/bee-state.local.md"
 
 # --- Helpers ---
 
@@ -219,7 +220,7 @@ cmd_init() {
   fi
 
   # Clean up cached context files from previous sessions
-  rm -f .claude/bee-context.local.md .claude/bee-architecture.local.md
+  rm -f "${BEE_DIR}/bee-context.local.md" "${BEE_DIR}/bee-architecture.local.md"
 
   write_state
   echo "State initialized: ${feature} (${size}, ${risk})"
@@ -247,7 +248,7 @@ cmd_get() {
 
 cmd_clear() {
   rm -f "$STATE_FILE"
-  rm -f .claude/bee-context.local.md .claude/bee-architecture.local.md
+  rm -f "${BEE_DIR}/bee-context.local.md" "${BEE_DIR}/bee-architecture.local.md"
   echo "State cleared."
 }
 
