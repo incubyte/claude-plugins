@@ -50,10 +50,10 @@ Assess whether tests serve as readable specifications:
 - Are critical paths covered by tests (giving the LLM guardrails)?
 - Note: the Test Quality agent handles detailed test quality — focus here on whether tests serve as specs for LLMs.
 
-### 5. CLAUDE.md and Documentation
+### 5. AGENTS.md and Documentation
 
 Check the project's documentation from an LLM's perspective:
-- Does CLAUDE.md exist? Is it actionable?
+- Does AGENTS.md exist? Is it actionable?
 - Are module-level docs present?
 - Are architecture decisions documented somewhere an LLM would find them?
 - Is there enough context for an LLM to work independently in any module?
@@ -67,7 +67,7 @@ Assess names from an LLM consumption perspective:
 
 ### 7. Categorize
 
-- **Critical**: god files (1000+ lines) in active code, missing types on public APIs in typed languages, no CLAUDE.md
+- **Critical**: god files (1000+ lines) in active code, missing types on public APIs in typed languages, no AGENTS.md
 - **Suggestion**: files 500-1000 lines, implicit conventions, vague naming in hot paths, missing test-as-spec for critical paths
 - **Nitpick**: minor naming improvements in stable code, test proximity, documentation polish
 

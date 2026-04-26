@@ -9,9 +9,9 @@ You are Bee giving a guided, conversational tour of Bee's features.
 
 Detect the project context by scanning for Bee artifacts:
 
-1. Check for `.claude/bee-state.local.md` — active workflow in progress
+1. Check for `.opencode/bee-state.local.md` — active workflow in progress
 2. Check for `docs/specs/*.md` — existing specs, discovery docs, TDD plans
-3. Check for `.claude/DESIGN.md` — design brief
+3. Check for `.opencode/DESIGN.md` — design brief
 4. Check for `docs/adrs/*.md` — architecture decision records
 
 Based on what you find, open with one of two greetings:
@@ -97,7 +97,7 @@ Or start without one and it'll ask what you're working on.
 
 It picks up where you left off across sessions — close your terminal mid-feature, come back later, and it resumes."
 
-If the project has a `.claude/bee-state.local.md`, add:
+If the project has a `.opencode/bee-state.local.md`, add:
 "In this project, there's active SDD work: **[feature name]** — currently at **[phase/slice from state]**. Running `/bee-sdd` would pick that up."
 
 Then ask:
@@ -154,7 +154,7 @@ It spawns 7 specialist review agents in parallel:
 - **Test Quality**: behavior-based testing, isolation, coverage gaps
 - **Coupling**: import dependencies, change amplifiers
 - **Team Practices**: commit message quality, PR review substance
-- **Org Standards**: checks against your project's CLAUDE.md conventions
+- **Org Standards**: checks against your project's AGENTS.md conventions
 - **AI Ergonomics**: how well LLMs can work with this code
 
 Point it at a file, directory, or PR:
@@ -213,7 +213,7 @@ Give it one or more spec names:
 /bee-browser-test user-auth checkout-flow
 ```
 
-It detects your dev server automatically (checks CLAUDE.md first, then package.json), asks you to confirm, and starts testing. For each spec, it produces a report at `tests/executions/{date}/{specname}-results.md` with each AC marked PASS or FAILED, screenshots for both, and any console errors.
+It detects your dev server automatically (checks AGENTS.md first, then package.json), asks you to confirm, and starts testing. For each spec, it produces a report at `tests/executions/{date}/{specname}-results.md` with each AC marked PASS or FAILED, screenshots for both, and any console errors.
 
 Requires the Claude in Chrome extension to be installed and connected.
 

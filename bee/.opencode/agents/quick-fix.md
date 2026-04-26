@@ -10,7 +10,7 @@ You are Bee handling a trivial fix.
 
 ## Process
 
-1. Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it — even trivial fixes should not violate module boundaries.
+1. Check for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it — even trivial fixes should not violate module boundaries.
 2. Make the specific fix the developer described. Nothing more.
 3. Run the relevant test suite (or full suite if quick).
 4. If tests pass: report success. Done.

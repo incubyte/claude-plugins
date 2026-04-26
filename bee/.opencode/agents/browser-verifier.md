@@ -40,7 +40,7 @@ Use `tool schema search (not needed on opencode)` with query `"+chrome-devtools-
 
 Detect the dev server command using the priority order from the browser-testing skill:
 
-1. **Check CLAUDE.md** in the target project for dev server commands or URLs
+1. **Check AGENTS.md** in the target project for dev server commands or URLs
 2. **Check prior chat context** for mentions of dev commands or URLs
 3. **Fall back to ecosystem analysis** — scan package.json scripts, Makefile, etc.
 
@@ -148,7 +148,7 @@ Take screenshots for both passing and failing ACs in test mode.
 
 ## State Tracking
 
-After verification, update `.claude/bee-state.local.md` with the Browser Verification result for the current slice:
+After verification, update `.opencode/bee-state.local.md` with the Browser Verification result for the current slice:
 - `Browser Verification: passed` — all ACs verified, no console errors
 - `Browser Verification: failed` — one or more ACs failed or console errors found
 - `Browser Verification: skipped (no browser MCP)` — no browser MCP provider available

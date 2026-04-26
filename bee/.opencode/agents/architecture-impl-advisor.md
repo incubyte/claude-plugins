@@ -18,7 +18,7 @@ DO NOT EXECUTE WITHOUT LOADING RELEVANT SKILLS FROM THE FOLLOWING LIST
 
 You will receive:
 - **spec_path**: path to the spec with acceptance criteria and slices
-- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project structure, architecture pattern, test infrastructure, conventions, change area). Read this file at the start.
+- **context_file**: path to `.opencode/bee-context.local.md` — full codebase context (project structure, architecture pattern, test infrastructure, conventions, change area). Read this file at the start.
 - **triage**: size and risk assessment
 
 ## Evaluation Dimensions
@@ -54,7 +54,7 @@ These cover ~95% of projects:
 
 ### 1. Check the Codebase
 
-Read the context file (`.claude/bee-context.local.md`). Look for existing patterns:
+Read the context file (`.opencode/bee-context.local.md`). Look for existing patterns:
 - Is there an established architecture? (MVC, onion, feature folders, etc.)
 - What framework is in use? (frameworks imply patterns)
 - How are files organized today?
@@ -63,7 +63,7 @@ Read the context file (`.claude/bee-context.local.md`). Look for existing patter
 
 ### 2. Check for Boundaries
 
-Look for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries in your recommendation.
+Look for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries in your recommendation.
 
 ### 3. Match Spec to Pattern
 

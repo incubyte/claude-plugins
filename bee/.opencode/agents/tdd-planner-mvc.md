@@ -50,7 +50,7 @@ When the spec or context-gatherer flags UI involvement, the plan starts from the
 Check the spec and context-gatherer output for:
 - UI acceptance criteria ("user sees...", "form shows...", "page displays...")
 - Frontend file patterns (`components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`)
-- Design brief from the design-agent (`.claude/DESIGN.md`)
+- Design brief from the design-agent (`.opencode/DESIGN.md`)
 
 **If UI is involved:** Start with Layer 0 (View), then proceed to Layer 1 (Controller), and inward.
 **If API-only:** Skip Layer 0, start with Layer 1 (Controller) as the outermost layer.
@@ -359,9 +359,9 @@ test('enforces unique constraint on order reference', async () => {
 Follow these steps in order to fulfill your mission:
 
 ### Phase 0: Check Project Constraints
-Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries when structuring the plan — tests should validate that new code lands in the correct module and does not import across undeclared boundaries.
+Check for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries when structuring the plan — tests should validate that new code lands in the correct module and does not import across undeclared boundaries.
 
-Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI steps in this plan must follow the design constraints in `.claude/DESIGN.md` — reference it when writing tests for UI components (color values, spacing scale, accessibility requirements, component patterns).
+Check for `.opencode/DESIGN.md` in the target project. If it exists, read it. UI steps in this plan must follow the design constraints in `.opencode/DESIGN.md` — reference it when writing tests for UI components (color values, spacing scale, accessibility requirements, component patterns).
 
 ### Phase 1: Locate and Parse
 1. Read the specification file provided
@@ -375,7 +375,7 @@ Before writing the plan, analyze:
 1. **UI involvement**: Does this feature have a user-facing component?
     - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
     - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
-    - Check for `.claude/DESIGN.md` (design brief from design-agent)
+    - Check for `.opencode/DESIGN.md` (design brief from design-agent)
     - **If UI-involved:** Plan starts with Layer 0 (View / component tests)
     - **If API-only:** Plan starts with Layer 1 (Controller)
 
@@ -561,7 +561,7 @@ If stuck after 3 attempts, mark ⚠️ and move to the next independent step.
 - [ ] **GREEN**: Implement view/component
   - Location: `[component file path]`
   - Depends on: API contract (fetch calls or props) — never imports services directly
-  - Follow `.claude/DESIGN.md` constraints if present
+  - Follow `.opencode/DESIGN.md` constraints if present
 
 - [ ] **RUN**: Confirm test PASSES
 

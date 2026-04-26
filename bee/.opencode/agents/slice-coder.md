@@ -19,8 +19,8 @@ DO NOT EXECUTE WITHOUT LOADING RELEVANT SKILLS FROM THE FOLLOWING LIST
 You will receive:
 - **spec_path**: path to the spec file
 - **slice_number**: which slice to implement
-- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project structure, architecture, test infrastructure, conventions, change area)
-- **architecture_file**: path to `.claude/bee-architecture.local.md` — full architecture recommendation (pattern, file structure, boundaries, dependency direction, evolution triggers)
+- **context_file**: path to `.opencode/bee-context.local.md` — full codebase context (project structure, architecture, test infrastructure, conventions, change area)
+- **architecture_file**: path to `.opencode/bee-architecture.local.md` — full architecture recommendation (pattern, file structure, boundaries, dependency direction, evolution triggers)
 - **file_paths**: source files to create or modify
 
 ## Process

@@ -21,8 +21,8 @@ You will receive:
 - **slice_number**: which slice to test
 - **source_files**: list of files the slice-coder created or modified
 - **test_file_path**: where to write the test file (follows project conventions)
-- **context_file**: path to `.claude/bee-context.local.md` — full codebase context including test framework, test runner command, naming conventions, existing test patterns
-- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation including boundaries and dependency direction (helps you understand what to mock and what to call directly)
+- **context_file**: path to `.opencode/bee-context.local.md` — full codebase context including test framework, test runner command, naming conventions, existing test patterns
+- **architecture_file**: path to `.opencode/bee-architecture.local.md` — architecture recommendation including boundaries and dependency direction (helps you understand what to mock and what to call directly)
 
 ## Process
 

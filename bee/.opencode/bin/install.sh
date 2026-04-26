@@ -81,7 +81,7 @@ echo "Commands:"
 link_markdown_dir "$OPENCODE_SRC/commands" "$COMMANDS_DST"
 echo
 echo "Skills:"
-link_one "$PLUGIN_ROOT/skills" "$SKILLS_DST/bee" && \
+link_one "$OPENCODE_SRC/skills" "$SKILLS_DST/bee" && \
     echo "  skills/ directory linked" || \
     echo "  skills link skipped"
 echo

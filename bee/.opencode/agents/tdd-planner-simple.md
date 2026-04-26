@@ -172,9 +172,9 @@ After each green, pause and look at the code. Is there duplication? Unclear nami
 ## Process (Detailed Steps)
 
 ### Phase 0: Check Project Constraints
-Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries when structuring the plan — tests should validate that new code lands in the correct module and does not import across undeclared boundaries.
+Check for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it and respect declared module boundaries when structuring the plan — tests should validate that new code lands in the correct module and does not import across undeclared boundaries.
 
-Check for `.claude/DESIGN.md` in the target project. If it exists, read it. UI steps in this plan must follow the design constraints in `.claude/DESIGN.md` — reference it when writing tests for UI components (color values, spacing scale, accessibility requirements, component patterns).
+Check for `.opencode/DESIGN.md` in the target project. If it exists, read it. UI steps in this plan must follow the design constraints in `.opencode/DESIGN.md` — reference it when writing tests for UI components (color values, spacing scale, accessibility requirements, component patterns).
 
 ### Phase 1: Locate and Parse
 1. Read the specification file provided
@@ -188,7 +188,7 @@ Before writing the plan, analyze:
 1. **UI involvement**: Does this feature have a user-facing component?
     - Check spec for UI acceptance criteria ("user sees...", "form shows...", "page displays...")
     - Look for frontend file patterns: `components/`, `pages/`, `views/`, `.tsx`, `.vue`, `.svelte`
-    - Check for `.claude/DESIGN.md` (design brief from design-agent)
+    - Check for `.opencode/DESIGN.md` (design brief from design-agent)
     - **If UI-involved:** Order behaviors so UI behaviors come first — the component test drives out what data/API shape it needs, then build the logic to satisfy it
     - **If no UI:** Order behaviors from simplest input → output to most complex
 

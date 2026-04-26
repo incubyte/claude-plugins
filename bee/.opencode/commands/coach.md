@@ -19,7 +19,7 @@ Parse `$ARGUMENTS` to determine which mode to run:
 
 ## Data Source
 
-Read session metrics from `.claude/bee-insights/session-log.jsonl`. Each line is a JSON object with session metrics logged by the stop hook.
+Read session metrics from `.opencode/bee-insights/session-log.jsonl`. Each line is a JSON object with session metrics logged by the stop hook.
 
 If fewer than 2 sessions exist in the log, show a friendly message: "I only see [0 or 1] session(s) so far. Keep coding and I'll have more to work with next time! Run `/bee-coach` again after a few more sessions for trend insights."
 
@@ -50,7 +50,7 @@ Print insights to the terminal as conversational output.
 
 ## Report Saving
 
-Save insights to `.claude/bee-insights/coaching-report-YYYY-MM-DD.md` (using today's date).
+Save insights to `.opencode/bee-insights/coaching-report-YYYY-MM-DD.md` (using today's date).
 
 If a report already exists for today, overwrite it (do not append).
 
@@ -61,7 +61,7 @@ The report file should include:
 
 ## Trend Summary
 
-Read `.claude/bee-insights/session-log.jsonl` and compute directional changes for:
+Read `.opencode/bee-insights/session-log.jsonl` and compute directional changes for:
 - Spec adoption rate (sessions with spec_written=true / total sessions)
 - Average token usage (input + output tokens per session)
 - Workflow phase completeness (how many workflow phases used per session)

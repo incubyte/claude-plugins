@@ -32,7 +32,7 @@ You will receive:
 
 ### Step 0: Check Module Boundaries
 
-Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and use it during verification — flag any new code that violates declared module boundaries (wrong imports, concepts in wrong modules, circular dependencies).
+Check for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it and use it during verification — flag any new code that violates declared module boundaries (wrong imports, concepts in wrong modules, circular dependencies).
 
 ### Step 1: Run the Full Test Suite
 

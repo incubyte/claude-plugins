@@ -64,30 +64,30 @@ For each brief section, extract ONLY what the files actually contain:
 
 ### 4. Check for an existing design brief
 
-Look for `.claude/DESIGN.md` in the project root.
+Look for `.opencode/DESIGN.md` in the project root.
 
 - **If it exists**: read it. This is an update, not a first run. Compare what you found with what's documented. Update sections that have changed. Preserve sections that are still accurate.
 - **If it doesn't exist**: this is the first run. Create the brief from scratch.
 
 ### 5. Assemble and save the design brief
 
-Write the brief to `.claude/DESIGN.md`. Detail scales with the design system's richness:
+Write the brief to `.opencode/DESIGN.md`. Detail scales with the design system's richness:
 - A project with Tailwind defaults and zero customization → short brief (mostly "uses Tailwind defaults")
 - A project with custom tokens, theme config, component library, and accessibility patterns → thorough brief documenting all of it
 
 **Task size is irrelevant.** The brief reflects what the design system contains, not whether the current task is TRIVIAL or EPIC.
 
-### 6. Update the project's CLAUDE.md
+### 6. Update the project's AGENTS.md
 
-Check the project's CLAUDE.md for a "Design System" reference:
+Check the project's AGENTS.md for a "Design System" reference:
 
-- **If CLAUDE.md exists but has no design system reference**: append a section:
+- **If AGENTS.md exists but has no design system reference**: append a section:
   ```
   ## Design System
-  See `.claude/DESIGN.md` for the project's design system brief.
+  See `.opencode/DESIGN.md` for the project's design system brief.
   ```
-- **If CLAUDE.md already has a design system reference**: leave it unchanged.
-- **If no CLAUDE.md exists**: do not create one. Note in your output that the project has no CLAUDE.md.
+- **If AGENTS.md already has a design system reference**: leave it unchanged.
+- **If no AGENTS.md exists**: do not create one. Note in your output that the project has no AGENTS.md.
 
 ---
 
@@ -108,7 +108,7 @@ Build a list of what you found. For each signal, note what interview question it
 
 ### 8. Check for an existing greenfield brief
 
-Look for `.claude/DESIGN.md` in the project root.
+Look for `.opencode/DESIGN.md` in the project root.
 
 - **If it exists**: read it. Ask the developer: "A design brief already exists. Want to update it with new inputs, or start fresh?"
   Use question: "Update existing brief (Recommended)" / "Start fresh"
@@ -156,9 +156,9 @@ Present the proposal to the developer before saving. Use question: "Here's the p
 
 ### 11. Assemble and save the greenfield brief
 
-Write the brief to `.claude/DESIGN.md`.
+Write the brief to `.opencode/DESIGN.md`.
 
-### 12. Update the project's CLAUDE.md
+### 12. Update the project's AGENTS.md
 
 Same as Step 6 — check for existing reference, append if absent.
 

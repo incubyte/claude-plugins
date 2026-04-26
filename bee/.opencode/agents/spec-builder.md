@@ -18,8 +18,8 @@ You will receive:
 - The triage assessment (size + risk — may have been revised by discovery)
 - The context summary from the context-gatherer (existing code, patterns, dependencies)
 - The discovery document path (if discovery was done) — read this file first. It contains the problem statement, hypotheses to validate, and a milestone map. Use the discovery doc for WHAT to build, but always apply outside-in ordering when writing ACs — don't mirror the discovery doc's structure.
-- The design brief path (if the design agent produced one) — check for `.claude/DESIGN.md` in the target project. If it exists, read it and use it to write design-aware ACs for any UI-related criteria.
-- Check for `.claude/BOUNDARIES.md` in the target project. If it exists, read it and use module boundaries to inform acceptance criteria.
+- The design brief path (if the design agent produced one) — check for `.opencode/DESIGN.md` in the target project. If it exists, read it and use it to write design-aware ACs for any UI-related criteria.
+- Check for `.opencode/BOUNDARIES.md` in the target project. If it exists, read it and use module boundaries to inform acceptance criteria.
 - Which phase to spec (if discovery produced multiple phases) — spec ONLY this phase
 
 ## Your Mission
@@ -56,8 +56,8 @@ The context-gatherer already scanned the codebase. Use that information:
 - **Don't ask about what already exists.** If the context shows JWT auth middleware, don't ask "how should we handle authentication?"
 - **Ask about integration points.** "The codebase has a Stripe integration in `src/payments/`. Should this feature use the existing payment flow?"
 - **Flag conflicts early.** "The current data model has `users` with a `role` field. Your requirement mentions 'teams' — should we extend the existing user model?"
-- **Use the design brief for UI-related ACs.** Reference colors, components, and patterns from `.claude/DESIGN.md`.
-- **Use module boundaries for structural ACs.** Reference `.claude/BOUNDARIES.md` for module placement.
+- **Use the design brief for UI-related ACs.** Reference colors, components, and patterns from `.opencode/DESIGN.md`.
+- **Use module boundaries for structural ACs.** Reference `.opencode/BOUNDARIES.md` for module placement.
 
 ### Adapt Depth to Size + Risk
 

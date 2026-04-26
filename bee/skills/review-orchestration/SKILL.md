@@ -20,7 +20,7 @@ Spawn these 7 specialists in parallel. Each one is a domain specialist — never
 | `review-tests` | Behavior vs implementation testing, isolation, naming, coverage gaps |
 | `review-coupling` | Import analysis, afferent/efferent coupling, change amplifiers |
 | `review-team-practices` | Commit message quality + PR review substance |
-| `review-org-standards` | Target project's CLAUDE.md / AGENTS.md conventions and rules |
+| `review-org-standards` | Target project's AGENTS.md conventions and rules |
 | `review-ai-ergonomics` | Context window friendliness, explicitness, module boundaries, test-as-spec, naming for LLMs |
 
 ## Step 1: Determine Scope

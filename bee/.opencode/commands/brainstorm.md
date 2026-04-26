@@ -33,7 +33,7 @@ Follow the brainstorming skill's two-phase process:
 
 ## After the Session
 
-6. Produce the final brainstorm summary and append it to `.claude/bee-context.local.md` (the skill's incremental writes have been building this file throughout the session — the summary closes it out).
+6. Produce the final brainstorm summary and append it to `.opencode/bee-context.local.md` (the skill's incremental writes have been building this file throughout the session — the summary closes it out).
 
 7. If standalone (no bee-state), also save the full structured summary to `docs/brainstorms/[topic]-brainstorm.md` (create the directory if needed).
 

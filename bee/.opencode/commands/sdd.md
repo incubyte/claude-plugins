@@ -17,7 +17,7 @@ You are Bee running spec-driven development (SDD). **Code first, test after** �
 
 ## STATE TRACKING
 
-Bee tracks progress in `.claude/bee-state.local.md`. This file is the source of truth for where we are across sessions. Read it on startup. Update it after every phase transition.
+Bee tracks progress in `.opencode/bee-state.local.md`. This file is the source of truth for where we are across sessions. Read it on startup. Update it after every phase transition.
 
 **CRITICAL: Use the state script for ALL state writes.** Never use Write or Edit tools on `bee-state.local.md` — that triggers permission prompts for the user. Instead, call the update script via Bash. The script is pre-approved in allowed-tools and writes silently.
 
@@ -30,7 +30,7 @@ The script lives at `$HOME/.config/opencode/bee/scripts/update-bee-state.sh`. Co
 Update state after each of these transitions:
 - Triage complete → `init` with feature name, size, risk
 - Context gathered → `set --current-phase "context gathered"`
-- Design brief produced → `set --design-brief ".claude/DESIGN.md"`
+- Design brief produced → `set --design-brief ".opencode/DESIGN.md"`
 - Discovery complete → `set --discovery "docs/specs/feature-discovery.md"`
 - Spec confirmed → `set --phase-spec "docs/specs/feature.md — confirmed"`
 - Architecture decided → `set --architecture "[pattern] — [summary]"`
@@ -47,7 +47,7 @@ Update state after each of these transitions:
 
 Before anything, check for in-progress work:
 
-1. Run `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" get` via Bash. If it prints "No active Bee state.", skip to entry mode detection.
+1. Run `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" get` via Bash. If it prints "No active Bee state.", skip to entry mode detection.
 2. If state exists, read the output. It tells you where we left off.
 3. Use question:
    "I found in-progress SDD work on **[feature name]** — [phase description]. Pick up where we left off?"
@@ -90,17 +90,17 @@ If the spec has no slices (flat list of ACs), treat the entire spec as one slice
 
 Delegate to the **context-gatherer** agent via Task, passing the task description extracted from the spec title/overview.
 
-When it returns, save the context output to `.claude/bee-context.local.md`. If the file already exists (grill-me decisions were written earlier), **append** with `>>`. If not, **create** with `>`:
+When it returns, save the context output to `.opencode/bee-context.local.md`. If the file already exists (grill-me decisions were written earlier), **append** with `>>`. If not, **create** with `>`:
 ```bash
-mkdir -p .claude && cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+mkdir -p .opencode && cat >> .opencode/bee-context.local.md << 'CONTEXT_EOF'
 
 [full context-gatherer markdown output here]
 CONTEXT_EOF
 ```
 
-This file becomes the shared context for all downstream agents. Pass the path `.claude/bee-context.local.md` as `context_file` to every agent instead of building a condensed string. Agents read the full context directly — no information is lost.
+This file becomes the shared context for all downstream agents. Pass the path `.opencode/bee-context.local.md` as `context_file` to every agent instead of building a condensed string. Agents read the full context directly — no information is lost.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" init --feature "[spec title]" --size FEATURE --risk MODERATE --current-phase "context gathered"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" init --feature "[spec title]" --size FEATURE --risk MODERATE --current-phase "context gathered"`
 
 ### A3. Tidy (Optional)
 
@@ -112,31 +112,31 @@ If the developer says yes: delegate to the tidy agent via Task.
 ### A4. UI Check
 
 If context-gatherer flagged "UI-involved: yes":
-Delegate to the **design-agent** via Task, passing the spec overview, context_file (`.claude/bee-context.local.md`), and a triage assessment inferred from the spec.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
+Delegate to the **design-agent** via Task, passing the spec overview, context_file (`.opencode/bee-context.local.md`), and a triage assessment inferred from the spec.
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --design-brief ".opencode/DESIGN.md"`
 **→ Run the Collaboration Loop** on the design brief.
 
 ### A5. Architecture
 
 Delegate to the **architecture-impl-advisor** agent via Task, passing:
 - The spec path
-- The context file path (`.claude/bee-context.local.md`)
+- The context file path (`.opencode/bee-context.local.md`)
 - Size/risk assessment (infer from the spec — default to FEATURE/MODERATE if unclear)
 
 The advisor evaluates the codebase and spec, presents architecture options to the developer via question, and returns the chosen architecture.
 
-**Save the architecture output to `.claude/bee-architecture.local.md`** using Bash:
+**Save the architecture output to `.opencode/bee-architecture.local.md`** using Bash:
 ```bash
-cat > .claude/bee-architecture.local.md << 'ARCH_EOF'
+cat > .opencode/bee-architecture.local.md << 'ARCH_EOF'
 [full architecture recommendation output here]
 ARCH_EOF
 ```
 
-Pass the path `.claude/bee-architecture.local.md` as `architecture_file` to slice-coder, slice-tester, and sdd-verifier. All three need the architecture context.
+Pass the path `.opencode/bee-architecture.local.md` as `architecture_file` to slice-coder, slice-tester, and sdd-verifier. All three need the architecture context.
 
 If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
 
 **→ Run the Collaboration Loop** on the architecture recommendation.
 
@@ -170,7 +170,7 @@ Risk flows to every downstream phase:
 - Moderate risk: standard spec, thorough verification, review recommends team review
 - High risk: thorough spec (edge cases, failure modes), defensive verification, review recommends feature flag + team review + QA
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" init --feature "[feature name]" --size [SIZE] --risk [RISK] --current-phase "triaged"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" init --feature "[feature name]" --size [SIZE] --risk [RISK] --current-phase "triaged"`
 
 ### B2. Inline Clarification
 
@@ -206,12 +206,12 @@ Pass the developer's answers as enriched context to every downstream agent.
 
 ### B2.3. Grill-Me Decisions (When Used)
 
-If the developer invoked grill-me (e.g., `/bee-sdd /grill-me "description"` or the grill-me skill was loaded during this session), the grill-me skill **builds `.claude/bee-context.local.md` incrementally** — appending each resolved decision as it happens during the interview. By the time grill-me concludes, the file already contains all decisions and open items. No post-session capture needed.
+If the developer invoked grill-me (e.g., `/bee-sdd /grill-me "description"` or the grill-me skill was loaded during this session), the grill-me skill **builds `.opencode/bee-context.local.md` incrementally** — appending each resolved decision as it happens during the interview. By the time grill-me concludes, the file already contains all decisions and open items. No post-session capture needed.
 
-**Verify the file exists.** After grill-me completes, confirm `.claude/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., grill-me was run standalone outside SDD), capture the decisions now:
+**Verify the file exists.** After grill-me completes, confirm `.opencode/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., grill-me was run standalone outside SDD), capture the decisions now:
 
 ```bash
-mkdir -p .claude && cat > .claude/bee-context.local.md << 'GRILLME_EOF'
+mkdir -p .opencode && cat > .opencode/bee-context.local.md << 'GRILLME_EOF'
 ## Grill-Me Decisions
 
 [For each resolved question/decision from the grill-me session:]
@@ -225,7 +225,7 @@ GRILLME_EOF
 When context-gatherer runs later (B3), **append** its output to this file instead of overwriting:
 
 ```bash
-cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+cat >> .opencode/bee-context.local.md << 'CONTEXT_EOF'
 
 [full context-gatherer markdown output here]
 CONTEXT_EOF
@@ -237,12 +237,12 @@ If grill-me was NOT used, skip this step — context-gatherer will create the fi
 
 ### B2.4. Brainstorming Decisions (When Used)
 
-If the developer invoked brainstorming (e.g., `/bee-sdd let's brainstorm "description"` or the brainstorming skill was loaded during this session), the brainstorming skill **builds `.claude/bee-context.local.md` incrementally** — appending each research finding, cross-domain insight, and decision as the session progresses. By the time brainstorming concludes, the file already contains all findings, the chosen direction, and open questions. No post-session capture needed.
+If the developer invoked brainstorming (e.g., `/bee-sdd let's brainstorm "description"` or the brainstorming skill was loaded during this session), the brainstorming skill **builds `.opencode/bee-context.local.md` incrementally** — appending each research finding, cross-domain insight, and decision as the session progresses. By the time brainstorming concludes, the file already contains all findings, the chosen direction, and open questions. No post-session capture needed.
 
-**Verify the file exists.** After brainstorming completes, confirm `.claude/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., brainstorming was run standalone outside SDD), capture the decisions now:
+**Verify the file exists.** After brainstorming completes, confirm `.opencode/bee-context.local.md` exists and has content. If for some reason it doesn't (e.g., brainstorming was run standalone outside SDD), capture the decisions now:
 
 ```bash
-mkdir -p .claude && cat > .claude/bee-context.local.md << 'BRAINSTORM_EOF'
+mkdir -p .opencode && cat > .opencode/bee-context.local.md << 'BRAINSTORM_EOF'
 ## Brainstorm Decisions
 
 [For each key finding/decision from the brainstorming session:]
@@ -265,17 +265,17 @@ After triage and clarification, route by size:
 "This looks like a quick fix. I'll make the change and run tests. Go ahead?"
 Options: "Yes, go ahead (Recommended)" / "Let me explain more first"
 If yes → delegate to the **slice-coder** agent via Task, passing the task description and context. When it returns, run tests. Done — skip the rest of the workflow.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
 **SMALL:**
 Skip discovery, spec, and architecture. Run a shortened pipeline: context-gather → confirm approach → slice-coder → slice-tester → sdd-verifier → done.
 
-1. Delegate to **context-gatherer** agent via Task, passing the task description. Append output to `.claude/bee-context.local.md` (use `>>` if grill-me seeded it, `>` otherwise).
+1. Delegate to **context-gatherer** agent via Task, passing the task description. Append output to `.opencode/bee-context.local.md` (use `>>` if grill-me seeded it, `>` otherwise).
 2. Summarize findings. Use question: "Here's what I'll change: [brief plan]. Sound right?"
    Options: "Yes, go ahead (Recommended)" / "Let me adjust the approach"
-3. Delegate to **slice-coder** agent via Task, passing the task description, `context_file: .claude/bee-context.local.md`, and the approach.
-4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and `context_file: .claude/bee-context.local.md`.
-5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and `context_file: .claude/bee-context.local.md`.
+3. Delegate to **slice-coder** agent via Task, passing the task description, `context_file: .opencode/bee-context.local.md`, and the approach.
+4. Delegate to **slice-tester** agent via Task, passing the source files from the slice-coder and `context_file: .opencode/bee-context.local.md`.
+5. Delegate to **sdd-verifier** agent via Task, passing the source files, test files, risk level, and `context_file: .opencode/bee-context.local.md`.
 6. If verifier passes → report and offer recap. If needs fixes → share report with developer, fix, re-verify.
 
 After the verifier passes, use question:
@@ -287,7 +287,7 @@ If yes → Delegate to the **recap** agent via Task, passing:
 - source_files and test_files from the slice-coder and slice-tester results
 - verifier_summary from the sdd-verifier result
 
-**→ Update state after verifier passes:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+**→ Update state after verifier passes:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
 **FEATURE / EPIC:**
 Continue to B3 (Context Gathering) and the full workflow below.
@@ -297,20 +297,20 @@ Continue to B3 (Context Gathering) and the full workflow below.
 **If there's existing code:**
 "Let me read the codebase first to understand what we're working with."
 Delegate to the **context-gatherer** agent via Task, passing the task description.
-When it returns, save the context output to `.claude/bee-context.local.md`. If the file already exists (grill-me decisions were written in B2.3), **append** with `>>`. If not, **create** with `>`:
+When it returns, save the context output to `.opencode/bee-context.local.md`. If the file already exists (grill-me decisions were written in B2.3), **append** with `>>`. If not, **create** with `>`:
 ```bash
 # Use >> if grill-me seeded the file, > otherwise
-cat >> .claude/bee-context.local.md << 'CONTEXT_EOF'
+cat >> .opencode/bee-context.local.md << 'CONTEXT_EOF'
 
 [full context-gatherer markdown output here]
 CONTEXT_EOF
 ```
-Share the summary with the developer. Pass `.claude/bee-context.local.md` as `context_file` to all downstream agents.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "context gathered"`
+Share the summary with the developer. Pass `.opencode/bee-context.local.md` as `context_file` to all downstream agents.
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "context gathered"`
 
 **If greenfield (empty/new repo):**
 Skip context-gatherer. Note: greenfield is an amplifying signal for discovery.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "context gathered (greenfield)"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "context gathered (greenfield)"`
 
 ### B4. Tidy (Optional)
 
@@ -322,9 +322,9 @@ If yes: delegate to the **tidy** agent via Task.
 ### B5. UI Check
 
 If context-gatherer flagged "UI-involved: yes" (or greenfield with UI signals detected):
-Delegate to the **design-agent** via Task, passing the developer's task description, context_file (`.claude/bee-context.local.md`), and the triage assessment.
-The design agent produces a design brief at `.claude/DESIGN.md`.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --design-brief ".claude/DESIGN.md"`
+Delegate to the **design-agent** via Task, passing the developer's task description, context_file (`.opencode/bee-context.local.md`), and the triage assessment.
+The design agent produces a design brief at `.opencode/DESIGN.md`.
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --design-brief ".opencode/DESIGN.md"`
 **→ Run the Collaboration Loop** on the design brief.
 
 For greenfield: do a lightweight UI-signal scan of the developer's description for UI keywords (screen, form, dashboard, page, UI, UX, frontend, display, view, layout, chart, table, component, button, widget). If detected, offer the design agent.
@@ -352,8 +352,8 @@ When discovery is recommended, use question:
 Options: "Yes, let's discover first (Recommended)" / "Skip, go straight to spec"
 
 If the developer chooses discovery:
-Delegate to the **discovery** agent via Task, passing the task description, triage assessment, context_file (`.claude/bee-context.local.md`), and any inline clarification answers.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --discovery "[discovery-doc-path]" --current-phase "discovery complete"`
+Delegate to the **discovery** agent via Task, passing the task description, triage assessment, context_file (`.opencode/bee-context.local.md`), and any inline clarification answers.
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --discovery "[discovery-doc-path]" --current-phase "discovery complete"`
 
 **→ Run the Collaboration Loop** on the discovery document.
 
@@ -361,20 +361,20 @@ If discovery revised the triage size (e.g., FEATURE → EPIC), update state with
 
 ### B6.5. Greenfield Boundary Generation
 
-After discovery completes on a greenfield project, check if the discovery document contains a **Module Structure** section. If present, load the `boundary-generation` skill using the Skill tool and follow its procedure to generate `.claude/BOUNDARIES.md`. If absent or the developer declines, skip this step.
+After discovery completes on a greenfield project, check if the discovery document contains a **Module Structure** section. If present, load the `boundary-generation` skill using the Skill tool and follow its procedure to generate `.opencode/BOUNDARIES.md`. If absent or the developer declines, skip this step.
 
 ### B7. Spec Building
 
 Delegate to the **spec-builder** agent via Task, passing:
 - The developer's task description
 - The triage assessment (size + risk — possibly revised by discovery)
-- context_file: `.claude/bee-context.local.md`
+- context_file: `.opencode/bee-context.local.md`
 - The discovery document path (if discovery was done)
 - For multi-phase: which phase to spec (number + name from milestone map). Spec saves to `docs/specs/[feature]-phase-N-spec.md`.
 - For single-phase: no phase constraint. Spec saves to `docs/specs/[feature]-spec.md`.
 
 The spec-builder interviews the developer, writes the spec to `docs/specs/`, and gets confirmation before returning.
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --phase-spec "[spec-path] — confirmed" --current-phase "spec confirmed"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --phase-spec "[spec-path] — confirmed" --current-phase "spec confirmed"`
 
 **→ Run the Collaboration Loop** on the spec document.
 
@@ -382,21 +382,21 @@ The spec-builder interviews the developer, writes the spec to `docs/specs/`, and
 
 Delegate to the **architecture-impl-advisor** agent via Task, passing:
 - The confirmed spec (path and content)
-- The context file path (`.claude/bee-context.local.md`)
+- The context file path (`.opencode/bee-context.local.md`)
 - The triage assessment (size + risk)
 
 The advisor evaluates options and returns the architecture recommendation.
 
-**Save the architecture output to `.claude/bee-architecture.local.md`** using Bash:
+**Save the architecture output to `.opencode/bee-architecture.local.md`** using Bash:
 ```bash
-cat > .claude/bee-architecture.local.md << 'ARCH_EOF'
+cat > .opencode/bee-architecture.local.md << 'ARCH_EOF'
 [full architecture recommendation output here]
 ARCH_EOF
 ```
 
 If the architecture advisor recommended a slice reorder: update the spec file to reflect the new order. Reorder the `### Slice` sections in the spec to match the recommended order. Keep slice content intact — only move sections. This ensures the spec file is always the single source of truth for execution order.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --architecture "[pattern] — [summary]" --current-phase "architecture decided"`
 
 **→ Run the Collaboration Loop** on the architecture recommendation.
 
@@ -428,20 +428,20 @@ Create a task for tracking:
 - activeForm: "Coding slice [N]"
 - status: in_progress
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — coding"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — coding"`
 
 ### Step B — Code the Slice
 
 Delegate to the **slice-coder** agent via Task, passing:
 - spec_path: the spec file path
 - slice_number: the current slice number
-- context_file: `.claude/bee-context.local.md`
-- architecture_file: `.claude/bee-architecture.local.md`
+- context_file: `.opencode/bee-context.local.md`
+- architecture_file: `.opencode/bee-architecture.local.md`
 - file_paths: suggested source file paths based on architecture
 
 The slice-coder returns: files created/modified, what was built per AC.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — testing"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — testing"`
 
 ### Step C — Test the Slice
 
@@ -450,12 +450,12 @@ Delegate to the **slice-tester** agent via Task, passing:
 - slice_number: the current slice number
 - source_files: the files the slice-coder reported creating/modifying
 - test_file_path: the test file path — MUST describe the behavior being tested (e.g., `user-authentication.test.ts`, `pricing-discount.test.ts`, `order-validation.test.ts`). NEVER use slice numbers, step numbers, or any workflow metadata in test file names. Slice numbers are internal planning artifacts — they must not leak into the codebase. Follow existing project naming conventions for style (kebab-case, camelCase, etc.).
-- context_file: `.claude/bee-context.local.md`
-- architecture_file: `.claude/bee-architecture.local.md`
+- context_file: `.opencode/bee-context.local.md`
+- architecture_file: `.opencode/bee-architecture.local.md`
 
 The slice-tester returns: test results, any testability refactors made, any issues.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — verifying"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N] — verifying"`
 
 ### Step D — Verify the Slice
 
@@ -463,8 +463,8 @@ Delegate to the **sdd-verifier** agent via Task, passing:
 - spec_path: the spec file path
 - slice_number: the current slice number
 - risk_level: the risk level
-- context_file: `.claude/bee-context.local.md`
-- architecture_file: `.claude/bee-architecture.local.md`
+- context_file: `.opencode/bee-context.local.md`
+- architecture_file: `.opencode/bee-architecture.local.md`
 - source_files: files the slice-coder created/modified
 - test_files: files the slice-tester created
 
@@ -474,7 +474,7 @@ The sdd-verifier runs tests, assesses test quality, validates ACs, and checks pa
 - Mark the slice's ACs as `[x]` in the spec file (if the verifier didn't already)
 - Update the task to completed
 - Report: "Slice [N] done. [test count] tests passing. Moving to slice [N+1]."
-- **→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N+1] — coding" --slice-progress "[updated progress]"`
+- **→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-slice "Slice [N+1] — coding" --slice-progress "[updated progress]"`
 
 **If verifier NEEDS FIXES:**
 - Share the verifier report with the developer
@@ -483,7 +483,7 @@ The sdd-verifier runs tests, assesses test quality, validates ACs, and checks pa
 - If re-running an agent: pass the verifier's feedback as additional context
 
 **After the verifier passes**, if UI-involved: run browser verification.
-Delegate to the **browser-verifier** agent via Task in dev mode, passing the spec path, slice number, context_file (`.claude/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
+Delegate to the **browser-verifier** agent via Task in dev mode, passing the spec path, slice number, context_file (`.opencode/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
 - "Browser verification skipped" (Chrome MCP unavailable): slice still passes
 - Failures: share report with developer, re-run after fixes
 - "Browser verification passed": proceed normally
@@ -518,22 +518,22 @@ Move to the next slice. Repeat Steps A-D.
 
 3. **Load the `try-it-yourself` skill** and generate a contextual "Try it yourself" block.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "all slices verified, ready for review"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "all slices verified, ready for review"`
 
 ## REVIEW
 
 Delegate to the **reviewer** agent via Task, passing:
 - The spec path
 - The risk level
-- context_file: `.claude/bee-context.local.md`
-- architecture_file: `.claude/bee-architecture.local.md`
+- context_file: `.opencode/bee-context.local.md`
+- architecture_file: `.opencode/bee-architecture.local.md`
 
 The reviewer does a holistic review: spec coverage, code quality, test quality, commit story, observability, and a risk-aware ship recommendation.
 
 If the reviewer recommends changes: share with developer, fix, re-review.
 If the reviewer says "ready to merge": done.
 
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
 ### RECAP OFFER
 
@@ -562,11 +562,11 @@ When discovery produced multiple phases, each phase runs: spec → architecture 
 1. Run B7 (Spec) through Review for this phase.
 2. After review passes: "Phase [N] shipped. **[N of M] phases done.** Ready for Phase [N+1]: **[next phase name]**?"
    Options: "Yes, let's spec Phase [N+1] (Recommended)" / "Take a break, I'll come back"
-   **→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --phase-progress "[updated progress]" --current-phase "Phase [N+1]: [name]"`
+   **→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --phase-progress "[updated progress]" --current-phase "Phase [N+1]: [name]"`
 3. Repeat until all phases shipped.
 
 When all phases are done: "All phases shipped. Nice work."
-**→ Update state:** `"$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
+**→ Update state:** `BEE_DIR=.opencode "$HOME/.config/opencode/bee/scripts/update-bee-state.sh" set --current-phase "done — shipped"`
 
 ---
 
@@ -591,11 +591,11 @@ This loop applies after: discovery agent returns, spec-builder returns, and arch
 When the context-gatherer (or greenfield UI-signal scan) flags "UI-involved: yes", two things happen:
 
 **1. Design agent** (after context-gathering, before spec):
-Delegate to the design agent via Task, passing the developer's task description, context_file (`.claude/bee-context.local.md` — includes the Design System subsection), and the triage assessment. The design agent produces a design brief at `.claude/DESIGN.md`.
+Delegate to the design agent via Task, passing the developer's task description, context_file (`.opencode/bee-context.local.md` — includes the Design System subsection), and the triage assessment. The design agent produces a design brief at `.opencode/DESIGN.md`.
 **→ Run the Collaboration Loop** on the design brief.
 
 **2. Browser verification** (after each slice passes the sdd-verifier):
-Delegate to the browser-verifier agent via Task in dev mode, passing the spec path, slice number, context_file (`.claude/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
+Delegate to the browser-verifier agent via Task in dev mode, passing the spec path, slice number, context_file (`.opencode/bee-context.local.md`), mode "dev", and the DESIGN.md path if it exists.
 - "Browser verification skipped" (Chrome MCP unavailable): slice still passes. Browser verification is additive, not required.
 - Failures: share the report with the developer. After fixes, re-run the browser-verifier.
 - "Browser verification passed": proceed normally.
@@ -614,4 +614,4 @@ Delegate to the browser-verifier agent via Task in dev mode, passing the spec pa
 - **Don't skip the verify phase.** Every slice gets verified by sdd-verifier before advancing.
 - **Don't modify the spec** beyond marking completed ACs with `[x]`.
 
-Follow CLAUDE.md conventions for navigation style, teaching level, and personality.
+Follow AGENTS.md conventions for navigation style, teaching level, and personality.

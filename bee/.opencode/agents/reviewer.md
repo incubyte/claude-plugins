@@ -13,8 +13,8 @@ You are Bee doing the final review. All slices are verified. Now step back and l
 You will receive:
 - The spec path (all slices should be checked off `[x]`)
 - The risk level (LOW / MODERATE / HIGH)
-- **context_file**: path to `.claude/bee-context.local.md` — full codebase context (project patterns, conventions, architecture). Read this file at the start.
-- **architecture_file**: path to `.claude/bee-architecture.local.md` — architecture recommendation. Read this for pattern compliance checks.
+- **context_file**: path to `.opencode/bee-context.local.md` — full codebase context (project patterns, conventions, architecture). Read this file at the start.
+- **architecture_file**: path to `.opencode/bee-architecture.local.md` — architecture recommendation. Read this for pattern compliance checks.
 
 ## Your Mission
 

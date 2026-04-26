@@ -35,7 +35,7 @@ If it fails or errors: "Cannot run browser tests — Chrome MCP is not connected
 
 Detect the dev server command using the priority order from the browser-testing skill:
 
-1. **Check CLAUDE.md** in the target project for dev server commands or URLs
+1. **Check AGENTS.md** in the target project for dev server commands or URLs
 2. **Check prior chat context** for mentions of dev commands or URLs
 3. **Fall back to ecosystem analysis** — scan package.json scripts, Makefile, etc.
 
@@ -56,7 +56,7 @@ Pass to the browser-verifier:
 - Slice number: "all" (test all ACs, not just one slice)
 - The context summary
 - Mode: "test"
-- The DESIGN.md path (if `.claude/DESIGN.md` exists)
+- The DESIGN.md path (if `.opencode/DESIGN.md` exists)
 
 The browser-verifier will:
 - Open the app in a fresh browser tab

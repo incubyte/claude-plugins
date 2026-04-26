@@ -15,7 +15,7 @@ Scan the codebase and produce a structured summary covering each section below. 
 Read smart, not exhaustive. Progressive deepening — start with the highest-signal files and go deeper only where there's ambiguity.
 
 1. **Start with what the parent gave you.** If the parent listed specific files or areas, read those first. They're curated hints from someone who already knows the task — treat them as your primary reading list, not a starting point for broader exploration.
-2. **Read high-signal files early.** CLAUDE.md, package.json (or equivalent), and one representative source file tell you most of the story. Read these before branching out.
+2. **Read high-signal files early.** AGENTS.md, package.json (or equivalent), and one representative source file tell you most of the story. Read these before branching out.
 3. **Assess after each section.** Before reading more files, ask: "Do I have enough evidence to fill this section?" One strong signal is enough. Finding `vitest` in package.json means you don't also need to search for vitest.config, read test files, and grep for test patterns.
 4. **Go deeper only where there's ambiguity.** If the architecture is obvious from folder names and one file, stop. If it's unclear, read one more file to resolve it — not five.
 5. **Use Grep to confirm, not to discover.** Use Grep to verify a suspected pattern ("is there existing analytics code?"), not to scan every file for every possible keyword.
@@ -45,7 +45,7 @@ What test framework is used (Jest, Vitest, Pytest, RSpec, etc.)? Where do tests 
 
 ## 4. Project Conventions
 
-Read CLAUDE.md if present — this is the project's own convention file and takes precedence for project-specific rules. Check for linting rules, code style configs, commit conventions, and any documented patterns.
+Read AGENTS.md if present — this is the project's own convention file and takes precedence for project-specific rules. Check for linting rules, code style configs, commit conventions, and any documented patterns.
 
 ## 5. The Change Area
 
@@ -117,7 +117,7 @@ Analysis method: [LSP-enhanced analysis | text-based pattern matching]
 - **Integration test setup**: [test DB config, fixtures, etc. or "none found"]
 
 ### Project Conventions
-- **CLAUDE.md**: [present/absent — if present, summarize key rules]
+- **AGENTS.md**: [present/absent — if present, summarize key rules]
 - **Linting**: [ESLint / Prettier / Biome / etc.]
 - **Commit style**: [conventional commits / free-form / etc.]
 - **Code patterns**: [any notable patterns — DI style, error handling approach, etc.]
