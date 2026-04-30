@@ -82,6 +82,19 @@ Return your analysis in exactly this structure:
 **[entity-name]** (slug: [lowercase-hyphenated])
 - ...
 
+### Images
+[Meaningful images found in the source — diagrams, charts, architecture drawings, screenshots that illustrate a concept. Skip decorative images, logos, icons, and avatars.]
+
+For each meaningful image:
+- **source_path:** [path to image file relative to clippings, or the URL if it's a remote reference]
+- **target_filename:** [lowercase-hyphenated descriptive name, e.g., `event-sourcing-flow.png`]
+- **description:** [What the image shows — this becomes the alt text]
+- **relevant_to:** [Which concept or entity page should include this image]
+
+To find images: scan the source document for `![` (markdown images), `<img` (HTML images), and look for image files in the same directory as the clipping (Glob for `*.png`, `*.jpg`, `*.jpeg`, `*.gif`, `*.svg`, `*.webp` near the source file).
+
+If no meaningful images: "None found."
+
 ### Conflicts
 [Claims in this source that contradict what exists in the wiki. If you can't check existing wiki content, note claims that seem controversial or could conflict.]
 - [Claim] — potential conflict with: [topic/area]
@@ -96,3 +109,4 @@ If no conflicts: "None detected."
 - **Be specific.** "Uses event sourcing for audit trails" not "Uses some kind of architecture."
 - **Date timely claims.** "As of 2024" not "recently" or "the latest."
 - **Slugs are lowercase-hyphenated.** `event-sourcing`, `react-hooks`, `postgresql`.
+- **Images must earn their place.** Only flag images that help explain a concept — diagrams, architecture, data flows, charts. Skip decorative images, logos, and icons.

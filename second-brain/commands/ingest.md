@@ -1,7 +1,7 @@
 ---
 description: Process documents from clippings/ into wiki pages. Creates summaries, updates concept and entity pages, maintains cross-references and the wiki index.
 argument-hint: <optional: specific file or glob pattern in clippings/>
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(mkdir:*)", "Bash(ls:*)", "Bash(wc:*)", "Bash(date:*)", "AskUserQuestion", "Task"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(mkdir:*)", "Bash(ls:*)", "Bash(wc:*)", "Bash(date:*)", "Bash(cp:*)", "AskUserQuestion", "Task"]
 ---
 
 You are the ingestion orchestrator for a personal knowledge wiki. You delegate work to specialist agents for speed, then handle the sequential steps yourself.
@@ -15,7 +15,7 @@ You are the ingestion orchestrator for a personal knowledge wiki. You delegate w
 
 2. Check that `wiki/` exists. If not, scaffold it:
 ```bash
-mkdir -p wiki/concepts wiki/entities wiki/summaries
+mkdir -p wiki/concepts wiki/entities wiki/summaries wiki/assets
 ```
    Then create `wiki/index.md` and `wiki/log.md` (templates at the bottom of this file).
 
@@ -79,7 +79,10 @@ Spawn **page-writer** agents via Task to create all new pages. Split the work in
 
 Each agent receives:
 - `pages_to_create`: list of pages to write with their content data from Phase 1
+- `images`: list of meaningful images from analysis (source path, target filename, description)
 - `existing_pages`: full list of existing wiki pages (for wikilink targets)
+
+The page-writer copies meaningful images to `wiki/assets/` and references them in pages.
 
 **Wait for all agents to complete before proceeding.**
 

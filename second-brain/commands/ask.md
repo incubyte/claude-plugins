@@ -1,7 +1,7 @@
 ---
 description: Query the wiki. Searches relevant pages, synthesizes an answer with [[citations]] and Obsidian deep links to sources.
 argument-hint: <your question>
-allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(basename:*)", "Bash(wc:*)", "Bash(date:*)", "Bash(pwd:*)", "AskUserQuestion"]
+allowed-tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash(basename:*)", "Bash(wc:*)", "Bash(date:*)", "Bash(pwd:*)", "Bash(open:*)", "Bash(mkdir:*)", "Bash(base64:*)", "Bash(file:*)", "AskUserQuestion"]
 ---
 
 You are answering questions using a personal wiki as your knowledge base. The wiki lives in `wiki/` and contains concept pages, entity pages, and source summaries — all interlinked with `[[wikilinks]]`.
@@ -69,14 +69,104 @@ If the answer also traces back to original clippings (via summary page frontmatt
 
 **URL encoding rules:** Replace spaces with `%20`, slashes with `%2F`. Drop the `.md` extension. Keep hyphens, lowercase letters, and numbers as-is.
 
-## Filing Good Answers
+## After the Answer
 
-After answering, if the response contains a novel synthesis (connecting ideas that weren't explicitly linked before), offer to file it:
+Once the answer and sources are presented, offer two follow-up options via AskUserQuestion:
 
-"This answer connects ideas across multiple pages. Want me to save it as a wiki page?"
+"What would you like to do with this?"
 
 Options:
-- "Yes, save it" — Write to `wiki/concepts/[topic].md` with proper frontmatter, wikilinks, and source references. Update `wiki/index.md` and add cross-references to cited pages.
-- "No, just the answer" — Done.
+- "Create a presentation (Recommended)" — Proceed to the Presentation Flow below
+- "Save as a wiki page" — Write to `wiki/concepts/[topic].md` with proper frontmatter, wikilinks, and source references. Update `wiki/index.md` and add cross-references to cited pages. Only offer this if the answer contains novel synthesis.
+- "I'm done" — Done.
 
-Only offer this for substantive synthesis — not for simple lookups.
+---
+
+## Presentation Flow
+
+### Step 1: Audience
+
+Use AskUserQuestion. Recommend the most likely audience based on the content — if the answer is technical, recommend engineers; if it's strategic, recommend leadership.
+
+"Who are you presenting this to?"
+
+Options (tailor to the answer's content):
+- "[Most likely audience] (Recommended)" — e.g., "Engineering team", "Leadership / stakeholders", "Client / external audience"
+- "[Second likely audience]"
+- "[Third option]"
+
+### Step 2: Length
+
+Use AskUserQuestion:
+
+"How long should the presentation be?"
+
+Options:
+- "5 minutes / 5-7 slides (Recommended)" — Tight and focused
+- "10 minutes / 10-12 slides" — Room for depth
+- "Lightning talk / 3 slides" — Elevator pitch
+
+### Step 3: Generate the Presentation
+
+Create a single, standalone HTML file. Save to `presentations/[topic-slug].html`. Create the `presentations/` directory if it doesn't exist.
+
+```bash
+mkdir -p presentations
+```
+
+The HTML must be **fully self-contained** — no external CSS, JS, font, or image dependencies. Everything inline. It should look polished when opened in a browser.
+
+**Design principles:**
+- Clean, modern slide deck aesthetic
+- One idea per slide — no walls of text
+- Large readable type (min 24px for body, 36px+ for headings)
+- High contrast — dark text on light background or light text on dark
+- Subtle accent color derived from the content's theme
+- Smooth slide transitions via keyboard (arrow keys) or click
+- Slide counter ("3 / 7") in the corner
+- Sources slide at the end with Obsidian deep links
+
+**Slide structure:**
+1. **Title slide** — Topic, one-line subtitle, date
+2. **Context slide** — Why this matters, framed for the audience
+3-N. **Content slides** — One key point per slide. Use short phrases, not paragraphs. Add a supporting detail or example beneath the headline. Use diagrams (inline SVG) where a visual beats text.
+N+1. **Takeaways slide** — 2-3 bullet points, what to remember
+N+2. **Sources slide** — Wiki pages and clippings used, with Obsidian deep links
+
+**Images in slides:**
+
+Before generating the HTML, scan the wiki pages used in the answer for image references (`![alt](../assets/filename)`). For each image:
+
+1. Determine the MIME type:
+```bash
+file --mime-type -b wiki/assets/[filename]
+```
+
+2. Encode as base64:
+```bash
+base64 -i wiki/assets/[filename]
+```
+
+3. Embed in the HTML as a data URI:
+```html
+<img src="data:[mime-type];base64,[encoded-data]" alt="[description]" />
+```
+
+Place images on the slide where they illustrate the point being made. Size them appropriately — max-width 80% of the slide, centered. If an image is the main point of a slide, make it large. If it's supporting, keep it smaller alongside the text.
+
+Only include images that add value to the presentation. Skip images that don't make sense without the full wiki page context.
+
+**The HTML must include:**
+- Inline CSS in a `<style>` block
+- Inline JS for keyboard navigation (left/right arrows, click to advance)
+- All slides as `<section>` elements, shown/hidden via JS
+- All images as base64 data URIs (no external file references)
+- Print-friendly: `@media print` styles that show all slides
+
+### Step 4: Open the Presentation
+
+```bash
+open presentations/[topic-slug].html
+```
+
+Tell the user: "Presentation saved to `presentations/[topic-slug].html` and opened in your browser. Use arrow keys to navigate."
