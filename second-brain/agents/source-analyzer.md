@@ -43,8 +43,11 @@ Return your analysis in exactly this structure:
 
 ### Summary
 - **title**: [Source title or descriptive name]
+- **source_url**: [Original web URL if found, otherwise "none"]
 - **tldr**: [2-3 sentences — the source's core argument or contribution]
 - **tags**: [comma-separated topic tags]
+
+To find the source URL: check the clipping's YAML frontmatter for `url`, `source`, `link`, or `original_url` fields. Also scan the first few lines for a bare URL. Obsidian Web Clipper typically stores the URL in frontmatter.
 
 ### Key Ideas
 [3-5 paragraphs of narrative prose summarizing the source's main ideas. This becomes the body of the summary page. Use plain text — no wikilinks yet, the orchestrator adds those.]

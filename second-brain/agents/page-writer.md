@@ -64,6 +64,7 @@ Write to `wiki/summaries/[source-name].md`:
 title: "Summary: [Source Title]"
 type: summary
 source_file: "clippings/[filename]"
+source_url: "[original web URL if available, omit if none]"
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags: [topic1, topic2]

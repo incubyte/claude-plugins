@@ -129,7 +129,7 @@ The HTML must be **fully self-contained** — no external CSS, JS, font, or imag
 **Slide structure:**
 1. **Title slide** — Topic, one-line subtitle, date
 2. **Context slide** — Why this matters, framed for the audience
-3-N. **Content slides** — One key point per slide. Use short phrases, not paragraphs. Add a supporting detail or example beneath the headline. Use diagrams (inline SVG) where a visual beats text.
+3-N. **Content slides** — One key point per slide. Use short phrases, not paragraphs. Add a supporting detail or example beneath the headline. Use diagrams (inline SVG) where a visual beats text. When a claim or concept originates from a source with a web URL, make the relevant text a clickable hyperlink to the original — don't add a separate citation, just make the existing words the link. For example: `<a href="https://...">Event sourcing eliminates the impedance mismatch</a>` instead of adding "[1]" footnotes.
 N+1. **Takeaways slide** — 2-3 bullet points, what to remember
 N+2. **Sources slide** — Wiki pages and clippings used, with Obsidian deep links
 
@@ -156,11 +156,22 @@ Place images on the slide where they illustrate the point being made. Size them 
 
 Only include images that add value to the presentation. Skip images that don't make sense without the full wiki page context.
 
+**Inline source links on content slides:**
+
+Before generating slides, read the summary pages cited in the answer. Extract `source_url` from their YAML frontmatter. Build a map of summary slug -> web URL.
+
+On content slides, when a claim or phrase traces back to a source that has a web URL, make that text a clickable `<a href="...">` link. Don't add footnotes or citation numbers — the link IS the citation. The reader clicks the phrase to see the original source.
+
+Style inline links subtly — same color as body text with a dotted underline, so they don't dominate the slide but are clearly clickable. On hover, show the full URL in the browser status bar.
+
+If a source has no web URL (local-only clipping), don't link it — the Obsidian deep links on the Sources slide cover those.
+
 **The HTML must include:**
 - Inline CSS in a `<style>` block
 - Inline JS for keyboard navigation (left/right arrows, click to advance)
 - All slides as `<section>` elements, shown/hidden via JS
 - All images as base64 data URIs (no external file references)
+- Inline `<a>` links to original web sources on content slides
 - Print-friendly: `@media print` styles that show all slides
 
 ### Step 4: Open the Presentation
