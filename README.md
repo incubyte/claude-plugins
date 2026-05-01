@@ -26,15 +26,28 @@ Learn any technology by building real projects. Claude guides you step-by-step �
 
 Entry point: `/learn:start`
 
+### [Discovery](discovery/) — End-to-End Product Discovery
+
+Take a raw product idea through ten guided phases and walk away with a structured PRD. Pushes back on vague metrics, refuses to write PRDs for ideas that should die.
+
+- 10 phases (context → scope → competition → journeys → wireframes → mockups → epics → tech → metrics → GTM → assembly)
+- Resumable across sessions via `discovery-state.md`
+- Kill-gate evaluation — willing to recommend not pursuing
+- Forces measurable user goals and structured non-goals
+- Revision mode for post-delivery edits
+
+Entry point: `/discovery:start`
+
 ## Install
 
 ```bash
 # Add the Incubyte marketplace
-/plugin marketplace add incubyte/claude-plugins
+/plugin marketplace add incubyte/ai-plugins
 
 # Install a plugin
 /plugin install bee@incubyte-plugins
 /plugin install learn@incubyte-plugins
+/plugin install discovery@incubyte-plugins
 ```
 
 ## License
